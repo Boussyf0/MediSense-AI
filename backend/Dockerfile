@@ -28,11 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /build/wheels /wheels
 RUN pip install --no-cache /wheels/*
 
-# Download Swagger UI assets locally (avoid CDN dependency)
+# Download Swagger UI assets locally (avoid CDN dependency at runtime)
+# -fsSL: fail on HTTP error, silent, follow redirects — prevents silently empty files
+ARG SWAGGER_UI_VERSION=5.11.0
 RUN mkdir -p /app/static && \
-    curl -sL https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css \
+    curl -fsSL "https://cdn.jsdelivr.net/npm/swagger-ui-dist@${SWAGGER_UI_VERSION}/swagger-ui.css" \
          -o /app/static/swagger-ui.css && \
-    curl -sL https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js \
+    curl -fsSL "https://cdn.jsdelivr.net/npm/swagger-ui-dist@${SWAGGER_UI_VERSION}/swagger-ui-bundle.js" \
          -o /app/static/swagger-ui-bundle.js
 
 # Copy application code
