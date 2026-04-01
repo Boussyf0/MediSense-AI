@@ -2,9 +2,10 @@
 MediSense AI — FastAPI Application Entry Point
 """
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
@@ -47,9 +48,9 @@ app = FastAPI(
 )
 
 # ── Static files (Swagger UI assets) ─────────────────────
-# Served from /app/static inside the container
-# Downloaded at Docker build time — no internet needed at runtime
-app.mount("/static", StaticFiles(directory="/app/static"), name="static")
+# Path resolves relative to this file → works both inside Docker and locally
+_STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
 # ── CORS ──────────────────────────────────────────────────
 app.add_middleware(
@@ -62,20 +63,35 @@ app.add_middleware(
 
 
 # ── Security Headers ──────────────────────────────────────
+_DOCS_PREFIX = settings.API_V1_PREFIX + "/docs"
+
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    # Allow inline scripts for Swagger UI to work
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data: https://fastapi.tiangolo.com"
-    )
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+    # Swagger UI needs 'unsafe-inline' for its inline scripts/styles.
+    # Scope the relaxed CSP only to /docs* and /static* — all API endpoints
+    # keep the strict policy (no unsafe-inline).
+    path = request.url.path
+    if path.startswith(_DOCS_PREFIX) or path.startswith("/static"):
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:"
+        )
+    else:
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self'; "
+            "img-src 'self' data:"
+        )
+    response.headers["Content-Security-Policy"] = csp
     return response
 
 
@@ -89,6 +105,11 @@ async def custom_swagger_ui() -> HTMLResponse:
         swagger_css_url="/static/swagger-ui.css",
         oauth2_redirect_url=f"{settings.API_V1_PREFIX}/docs/oauth2-redirect",
     )
+
+
+@app.get(f"{settings.API_V1_PREFIX}/docs/oauth2-redirect", include_in_schema=False)
+async def swagger_oauth2_redirect() -> HTMLResponse:
+    return get_swagger_ui_oauth2_redirect_html()
 
 
 # ── Routes ────────────────────────────────────────────────
