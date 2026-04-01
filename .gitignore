@@ -205,3 +205,17 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# MediSense AI — Project specific
+.env
+nginx/certs/*.crt
+nginx/certs/*.key
+nginx/certs/*.pem
+
+# Never commit model weights or large data files
+*.pkl
+*.h5
+*.pt
+*.onnx
+data/raw/
+mlruns/
