@@ -208,6 +208,9 @@ __marimo__/
 
 # MediSense AI — Project specific
 .env
+# Swagger UI vendor assets (downloaded at build time — too large to commit)
+backend/static/swagger-ui-bundle.js
+backend/static/swagger-ui.css
 nginx/certs/*.crt
 nginx/certs/*.key
 nginx/certs/*.pem

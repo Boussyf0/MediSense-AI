@@ -28,6 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /build/wheels /wheels
 RUN pip install --no-cache /wheels/*
 
+# Download Swagger UI assets locally (avoid CDN dependency)
+RUN mkdir -p /app/static && \
+    curl -sL https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css \
+         -o /app/static/swagger-ui.css && \
+    curl -sL https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js \
+         -o /app/static/swagger-ui-bundle.js
+
 # Copy application code
 COPY . .
 

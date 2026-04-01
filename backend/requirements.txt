@@ -22,6 +22,9 @@ email-validator==2.2.0      # required by pydantic EmailStr (explicit because of
 pydantic-settings==2.6.1    # .env file loading
 python-dotenv==1.0.1
 
+# ── Static Files ──────────────────────────────────────────
+aiofiles==24.1.0            # required by FastAPI StaticFiles
+
 # ── HTTP Client ───────────────────────────────────────────
 httpx==0.28.1               # async HTTP client (for Ollama API calls in Sprint 3)
 
