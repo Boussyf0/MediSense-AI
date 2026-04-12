@@ -1,15 +1,33 @@
 """
 Pytest fixtures — shared across all test files.
 
-Why a test database?
-  - Tests must NEVER touch the production/development database
-  - We use a separate test DB that is created/dropped per test session
-  - SQLite in-memory would be simpler but doesn't support pgcrypto/UUID
-    → we use a real PostgreSQL test DB
+EVENT LOOP STRATEGY:
+  Session-scoped ASYNC fixtures in pytest-asyncio 0.24 require the event_loop
+  to also be session-scoped — causing "ScopeMismatch" errors when the default
+  loop scope is function. And session-scoped event loops cause asyncpg
+  connections to be shared across concurrent test tasks.
+
+  Solution: separate responsibilities by sync vs async:
+
+    db_schema  (session-scoped SYNC) — creates/drops tables ONCE per run
+               using psycopg2 (sync driver). No event loop involved.
+               Safe to be session-scoped without any asyncio concerns.
+
+    test_db    (function-scoped ASYNC) — creates a FRESH async engine +
+               session per test. All asyncpg connections live in the test's
+               own per-test event loop. Rolls back at teardown.
+
+    client     (function-scoped ASYNC) — wraps test_db.
+
+This gives us:
+  - Schema created once (fast)
+  - No cross-loop asyncpg connections
+  - Clean DB state after every test (rollback)
 """
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from unittest.mock import AsyncMock, patch
 
@@ -19,41 +37,91 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# Override DB URL for tests (uses same postgres but different DB name)
+# Async URL (asyncpg) — used by per-test engines
 TEST_DATABASE_URL = settings.DATABASE_URL.replace(
+    settings.POSTGRES_DB, f"{settings.POSTGRES_DB}_test"
+)
+# Sync URL (psycopg2) — used by session-scoped schema fixture (no event loop)
+TEST_DATABASE_URL_SYNC = settings.DATABASE_URL_SYNC.replace(
     settings.POSTGRES_DB, f"{settings.POSTGRES_DB}_test"
 )
 
 
-@pytest_asyncio.fixture(scope="session")
-async def test_engine():
-    """Create test database engine — shared across the entire test session."""
-    engine = create_async_engine(TEST_DATABASE_URL, echo=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield engine
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    await engine.dispose()
+@pytest.fixture(scope="session")
+def db_schema():
+    """
+    Ensure the test database exists, then create the schema and all tables.
+
+    Uses psycopg2 (sync) so there are NO event loop concerns.
+    A sync session fixture can safely be session-scoped without
+    conflicting with per-test async event loops.
+
+    Why CREATE DATABASE here?
+      On a fresh machine or in CI the test DB doesn't exist yet — the engine
+      would fail before running a single test. We connect to the maintenance
+      database ("postgres") first, which always exists, and issue
+      CREATE DATABASE IF NOT NEEDED (via AUTOCOMMIT, required for DDL).
+    """
+    # Connect to the maintenance DB to create the test DB if absent
+    maintenance_url = TEST_DATABASE_URL_SYNC.rsplit("/", 1)[0] + "/postgres"
+    maintenance_engine = create_engine(maintenance_url, isolation_level="AUTOCOMMIT")
+    test_db_name = f"{settings.POSTGRES_DB}_test"
+    with maintenance_engine.connect() as conn:
+        exists = conn.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = :name"),
+            {"name": test_db_name},
+        ).fetchone()
+        if not exists:
+            conn.execute(text(f'CREATE DATABASE "{test_db_name}"'))
+    maintenance_engine.dispose()
+
+    # Now build the schema inside the test DB
+    engine = create_engine(TEST_DATABASE_URL_SYNC)
+    with engine.begin() as conn:
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS secure"))
+    Base.metadata.create_all(engine)
+    engine.dispose()
+
+    yield   # all tests run here
+
+    # Teardown
+    engine = create_engine(TEST_DATABASE_URL_SYNC)
+    Base.metadata.drop_all(engine)
+    with engine.begin() as conn:
+        conn.execute(text("DROP SCHEMA IF EXISTS secure CASCADE"))
+    engine.dispose()
 
 
 @pytest_asyncio.fixture
-async def test_db(test_engine):
-    """Provide a test DB session that rolls back after each test."""
-    async_session = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
+async def test_db(db_schema):
+    """
+    Fresh async engine + session for each test.
+
+    Each call creates new asyncpg connections on the test's own event loop.
+    Rolls back at teardown so the next test starts with a clean database.
+    """
+    engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+    factory = async_sessionmaker(
+        engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+        autoflush=False,
+        autocommit=False,
+    )
+    async with factory() as session:
         yield session
         await session.rollback()
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture
 async def client(test_db):
     """
-    Async test client with DB dependency overridden.
+    Async HTTP test client with DB dependency overridden.
 
-    Why override dependencies?
-      - FastAPI's dependency injection allows swapping get_db() for tests
-      - The test client uses the test DB, not the real one
+    override_get_db yields test_db WITHOUT committing, so all writes
+    (test seed data + endpoint writes) stay in one transaction and are
+    rolled back by test_db's teardown.
     """
     async def override_get_db():
         yield test_db
@@ -62,8 +130,23 @@ async def client(test_db):
 
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test"
+        base_url="http://test",
     ) as ac:
         yield ac
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(autouse=True)
+def mock_redis():
+    """
+    Autouse — patches Redis for every test.
+
+    is_token_blacklisted always returns False (token not revoked).
+    Override locally to test revocation behaviour.
+    """
+    with patch(
+        "app.core.security.is_token_blacklisted",
+        new=AsyncMock(return_value=False),
+    ):
+        yield
