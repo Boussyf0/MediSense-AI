@@ -579,6 +579,215 @@ async def test_db(db_schema):
 
 ---
 
+### Corrections post-review (Copilot AI)
+
+Après la première version fonctionnelle (36/36 tests verts), une review Copilot a identifié **7 problèmes** — tous liés à des désalignements entre le code Python et le schéma PostgreSQL réel, plus deux bugs de comportement subtils.
+
+#### Fix 1 — `ip_address : String(45)` → `INET` (AuditLog et ConsentLog)
+
+**Fichier :** `app/db/models/audit_log.py`
+
+```python
+# Avant (incorrect)
+from sqlalchemy import String
+ip_address: Mapped[str | None] = mapped_column(String(45))
+
+# Après (correct)
+from sqlalchemy.dialects.postgresql import INET
+ip_address: Mapped[str | None] = mapped_column(INET)
+```
+
+**Pourquoi :** `init_db.sql` déclare `ip_address INET`. SQLAlchemy utilise le type Python pour générer les migrations Alembic via `autogenerate`. Si le type ORM est `String(45)` mais que la colonne DB est `INET`, `alembic revision --autogenerate` génère une fausse migration "change column type" à chaque exécution — polluant l'historique de migrations. Le type `INET` est dans `sqlalchemy.dialects.postgresql`, pas dans `sqlalchemy` standard.
+
+**Pour ton profil DS/IA :** asyncpg retourne les valeurs `INET` comme des strings Python ordinaires — pas besoin de conversion. Mais si tu fais du ML et que tu veux analyser les IP (géolocalisation des accès, détection d'anomalies), PostgreSQL supporte des opérateurs spécifiques aux IPs (`<<`, `>>=`) que tu ne peux exploiter qu'avec le bon type.
+
+---
+
+#### Fix 2 — `user_agent : String(255)` → `Text` (AuditLog)
+
+**Fichier :** `app/db/models/audit_log.py`
+
+```python
+# Avant (incorrect)
+user_agent: Mapped[str | None] = mapped_column(String(255))
+
+# Après (correct)
+from sqlalchemy import Text
+user_agent: Mapped[str | None] = mapped_column(Text)
+```
+
+**Pourquoi :** `init_db.sql` déclare `user_agent TEXT`. Les user-agents modernes (Chrome sur mobile par exemple) dépassent facilement 255 caractères. Un `String(255)` aurait tronqué silencieusement en Python avant l'INSERT, ou échoué avec une erreur de contrainte PostgreSQL. `Text` = longueur illimitée, correspond exactement au type `TEXT` de PostgreSQL.
+
+**Note :** dans `audit.py`, `_get_user_agent()` tronque à 255 caractères *par choix applicatif* (pas par contrainte DB), pour éviter des logs excessivement longs. La contrainte est dans le code, pas dans le schéma — ce qui est plus flexible.
+
+---
+
+#### Fix 3 — `ForeignKey` manquant sur `ConsentLog.patient_uuid`
+
+**Fichier :** `app/db/models/audit_log.py`
+
+```python
+# Avant (incorrect — FK absente du modèle ORM)
+patient_uuid: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+
+# Après (correct)
+from sqlalchemy import ForeignKey
+patient_uuid: Mapped[uuid.UUID] = mapped_column(
+    UUID(as_uuid=True),
+    ForeignKey("public.patients.patient_uuid"),
+    nullable=False,
+)
+```
+
+**Pourquoi :** `init_db.sql` déclare une FK explicite `REFERENCES public.patients(patient_uuid)`. Sans ce `ForeignKey()` dans le modèle ORM :
+- Alembic `autogenerate` aurait généré une migration qui *supprime* la FK existante (car il ne la voit pas dans le modèle)
+- SQLAlchemy ne peut pas utiliser `relationship()` entre `Patient` et `ConsentLog` sans FK déclarée
+- Les outils d'introspection (SQLAlchemy Inspector, pgAdmin) affichent une incohérence
+
+**Pattern :** quand tu cartographies un schéma DB existant (`init_db.sql` en amont du code ORM), **toujours inclure les FK dans les modèles**, même si tu n'as pas besoin du `relationship()` pour l'instant.
+
+---
+
+#### Fix 4 — Ordre export : `log_audit` + `flush` AVANT le SELECT `access_log`
+
+**Fichier :** `app/api/v1/endpoints/patients.py` — endpoint US-07
+
+```python
+# Avant (bug de comportement)
+# ... query consent_history ...
+audit_result = await db.execute(
+    select(AuditLog).where(AuditLog.resource_uuid == patient_uuid)
+    .order_by(AuditLog.created_at.desc()).limit(100)
+)
+# log de l'export APRÈS — donc absent de la réponse
+await log_audit(db=db, actor=current_user, request=request,
+                action="EXPORT", ...)
+
+# Après (correct)
+# log de l'export AVANT — flush dans la même transaction
+await log_audit(db=db, actor=current_user, request=request,
+                action="EXPORT", resource_type="patient", resource_uuid=patient_uuid)
+await db.flush()   # ← rend l'entrée visible au SELECT suivant (même transaction)
+
+audit_result = await db.execute(
+    select(AuditLog).where(AuditLog.resource_uuid == patient_uuid)
+    .order_by(AuditLog.created_at.desc()).limit(100)
+)
+```
+
+**Pourquoi :** RGPD Art. 20 exige que le patient puisse voir *qui a accédé à ses données et quand*. Si l'entrée EXPORT n'apparaît pas dans la section `access_log` de sa propre réponse d'export, l'export est incomplet. `db.flush()` envoie les INSERTs en attente vers PostgreSQL dans la transaction courante — sans commit — ce qui les rend visibles au SELECT suivant dans la même session.
+
+**Mécanisme SQLAlchemy :** `db.add()` place l'objet dans l'identity map (mémoire Python). `db.flush()` traduit l'identity map en SQL exécuté sur la connexion (visible dans la transaction). `db.commit()` rend visible aux *autres* connexions.
+
+---
+
+#### Fix 5 — `updated_at` obsolète dans la réponse consent
+
+**Fichier :** `app/api/v1/endpoints/patients.py` — endpoint US-06
+
+```python
+# Avant (bug subtil)
+setattr(patient, f"consent_{consent_type}", new_val)
+changed = True
+# ...
+return ConsentResponse.model_validate(patient)
+# ← updated_at retourné = valeur PRE-UPDATE (pas encore flushé)
+
+# Après (correct)
+setattr(patient, f"consent_{consent_type}", new_val)
+changed = True
+# ...
+await db.flush()   # ← déclenche le trigger onupdate sur updated_at
+return ConsentResponse.model_validate(patient)
+# ← updated_at = timestamp du vrai UPDATE
+```
+
+**Pourquoi :** `patients.updated_at` est géré par un trigger PostgreSQL `onupdate` (défini dans `init_db.sql`). Ce trigger ne se déclenche qu'à l'exécution SQL, pas à la modification de l'objet Python. Sans `flush()`, l'objet Python conserve l'ancienne valeur `updated_at` et `model_validate` la sérialise dans la réponse. Le client recevrait un timestamp incorrect.
+
+**Pattern généralisable :** toute réponse qui inclut une colonne `updated_at` / `created_at` / `id` gérée côté DB (autogenerate, trigger, DEFAULT) nécessite un `flush()` avant la sérialisation.
+
+---
+
+#### Fix 6 — Docstring `schemas/patient.py` : `AuditLogEntry` → `AuditLogExportEntry`
+
+**Fichier :** `app/schemas/patient.py`
+
+```python
+# Avant (docstring incorrecte)
+"""
+...
+AuditLogEntry        — reduced audit row exposed in the patient export
+"""
+
+# Après (correct)
+"""
+...
+AuditLogExportEntry  — reduced audit row exposed in the patient export
+                       (hides actor_uuid and ip_address — admin-only fields)
+PatientDataExport    — GET /patients/{uuid}/data/export response (US-07)
+                       Admin-only endpoint (require_admin).
+"""
+```
+
+**Pourquoi :** `AuditLogEntry` (nom complet avec acteur + IP) est défini dans `schemas/admin.py` pour l'endpoint US-46 admin. `AuditLogExportEntry` (vue réduite sans acteur ni IP, exposée au patient) est défini ici. La docstring incorrecte créait une confusion entre les deux — surtout importante pour la séparation RGPD : un patient voit *que* ses données ont été accédées, pas *par qui* (c'est admin-only).
+
+---
+
+#### Fix 7 — Auto-création de la DB de test dans `conftest.py`
+
+**Fichier :** `backend/tests/conftest.py`
+
+```python
+# Avant (DB de test devait être créée manuellement)
+@pytest.fixture(scope="session")
+def db_schema():
+    engine = create_engine(TEST_DATABASE_URL_SYNC)
+    # ← échoue avec "database does not exist" sur une machine fraîche
+
+# Après (auto-création via DB maintenance)
+@pytest.fixture(scope="session")
+def db_schema():
+    # Connexion à la DB "postgres" (toujours présente) en AUTOCOMMIT
+    maintenance_url = TEST_DATABASE_URL_SYNC.rsplit("/", 1)[0] + "/postgres"
+    maintenance_engine = create_engine(maintenance_url, isolation_level="AUTOCOMMIT")
+    test_db_name = f"{settings.POSTGRES_DB}_test"
+
+    with maintenance_engine.connect() as conn:
+        exists = conn.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = :name"),
+            {"name": test_db_name},
+        ).fetchone()
+        if not exists:
+            conn.execute(text(f'CREATE DATABASE "{test_db_name}"'))
+    maintenance_engine.dispose()
+
+    # Suite : créer schéma + tables dans la DB de test
+    engine = create_engine(TEST_DATABASE_URL_SYNC)
+    ...
+```
+
+**Pourquoi :** `CREATE DATABASE` est une opération DDL qui ne peut pas s'exécuter à l'intérieur d'une transaction PostgreSQL — elle nécessite `AUTOCOMMIT`. `isolation_level="AUTOCOMMIT"` sur le moteur SQLAlchemy désactive le wrapping automatique en transaction. La connexion à `postgres` (DB de maintenance, toujours présente dans toute installation PostgreSQL) permet de créer des DBs sans être déjà connecté à la cible.
+
+**Pour ton pipeline CI :** cette fix rend les tests reproductibles sur n'importe quelle machine fraîche (developer onboarding, GitHub Actions) sans étape de setup manuelle.
+
+---
+
+#### Synthèse — Catégories de fixes
+
+| # | Fichier | Type de fix | Impact |
+|---|---------|------------|--------|
+| 1 | `models/audit_log.py` | Type SQL `INET` | Alembic autogenerate correct |
+| 2 | `models/audit_log.py` | Type SQL `Text` | Pas de troncature user-agent |
+| 3 | `models/audit_log.py` | FK déclarée | Cohérence ORM ↔ DB schema |
+| 4 | `endpoints/patients.py` | Ordre `flush` avant SELECT | EXPORT présent dans sa propre réponse |
+| 5 | `endpoints/patients.py` | `flush` avant `model_validate` | `updated_at` correct dans réponse |
+| 6 | `schemas/patient.py` | Docstring corrigée | Clarté `AuditLogEntry` vs `AuditLogExportEntry` |
+| 7 | `tests/conftest.py` | Auto-create test DB | Reproductible sur machine fraîche / CI |
+
+**Leçon commune :** les bugs les plus difficiles à détecter ne causent pas d'erreur immédiate — ils produisent des *données incorrectes silencieuses* (timestamp obsolète, entrée absente, fausse migration Alembic). Les reviews de code external (Copilot, pair review) sont essentielles pour les attraper.
+
+---
+
 ## 8. Ce sur quoi tu dois te concentrer — Profil DS/IA
 
 > Sprint 2 est le sprint RGPD. Tu pourrais penser que c'est du "backend pur" et que ça ne te concerne pas directement. **C'est faux.** Chaque pipeline IA que tu vas écrire à partir du Sprint 3 sera bloqué ou autorisé par ce que tu as construit ici.
