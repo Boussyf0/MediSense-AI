@@ -78,7 +78,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph ARTIFACTS["Artefacts Scrum"]
-        PBL["📋 Product Backlog<br/><br/>— Liste ordonnée de toutes les US<br/>— Estimations en story points<br/>— Priorisation MoSCoW<br/>— 46 User Stories au total<br/>— Mis à jour chaque sprint"]
+        PBL["📋 Product Backlog<br/><br/>— Liste ordonnée de toutes les US<br/>— Estimations en story points<br/>— Priorisation MoSCoW<br/>— 52 User Stories au total<br/>— Mis à jour chaque sprint"]
 
         SBL["📌 Sprint Backlog<br/><br/>— US sélectionnées pour le sprint<br/>— Décomposées en tâches techniques<br/>— Estimées en heures<br/>— Visible sur GitHub Projects<br/>— Propriété de l'équipe Dev"]
 
@@ -108,7 +108,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    PBL["📋 Product Backlog<br/>(46 US priorisées)"]
+    PBL["📋 Product Backlog<br/>(52 US priorisées)"]
 
     subgraph SPRINT["🔄 Sprint — 2 Semaines"]
         direction TB
@@ -149,6 +149,9 @@ flowchart TB
         M12["US-18 Modèle XGBoost F1 > 0.80"]
         M13["US-25 Kafka IoT 10 msg/s"]
         M14["US-27 LSTM AUC-ROC > 0.85"]
+        M15["US-47 Flutter app patient — auth + onboarding RGPD"]
+        M16["US-48 Flutter chatbot Darija/FR + input vocal"]
+        M17["US-51 Next.js dashboard médecin — fondation"]
     end
 
     subgraph SHOULD["🟠 Should Have — Important"]
@@ -167,6 +170,15 @@ flowchart TB
         S13["US-41 Vue DPA 3 colonnes"]
         S14["US-45 Swagger UI /docs"]
         S15["US-46 Endpoint audit logs"]
+        S16["US-49 Flutter IoT dashboard FC/SpO2/HRV"]
+        S17["US-50 Flutter prise de RDV + sync Salesforce"]
+        S18["US-52 DPA UI 3 colonnes IoT/Symptômes/IA"]
+        S19["US-53 Smart Agenda UI code couleur no-show"]
+        S20["US-54 WebSocket alertes + modal Twilio VOIP"]
+        S21["US-55 Flutter résultats analyses + LLM"]
+        S22["US-56 FCM push J-3/J-1/H-2"]
+        S23["US-57 Grafana 3 dashboards monitoring"]
+        S24["US-60 Admin UI — audit logs + user management"]
     end
 
     subgraph COULD["🟡 Could Have — Souhaitable"]
@@ -178,13 +190,14 @@ flowchart TB
         C6["US-38 OWASP ZAP scan"]
         C7["US-42 Human-in-the-Loop"]
         C8["US-43 Tâches Salesforce"]
+        C9["US-58 Salesforce Apex Trigger code"]
+        C10["US-59 Flutter ordonnances + rappels médicaments"]
     end
 
     subgraph WONT["⚪ Won't Have (hors scope PFE)"]
-        W1["Application mobile native"]
-        W2["Multi-tenant (plusieurs cliniques)"]
-        W3["Intégration HL7 FHIR"]
-        W4["Reconnaissance vocale"]
+        W1["Multi-tenant (plusieurs cliniques)"]
+        W2["Intégration HL7 FHIR"]
+        W3["Application smartwatch native (WatchOS/WearOS)"]
     end
 ```
 
@@ -278,20 +291,46 @@ flowchart TB
 | US-36 | Auto-rollback : si F1 chute > 10% en prod → restauration version N-1 | 5 | Could | ⏳ |
 | **Total** | | **26 pts** | | |
 
+#### Sprint 9 — Application Mobile Patient (Flutter) `20 Juil – 02 Aoû 2026` `⏳ À venir`
+
+| ID | User Story | Story Points | Priorité | Statut |
+|----|-----------|:---:|:---:|:---:|
+| US-47 | Flutter — Onboarding 3 slides + auth JWT + consentement RGPD UI (opt-in IoT/NLP/Partage) | 5 | Must | ⏳ |
+| US-48 | Flutter — Chatbot triage Darija/FR/AR avec input vocal (STT) + contexte IoT pré-chargé | 8 | Must | ⏳ |
+| US-49 | Flutter — Dashboard IoT personnel : courbes FC/SpO2/HRV sur 7/30/90 jours (charts animés) | 8 | Should | ⏳ |
+| US-50 | Flutter — Prise de RDV en ligne avec calendrier temps réel + sync Salesforce | 5 | Should | ⏳ |
+| US-55 | Flutter — Résultats d'analyses avec interprétation LLM simplifiée (Mistral 7B) | 5 | Should | ⏳ |
+| US-56 | FCM push notifications : rappels automatiques J-3, J-1, H-2 (Firebase Cloud Messaging) | 5 | Should | ⏳ |
+| US-59 | Flutter — Ordonnances numériques + rappels médicaments (heure + dosage) | 3 | Could | ⏳ |
+| **Total** | | **39 pts** | | |
+
+#### Sprint 10 — Dashboard Médecin (Next.js) + Monitoring (Grafana) `03 Aoû – 16 Aoû 2026` `⏳ À venir`
+
+| ID | User Story | Story Points | Priorité | Statut |
+|----|-----------|:---:|:---:|:---:|
+| US-51 | Next.js — Fondation dashboard médecin : auth, routing, layout sidebar, AuthGuard RBAC | 5 | Must | ⏳ |
+| US-52 | DPA UI — Vue 3 colonnes : IoT anomaly graphs \| NLP symptoms verbatim \| RAG suggestions IA | 8 | Should | ⏳ |
+| US-53 | Smart Agenda UI — code couleur no-show 🟢 <20% / 🟠 20–40% / 🔴 >40% + créneaux remplacement | 5 | Should | ⏳ |
+| US-54 | WebSocket alertes IoT temps réel + modal popup + bouton "Appeler patient" (Twilio VOIP) | 8 | Should | ⏳ |
+| US-57 | Grafana — 3 dashboards provisionnés : System Health / ML Performance / Business KPIs | 5 | Should | ⏳ |
+| US-60 | Admin UI — audit logs viewer paginé + filtres + user management (Next.js pages admin) | 5 | Should | ⏳ |
+| US-58 | Salesforce Apex Trigger code (côté CRM) + payload types partagés | 3 | Could | ⏳ |
+| **Total** | | **39 pts** | | |
+
 ---
 
 ## 4. Planning des Sprints
 
 ```mermaid
 flowchart TB
-    subgraph PLAN["Planning Global — 8 Sprints / 4 Mois"]
+    subgraph PLAN["Planning Global — 10 Sprints / 5 Mois"]
         direction LR
 
         subgraph S1["Sprint 1<br/>30 Mar – 12 Avr<br/>✅ TERMINÉ"]
             T1["Infrastructure Docker<br/>Auth JWT + RBAC<br/>Schéma RGPD<br/>Swagger UI<br/>34 pts"]
         end
 
-        subgraph S2["Sprint 2<br/>13 Avr – 26 Avr<br/>⏳ À venir"]
+        subgraph S2["Sprint 2<br/>13 Avr – 26 Avr<br/>⏳ En cours"]
             T2["Consentement granulaire<br/>Export RGPD<br/>Droit à l'effacement<br/>Audit logs endpoint<br/>21 pts"]
         end
 
@@ -319,11 +358,19 @@ flowchart TB
             T8["Mode dégradé Kafka<br/>Airflow DAG<br/>Evidently drift<br/>Auto-rollback<br/>26 pts"]
         end
 
-        subgraph FIN["Finalisation<br/>20 Juil – 02 Aoû"]
-            T9["Rédaction rapport<br/>Préparation soutenance<br/>Tests intégration<br/>Démonstration"]
+        subgraph S9["Sprint 9<br/>20 Juil – 02 Aoû<br/>⏳ À venir"]
+            T9["Flutter app patient<br/>Onboarding + Auth<br/>Chatbot vocal<br/>IoT dashboard<br/>FCM push notif.<br/>39 pts"]
         end
 
-        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> FIN
+        subgraph S10["Sprint 10<br/>03 Aoû – 16 Aoû<br/>⏳ À venir"]
+            T10["Next.js dashboard<br/>DPA 3 colonnes UI<br/>Smart Agenda UI<br/>WebSocket + Twilio<br/>Grafana dashboards<br/>39 pts"]
+        end
+
+        subgraph FIN["Finalisation<br/>17 Aoû – 31 Aoû"]
+            T11["Rédaction rapport<br/>Préparation soutenance<br/>Tests intégration<br/>Démonstration"]
+        end
+
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> FIN
     end
 ```
 
@@ -333,7 +380,7 @@ flowchart TB
 
 ```mermaid
 gantt
-    title MediSense AI — Planning Agile 8 Sprints (Mar 2026 – Aoû 2026)
+    title MediSense AI — Planning Agile 10 Sprints (Mar 2026 – Sep 2026)
     dateFormat  YYYY-MM-DD
     axisFormat  %d %b
 
@@ -359,15 +406,22 @@ gantt
     section Production
     Sprint 8 — Intégration & Résilience       :         s8, 2026-07-06, 2026-07-19
 
+    section Frontend Mobile
+    Sprint 9 — Flutter App Patient            :         s9, 2026-07-20, 2026-08-02
+
+    section Frontend Web & Monitoring
+    Sprint 10 — Dashboard Médecin + Grafana   :         s10, 2026-08-03, 2026-08-16
+
     section Rapport PFE
-    Rédaction rapport & soutenance            :crit,    rpt, 2026-07-20, 2026-08-02
+    Rédaction rapport & soutenance            :crit,    rpt, 2026-08-17, 2026-08-31
 
     section Jalons
     Gate Review S1+S2 — Fondation & RGPD     :milestone, g2, 2026-04-26, 0d
     Gate Review S3+S4 — RAG & Agents IA      :milestone, g4, 2026-05-24, 0d
     Gate Review S5+S6 — ML & MLOps           :milestone, g6, 2026-06-21, 0d
     Gate Review S7+S8 — IoT & Production     :milestone, g8, 2026-07-19, 0d
-    Soutenance PFE                            :milestone, sout, 2026-08-02, 0d
+    Gate Review S9+S10 — Frontend complet    :milestone, g10, 2026-08-16, 0d
+    Soutenance PFE                            :milestone, sout, 2026-08-31, 0d
 ```
 
 ---
@@ -379,10 +433,10 @@ gantt
 ```mermaid
 xychart-beta
     title "Story Points par Sprint"
-    x-axis ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
+    x-axis ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"]
     y-axis "Story Points" 0 --> 45
-    bar  [34, 21, 34, 37, 31, 29, 39, 26]
-    line [34, 21, 34, 37, 31, 29, 39, 26]
+    bar  [34, 21, 34, 37, 31, 29, 39, 26, 39, 39]
+    line [34, 21, 34, 37, 31, 29, 39, 26, 39, 39]
 ```
 
 ### Tableau Récapitulatif
@@ -397,9 +451,11 @@ xychart-beta
 | Sprint 6 | 2 sem. | 5 US | 29 pts | MLOps / CRM / DevOps |
 | Sprint 7 | 2 sem. | 5 US | 39 pts | IoT / Deep Learning |
 | Sprint 8 | 2 sem. | 4 US | 26 pts | Résilience / Production |
-| **TOTAL** | **16 sem.** | **38 US** | **251 pts** | |
+| Sprint 9 | 2 sem. | 7 US | 39 pts | Flutter Mobile / FCM / IoT UI |
+| Sprint 10 | 2 sem. | 7 US | 39 pts | Next.js Dashboard / Grafana / Twilio |
+| **TOTAL** | **20 sem.** | **52 US** | **329 pts** | |
 
-> **Vélocité moyenne :** 31.4 story points / sprint
+> **Vélocité moyenne :** 32.9 story points / sprint
 > **Estimation :** Fibonacci modifiée — 1, 2, 3, 5, 8, 13 points
 
 ---
@@ -408,14 +464,14 @@ xychart-beta
 
 ```mermaid
 xychart-beta
-    title "Burndown Chart Global — 251 Story Points"
-    x-axis ["Début", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
-    y-axis "Points restants" 0 --> 260
-    line [251, 217, 196, 162, 125, 94, 65, 26, 0]
+    title "Burndown Chart Global — 329 Story Points"
+    x-axis ["Début", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"]
+    y-axis "Points restants" 0 --> 340
+    line [329, 295, 274, 240, 203, 172, 143, 104, 78, 39, 0]
 ```
 
-> **Ligne idéale :** décroissance linéaire de 251 → 0 sur 8 sprints.
-> **Lecture :** après Sprint 1 (34 pts livrés), il reste 217 pts. La courbe doit rester proche de la ligne idéale pour garantir la livraison en temps.
+> **Ligne idéale :** décroissance linéaire de 329 → 0 sur 10 sprints.
+> **Lecture :** après Sprint 1 (34 pts livrés), il reste 295 pts. Sprints 9 & 10 couvrent le frontend complet (Flutter + Next.js + Grafana — 78 pts). La courbe doit rester proche de la ligne idéale pour garantir la livraison avant soutenance.
 
 ---
 
