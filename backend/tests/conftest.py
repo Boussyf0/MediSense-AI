@@ -50,12 +50,32 @@ TEST_DATABASE_URL_SYNC = settings.DATABASE_URL_SYNC.replace(
 @pytest.fixture(scope="session")
 def db_schema():
     """
-    Create the test schema and all tables ONCE per session.
+    Ensure the test database exists, then create the schema and all tables.
 
     Uses psycopg2 (sync) so there are NO event loop concerns.
     A sync session fixture can safely be session-scoped without
     conflicting with per-test async event loops.
+
+    Why CREATE DATABASE here?
+      On a fresh machine or in CI the test DB doesn't exist yet — the engine
+      would fail before running a single test. We connect to the maintenance
+      database ("postgres") first, which always exists, and issue
+      CREATE DATABASE IF NOT NEEDED (via AUTOCOMMIT, required for DDL).
     """
+    # Connect to the maintenance DB to create the test DB if absent
+    maintenance_url = TEST_DATABASE_URL_SYNC.rsplit("/", 1)[0] + "/postgres"
+    maintenance_engine = create_engine(maintenance_url, isolation_level="AUTOCOMMIT")
+    test_db_name = f"{settings.POSTGRES_DB}_test"
+    with maintenance_engine.connect() as conn:
+        exists = conn.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = :name"),
+            {"name": test_db_name},
+        ).fetchone()
+        if not exists:
+            conn.execute(text(f'CREATE DATABASE "{test_db_name}"'))
+    maintenance_engine.dispose()
+
+    # Now build the schema inside the test DB
     engine = create_engine(TEST_DATABASE_URL_SYNC)
     with engine.begin() as conn:
         conn.execute(text("CREATE SCHEMA IF NOT EXISTS secure"))

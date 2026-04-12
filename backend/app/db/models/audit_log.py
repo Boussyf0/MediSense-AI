@@ -17,9 +17,9 @@ WHY BIGSERIAL (int) and not UUID for PK?
 """
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import BigInteger, String, DateTime
+from sqlalchemy import BigInteger, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, INET
 from app.db.session import Base
 
 
@@ -47,8 +47,12 @@ class AuditLog(Base):
     action: Mapped[str] = mapped_column(String(50), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(50), nullable=False)
     resource_uuid: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
-    ip_address: Mapped[str | None] = mapped_column(String(45))    # max IPv6 length = 45 chars
-    user_agent: Mapped[str | None] = mapped_column(String(255))
+    # INET matches the PostgreSQL column type in init_db.sql; asyncpg returns
+    # plain strings for INET so no special handling is needed in application code.
+    ip_address: Mapped[str | None] = mapped_column(INET)
+    # TEXT matches init_db.sql; truncate to 255 chars at write-time in audit.py
+    # rather than imposing a DB-level constraint that may cause INSERT failures.
+    user_agent: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
@@ -70,12 +74,17 @@ class ConsentLog(Base):
     __table_args__ = {"schema": "public"}
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    patient_uuid: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    # FK declared to match init_db.sql — keeps Alembic autogenerate in sync.
+    patient_uuid: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("public.patients.patient_uuid"),
+        nullable=False,
+    )
     consent_type: Mapped[str] = mapped_column(String(20), nullable=False)
     action: Mapped[str] = mapped_column(String(10), nullable=False)   # 'granted' | 'revoked'
     channel: Mapped[str] = mapped_column(String(20), nullable=False)
     cgu_version: Mapped[str | None] = mapped_column(String(20))
-    ip_address: Mapped[str | None] = mapped_column(String(45))
+    ip_address: Mapped[str | None] = mapped_column(INET)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

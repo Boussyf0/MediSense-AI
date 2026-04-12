@@ -132,7 +132,10 @@ async def update_consent(
         resource_uuid=patient_uuid,
     )
 
-    # Session commits in get_db() after the endpoint returns
+    # Flush so the DB-managed onupdate trigger populates Patient.updated_at
+    # before we serialise it into the response. Without this the response
+    # would return the pre-update timestamp even though the row was changed.
+    await db.flush()
     return ConsentResponse.model_validate(patient)
 
 
@@ -182,16 +185,8 @@ async def export_patient_data(
     )
     consent_history = consent_result.scalars().all()
 
-    # Fetch access log for this patient (most recent 100 entries)
-    audit_result = await db.execute(
-        select(AuditLog)
-        .where(AuditLog.resource_uuid == patient_uuid)
-        .order_by(AuditLog.created_at.desc())
-        .limit(100)
-    )
-    access_log = audit_result.scalars().all()
-
-    # Log the export itself — RGPD accountability
+    # Log the export BEFORE querying the access log so this event appears
+    # in the response's access_log section (it's flushed by the SELECT below).
     await log_audit(
         db=db,
         actor=current_user,
@@ -200,6 +195,18 @@ async def export_patient_data(
         resource_type="patient",
         resource_uuid=patient_uuid,
     )
+    # Flush the EXPORT entry to the DB (same transaction) so the subsequent
+    # SELECT picks it up in the access_log results.
+    await db.flush()
+
+    # Fetch access log for this patient (most recent 100 entries)
+    audit_result = await db.execute(
+        select(AuditLog)
+        .where(AuditLog.resource_uuid == patient_uuid)
+        .order_by(AuditLog.created_at.desc())
+        .limit(100)
+    )
+    access_log = audit_result.scalars().all()
 
     return PatientDataExport(
         exported_at=datetime.now(timezone.utc),

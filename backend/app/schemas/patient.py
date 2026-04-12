@@ -2,18 +2,21 @@
 Patient schemas — Pydantic models for Sprint 2 RGPD endpoints.
 
 Schemas defined here:
-  ConsentUpdate     — PATCH /patients/{uuid}/consent request body (US-06)
-  ConsentResponse   — PATCH /patients/{uuid}/consent response
-  ConsentLogEntry   — single entry in consent history (used by export)
-  AuditLogEntry     — single audit log entry (used by export + admin)
-  PatientDataExport — GET /patients/{uuid}/data/export response (US-07)
-  ErasureResponse   — DELETE /patients/{uuid} response (US-08)
+  ConsentUpdate        — PATCH /patients/{uuid}/consent request body (US-06)
+  ConsentResponse      — PATCH /patients/{uuid}/consent response
+  ConsentLogEntry      — single entry in consent history (used by export)
+  AuditLogExportEntry  — reduced audit row exposed in the patient export
+                         (hides actor_uuid and ip_address — admin-only fields)
+  PatientDataExport    — GET /patients/{uuid}/data/export response (US-07)
+                         Admin-only endpoint (require_admin).
+  ErasureResponse      — DELETE /patients/{uuid} response (US-08)
 
-WHY NOT PUT AUDIT SCHEMAS HERE?
-  AuditLogEntry is shared between:
-    - PatientDataExport (patient's own history, subset)
-    - Admin audit endpoint (full log, paginated)
-  It lives in schemas/admin.py and is imported here to avoid duplication.
+NOTE ON AUDIT SCHEMAS:
+  The full AuditLogEntry (with actor_uuid, ip_address, user_agent) lives in
+  schemas/admin.py and is used by the paginated admin audit endpoint (US-46).
+  AuditLogExportEntry defined here is a deliberately reduced view: patients
+  can see *that* their data was accessed and *by which role*, but not the
+  full actor identity or IP — that is admin-only information.
 """
 from datetime import datetime
 from uuid import UUID
@@ -97,8 +100,9 @@ class PatientDataExport(BaseModel):
     Response for GET /patients/{patient_uuid}/data/export (US-07).
 
     RGPD Art. 20 — Right to data portability.
-    The patient (or their doctor) can request a machine-readable export
-    of all data held about them.
+    Admin-only endpoint: formal data export requests are handled by the DPO,
+    not by individual doctors. Returns a machine-readable export of all
+    pseudonymized data held about the patient.
 
     NOTE: Civil identity (name, phone, email) is NOT included here.
     That data lives in secure.patients_identity and requires DPO-level
