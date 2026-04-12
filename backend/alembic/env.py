@@ -29,6 +29,7 @@ from app.db.session import Base
 # If you forget to import a model, Alembic won't track it
 from app.db.models.user import User
 from app.db.models.patient import Patient, PatientIdentity
+from app.db.models.audit_log import AuditLog, ConsentLog   # Sprint 2
 
 settings = get_settings()
 
