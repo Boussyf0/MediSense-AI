@@ -1,12 +1,12 @@
 """
-Admin endpoints — Sprint 2 audit log access.
+Admin endpoints — Sprint 2 audit logs + Sprint 3 rerank evaluation.
 
 Endpoints:
-  GET /admin/audit-logs   US-46 — paginated, filterable audit trail
+  GET /admin/audit-logs     US-46 — paginated, filterable audit trail
+  POST /admin/rerank-eval   US-12 — compare RRF vs cross-encoder quality
 
 ACCESS CONTROL:
   All endpoints in this module require admin role.
-  Doctors and secretaries cannot access audit logs of other users.
 
 RGPD ART. 30:
   Organizations must maintain "records of processing activities".
@@ -116,4 +116,63 @@ async def get_audit_logs(
         limit=limit,
         offset=offset,
         items=[AuditLogEntry.model_validate(log) for log in logs],
+    )
+
+
+# ── US-12 — Cross-Encoder Re-ranking Evaluation ─────────
+
+from pydantic import BaseModel, Field
+
+
+class RerankEvalRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=500, description="Medical query in French")
+    top_k: int = Field(default=20, ge=5, le=50, description="Number of chunks to retrieve and evaluate")
+
+
+class RerankEvalResponse(BaseModel):
+    query: str
+    rank_correlation: float
+    top3_overlap: float
+    mrr_rrf: float
+    rrf_top3: list[str]
+    ce_top3: list[str]
+    num_chunks: int
+
+
+@router.post(
+    "/rerank-eval",
+    response_model=RerankEvalResponse,
+    summary="US-12 — Compare RRF vs cross-encoder quality",
+    description=(
+        "Runs a query through both Qdrant RRF (hybrid search) and the "
+        "mmarco multilingual cross-encoder, then compares the rankings. "
+        "Used to validate that RRF quality is sufficient for the chat hot path."
+    ),
+)
+async def evaluate_reranking(
+    body: RerankEvalRequest,
+    current_user: Annotated[TokenPayload, Depends(require_admin)],
+):
+    from app.rag.vectorstore import hybrid_search
+    from app.rag.reranker import evaluate_rrf_vs_crossencoder
+
+    chunks = hybrid_search(query_text=body.query, limit=body.top_k)
+
+    if not chunks:
+        return RerankEvalResponse(
+            query=body.query,
+            rank_correlation=0.0,
+            top3_overlap=0.0,
+            mrr_rrf=0.0,
+            rrf_top3=[],
+            ce_top3=[],
+            num_chunks=0,
+        )
+
+    metrics = evaluate_rrf_vs_crossencoder(body.query, chunks)
+
+    return RerankEvalResponse(
+        query=body.query,
+        num_chunks=len(chunks),
+        **metrics,
     )

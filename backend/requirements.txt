@@ -26,10 +26,15 @@ python-dotenv==1.0.1
 aiofiles==24.1.0            # required by FastAPI StaticFiles
 
 # ── HTTP Client ───────────────────────────────────────────
-httpx==0.28.1               # async HTTP client (for Ollama API calls in Sprint 3)
+httpx==0.28.1               # async HTTP client (Ollama, MCP servers, test client)
+
+# ── RAG Pipeline (Sprint 3) ──────────────────────────────
+qdrant-client==1.12.1       # vector store: hybrid search (dense + BM25 + RRF)
+sentence-transformers==3.3.1 # embeddings (multilingual-e5-base) + cross-encoder (mmarco)
+langdetect==1.0.9           # FR/AR language detection (Darija via stopword heuristic)
+sse-starlette==2.1.3        # Server-Sent Events for streaming chat endpoint
 
 # ── Testing ───────────────────────────────────────────────
 pytest==8.3.4
 pytest-asyncio==0.24.0
 pytest-cov==6.0.0           # coverage report (DoD requires ≥80%)
-httpx==0.28.1               # TestClient uses httpx under the hood
