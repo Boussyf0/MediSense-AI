@@ -1,6 +1,7 @@
 """
 Tests for US-03 (JWT auth) and US-04 (RBAC).
 """
+import uuid
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -71,7 +72,7 @@ async def test_protected_endpoint_with_invalid_token(client):
 @pytest.mark.asyncio
 async def test_rbac_doctor_token_accepted(client):
     """A valid doctor token must be accepted for /auth/me."""
-    token = create_access_token(subject="doctor-uuid-123", role="doctor")
+    token = create_access_token(subject=str(uuid.uuid4()), role="doctor")
     # Note: /auth/me also queries the DB for the user.
     # In a full test, we'd seed a user first. Here we test the auth layer only.
     response = await client.get(
