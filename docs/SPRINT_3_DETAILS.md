@@ -102,7 +102,7 @@ Au lieu d'attendre la réponse complète, on stream les tokens un par un dès qu
   │   App   │←╌╌╌╌╌╌│  (SSE)  │←╌╌╌╌╌╌│   7B    │
   └─────────┘  tok   └─────────┘  tok   └─────────┘
                par                 par
-               tok                 tok      ← streaming bidirectionnel
+               tok                 tok      ← requête HTTP POST + réponse SSE unidirectionnelle (serveur→client)
 ```
 
 ### Comment fonctionne le streaming SSE ?

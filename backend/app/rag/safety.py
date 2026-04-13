@@ -65,6 +65,30 @@ class SafetyResult:
     confidence: float
 
 
+def check_allergy_conflict(
+    response_text: str,
+    patient_allergies: list[str],
+) -> str | None:
+    """
+    Check if the response mentions a drug the patient is allergic to.
+
+    Returns a warning string if a conflict is detected, else None.
+    Called in post_generation_check when the patient profile has allergies.
+    """
+    if not patient_allergies:
+        return None
+    response_lower = response_text.lower()
+    conflicts = [a for a in patient_allergies if a.lower() in response_lower]
+    if conflicts:
+        names = ", ".join(conflicts)
+        return (
+            f"\n\nALERTE ALLERGIE: Ce message mentionne {names}, "
+            f"pour lesquels vous avez une allergie déclarée. "
+            f"Consultez impérativement votre médecin avant toute prise."
+        )
+    return None
+
+
 def pre_generation_check(
     entities: ExtractedEntities,
     retrieval_scores: list[float],
@@ -111,16 +135,27 @@ def pre_generation_check(
     )
 
 
-def post_generation_check(response_text: str, disclaimers: list[str]) -> str:
+def post_generation_check(
+    response_text: str,
+    disclaimers: list[str],
+    patient_allergies: list[str] | None = None,
+) -> str:
     """
     Run safety checks AFTER LLM generation.
 
-    Scans the response for dosage patterns and injects warnings if needed.
-    Appends all accumulated disclaimers.
+    - Scans for dosage patterns and injects warnings if needed.
+    - Checks for allergy conflicts if patient_allergies is provided.
+    - Appends all accumulated disclaimers.
     """
     # If the LLM output mentions dosages but we didn't catch it pre-gen
     if _DOSAGE_RE.search(response_text) and DOSAGE_DISCLAIMER not in disclaimers:
         disclaimers.append(DOSAGE_DISCLAIMER)
+
+    # Allergy conflict check
+    if patient_allergies:
+        allergy_warning = check_allergy_conflict(response_text, patient_allergies)
+        if allergy_warning and allergy_warning not in disclaimers:
+            disclaimers.append(allergy_warning)
 
     # Append disclaimers
     full_response = response_text
