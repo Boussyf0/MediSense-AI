@@ -1,0 +1,288 @@
+"""
+Chat endpoint — RAG-powered medical chatbot.
+
+Routes:
+  POST /chat          Send a message (SSE streaming or JSON)
+  GET  /chat/{id}     Get conversation history
+  GET  /chat          List patient's conversations
+  DELETE /chat/{id}   Delete a conversation (RGPD right to erasure)
+"""
+import json
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
+from sqlalchemy import select, func, text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_db
+from app.core.config import get_settings
+from app.core.dependencies import get_current_user
+from app.db.models.conversation import Conversation, Message
+from app.schemas.chat import (
+    ChatRequest,
+    ChatResponse,
+    SourceOut,
+    ConversationOut,
+    MessageOut,
+)
+from app.rag.pipeline import run, run_stream
+
+router = APIRouter(prefix="/chat", tags=["Chat (RAG)"])
+settings = get_settings()
+
+
+@router.post("", response_model=ChatResponse)
+async def send_message(
+    body: ChatRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+    stream: bool = Query(default=False, description="Enable SSE streaming"),
+):
+    """
+    Send a message to the MediSense chatbot.
+
+    - If `stream=true`, returns Server-Sent Events (text/event-stream)
+    - If `stream=false` (default), returns a JSON ChatResponse
+    - If `conversation_id` is provided, continues an existing conversation
+    - Otherwise, creates a new conversation
+    """
+    patient_id = uuid.UUID(current_user["sub"])
+
+    # Resolve or create conversation
+    if body.conversation_id:
+        conv = await _get_conversation(db, body.conversation_id, patient_id)
+    else:
+        conv = Conversation(patient_id=patient_id)
+        db.add(conv)
+        await db.flush()
+
+    if stream:
+        return StreamingResponse(
+            _stream_response(body.message, conv, patient_id, db),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
+
+    # Non-streaming path
+    result = await run(body.message)
+
+    # Auto-generate title from first message
+    if not conv.title:
+        conv.title = body.message[:80]
+
+    conv.language = result.language
+
+    # Persist user message (encrypted)
+    await _save_message(db, conv.id, "user", body.message)
+
+    # Persist assistant reply (encrypted)
+    await _save_message(
+        db,
+        conv.id,
+        "assistant",
+        result.reply,
+        sources=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in [SourceOut(**s) for s in result.sources]],
+        confidence=result.confidence,
+    )
+
+    await db.commit()
+
+    return ChatResponse(
+        reply=result.reply,
+        sources=[SourceOut(**s) for s in result.sources],
+        conversation_id=conv.id,
+        language=result.language,
+        confidence=result.confidence,
+        is_urgent=result.is_urgent,
+    )
+
+
+@router.get("", response_model=list[ConversationOut])
+async def list_conversations(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+    limit: int = Query(default=20, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    """List the patient's conversations (newest first)."""
+    patient_id = uuid.UUID(current_user["sub"])
+
+    stmt = (
+        select(
+            Conversation.id,
+            Conversation.title,
+            Conversation.language,
+            Conversation.created_at,
+            func.count(Message.id).label("message_count"),
+        )
+        .outerjoin(Message)
+        .where(Conversation.patient_id == patient_id)
+        .group_by(Conversation.id)
+        .order_by(Conversation.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    return [
+        ConversationOut(
+            id=row.id,
+            title=row.title,
+            language=row.language,
+            created_at=row.created_at.isoformat(),
+            message_count=row.message_count,
+        )
+        for row in rows
+    ]
+
+
+@router.get("/{conversation_id}", response_model=list[MessageOut])
+async def get_conversation_history(
+    conversation_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Get all messages in a conversation (decrypted)."""
+    patient_id = uuid.UUID(current_user["sub"])
+    conv = await _get_conversation(db, conversation_id, patient_id)
+
+    # Decrypt messages using pgcrypto
+    stmt = text("""
+        SELECT id, role,
+               pgp_sym_decrypt(content_encrypted, :key) AS content,
+               sources, confidence, created_at
+        FROM messages
+        WHERE conversation_id = :conv_id
+        ORDER BY created_at ASC
+    """)
+
+    result = await db.execute(stmt, {"key": settings.PGCRYPTO_KEY, "conv_id": conv.id})
+    rows = result.all()
+
+    return [
+        MessageOut(
+            id=row.id,
+            role=row.role,
+            content=row.content,
+            sources=[SourceOut(**s) for s in row.sources] if row.sources else None,
+            confidence=row.confidence,
+            created_at=row.created_at.isoformat(),
+        )
+        for row in rows
+    ]
+
+
+@router.delete("/{conversation_id}", status_code=204)
+async def delete_conversation(
+    conversation_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Delete a conversation and all its messages.
+
+    RGPD Article 17 — Right to erasure: patients can delete their chat history.
+    CASCADE delete removes all messages automatically.
+    """
+    patient_id = uuid.UUID(current_user["sub"])
+    conv = await _get_conversation(db, conversation_id, patient_id)
+    await db.delete(conv)
+    await db.commit()
+
+
+# ── Helpers ──────────────────────────────────────────────
+
+
+async def _get_conversation(
+    db: AsyncSession,
+    conversation_id: uuid.UUID,
+    patient_id: uuid.UUID,
+) -> Conversation:
+    """Fetch a conversation, verifying ownership."""
+    stmt = select(Conversation).where(
+        Conversation.id == conversation_id,
+        Conversation.patient_id == patient_id,
+    )
+    result = await db.execute(stmt)
+    conv = result.scalar_one_or_none()
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return conv
+
+
+async def _save_message(
+    db: AsyncSession,
+    conversation_id: uuid.UUID,
+    role: str,
+    content: str,
+    sources: list[dict] | None = None,
+    confidence: float | None = None,
+) -> None:
+    """Save an encrypted message to the database."""
+    stmt = text("""
+        INSERT INTO messages (id, conversation_id, role, content_encrypted, sources, confidence)
+        VALUES (
+            gen_random_uuid(),
+            :conv_id,
+            :role,
+            pgp_sym_encrypt(:content, :key),
+            :sources,
+            :confidence
+        )
+    """)
+    await db.execute(
+        stmt,
+        {
+            "conv_id": conversation_id,
+            "role": role,
+            "content": content,
+            "key": settings.PGCRYPTO_KEY,
+            "sources": json.dumps(sources) if sources else None,
+            "confidence": confidence,
+        },
+    )
+
+
+async def _stream_response(
+    message: str,
+    conv: Conversation,
+    patient_id: uuid.UUID,
+    db: AsyncSession,
+):
+    """SSE event generator for streaming chat responses."""
+    full_reply = ""
+    sources_data = []
+    confidence = 0.0
+
+    async for event in run_stream(message):
+        event_type = event.get("type", "")
+
+        if event_type == "lang":
+            conv.language = event["value"]
+            yield f"data: {json.dumps(event)}\n\n"
+
+        elif event_type == "sources":
+            sources_data = event["value"]
+            yield f"data: {json.dumps(event)}\n\n"
+
+        elif event_type == "token":
+            full_reply += event["value"]
+            yield f"data: {json.dumps(event)}\n\n"
+
+        elif event_type == "done":
+            confidence = event.get("confidence", 0.0)
+            yield f"data: {json.dumps({**event, 'conversation_id': str(conv.id)})}\n\n"
+
+    # Persist after streaming completes
+    if not conv.title:
+        conv.title = message[:80]
+
+    await _save_message(db, conv.id, "user", message)
+    await _save_message(db, conv.id, "assistant", full_reply, sources_data, confidence)
+    await db.commit()

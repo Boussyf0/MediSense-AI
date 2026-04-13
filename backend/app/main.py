@@ -19,6 +19,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # PostgreSQL
     try:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
@@ -26,6 +27,26 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"✗ PostgreSQL connection failed: {e}")
         raise
+
+    # Qdrant (non-blocking — may not be needed for all routes)
+    try:
+        from app.rag.vectorstore import ensure_collection, get_collection_info
+        ensure_collection()
+        info = get_collection_info()
+        print(f"✓ Qdrant collection '{info['name']}' ready ({info['points_count']} points)")
+    except Exception as e:
+        print(f"⚠ Qdrant not available (RAG endpoints will fail): {e}")
+
+    # Ollama (non-blocking — check if Mistral model is loaded)
+    try:
+        from app.rag.llm import check_health
+        ollama_ok = await check_health()
+        if ollama_ok:
+            print("✓ Ollama + Mistral 7B ready")
+        else:
+            print("⚠ Ollama reachable but Mistral model not loaded (run: ollama pull mistral:7b)")
+    except Exception as e:
+        print(f"⚠ Ollama not available (chat will fail): {e}")
 
     yield
 
