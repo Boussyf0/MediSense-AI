@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     # Ollama (used Sprint 3)
     OLLAMA_HOST: str = "ollama"
     OLLAMA_PORT: int = 11434
-    OLLAMA_MODEL: str = "mistral:7b"
+    OLLAMA_MODEL: str = "mistral:7b-instruct"
 
     @property
     def DATABASE_URL(self) -> str:
