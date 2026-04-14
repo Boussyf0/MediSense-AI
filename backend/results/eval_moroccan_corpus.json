@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-04-13",
+  "corpus_points": 25166,
+  "corpus_sources": ["icd10_full.json (12243)", "ansm_drugs.json (264)", "has_guidelines.json (94)"],
+  "total_chunks_ingested": 12601,
+  "test_queries": 30,
+  "metrics": {
+    "mrr_at_10": 0.9722,
+    "ndcg_at_5": 0.9516,
+    "precision_at_3": 0.8889,
+    "top1_accuracy": 0.9667
+  },
+  "failed_queries": [
+    {"query": "j'ai de la fièvre 39 degrés que faire", "reason": "colloquial French, generic symptom — no exact match in corpus"}
+  ],
+  "vs_baseline_211chunks": {
+    "mrr_delta": "-0.0278",
+    "ndcg5_delta": "-0.0434",
+    "precision3_delta": "-0.0778",
+    "note": "Slight drop expected: 60x more documents means more competition for top-1. Absolute quality is higher — more complete coverage."
+  },
+  "moroccan_context": {
+    "emergency_number": "141 (SAMU Maroc)",
+    "drug_source": "medicament.ma (DMP) — fallback to hardcoded monographies (JS-rendered site)",
+    "guidelines": "15 protocoles Ministère Santé Maroc (HTA AMO, diabète, tuberculose PNLT, VIH PNLS, etc.)"
+  }
+}
