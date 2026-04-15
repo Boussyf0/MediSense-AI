@@ -170,6 +170,105 @@ def fetch_moroccan_drugs(letters: list[str] = LETTERS, max_pages_per_letter: int
     return all_chunks
 
 
+def enrich_drug_details(chunks: list[dict], sample_size: int = 500) -> list[dict]:
+    """
+    Enrich drug chunks with detail page data: Composition (DCI), Classe thérapeutique,
+    Code ATC, Générique/Princeps status.
+
+    Fetches individual drug pages. Limited to `sample_size` to keep runtime reasonable.
+    (~500 drugs × 1.5s = ~12 min)
+    """
+    try:
+        import httpx
+        import re
+    except ImportError:
+        return chunks
+
+    # Prioritise drugs that have a slug (all from listing scraper)
+    to_enrich = [c for c in chunks if c.get("slug")][:sample_size]
+    if not to_enrich:
+        return chunks
+
+    print(f"\n[detail pages] Enriching {len(to_enrich)} drug pages with DCI/ATC/classe thérapeutique...")
+
+    _DETAIL_RE = re.compile(
+        r'<div class="detail-header">([^<]+)</div>\s*<div class="detail-content">(.*?)</div>',
+        re.DOTALL,
+    )
+    _TAG_RE = re.compile(r'<[^>]+>')
+    _STATUS_RE = re.compile(r'<span class="tag">([^<]+)</span>')
+
+    slug_to_detail: dict[str, dict] = {}
+
+    with httpx.Client(
+        timeout=15.0,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; MediSense-AI/1.0)"},
+        follow_redirects=True,
+    ) as client:
+        for i, chunk in enumerate(to_enrich):
+            slug = chunk["slug"]
+            url = f"https://medicament.ma/medicament/{slug}/"
+            try:
+                resp = client.get(url)
+                if resp.status_code != 200:
+                    continue
+                html = resp.text
+
+                detail: dict[str, str] = {}
+                for header, content in _DETAIL_RE.findall(html):
+                    key = header.strip().lower()
+                    val = _TAG_RE.sub("", content).strip()
+                    detail[key] = val
+
+                # Générique / Princeps tag
+                tag_match = _STATUS_RE.search(html)
+                if tag_match:
+                    detail["statut_commercial"] = tag_match.group(1).strip()
+
+                slug_to_detail[slug] = detail
+
+                if (i + 1) % 50 == 0:
+                    print(f"  [{i+1}/{len(to_enrich)}] enriched {len(slug_to_detail)} drugs")
+
+                time.sleep(1.2)
+
+            except Exception:
+                time.sleep(2)
+
+    # Merge details back into chunks
+    enriched = 0
+    for chunk in chunks:
+        slug = chunk.get("slug", "")
+        detail = slug_to_detail.get(slug)
+        if not detail:
+            continue
+
+        composition = detail.get("composition", "")
+        classe = detail.get("classe thérapeutique", "")
+        atc = detail.get("code atc", "")
+        statut = detail.get("statut_commercial", "")
+
+        extras = []
+        if composition:
+            extras.append(f"Composition (DCI): {composition}.")
+        if classe:
+            extras.append(f"Classe thérapeutique: {classe}.")
+        if atc:
+            extras.append(f"Code ATC: {atc}.")
+        if statut:
+            extras.append(f"Statut: {statut}.")
+
+        if extras:
+            chunk["text"] += " " + " ".join(extras)
+            chunk["composition"] = composition
+            chunk["atc"] = atc
+            chunk["classe_therapeutique"] = classe
+            enriched += 1
+
+    print(f"  → {enriched} drugs enriched with DCI/ATC/classe thérapeutique")
+    return chunks
+
+
 def _build_fallback_drug_chunks() -> list[dict]:
     """
     Fallback when medicament.ma is unavailable (JS-rendered, no API).
@@ -408,6 +507,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-drugs", action="store_true", help="Skip medicament.ma fetching")
     parser.add_argument("--skip-icd10", action="store_true", help="Skip ICD-10 (already built)")
+    parser.add_argument("--fetch-details", action="store_true",
+                        help="Enrich drugs with detail pages (DCI/ATC/classe). Adds ~12 min.")
+    parser.add_argument("--detail-sample", type=int, default=500,
+                        help="Max drugs to enrich with detail pages (default: 500)")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -416,6 +519,8 @@ def main():
 
     if not args.skip_drugs:
         drugs = fetch_moroccan_drugs()
+        if args.fetch_details and drugs:
+            drugs = enrich_drug_details(drugs, sample_size=args.detail_sample)
         save(drugs, "ansm_drugs.json")  # reuse same filename → ingest_from_files.py picks it up
     else:
         print("\n[SKIP] medicament.ma drugs")

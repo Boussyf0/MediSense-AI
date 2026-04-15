@@ -33,7 +33,7 @@ os.environ.setdefault("PGCRYPTO_KEY", "dummy")
 # A result is considered relevant if ANY keyword appears in the chunk text.
 
 TEST_SET = [
-    # Drug queries
+    # ── Drug queries (standard) ───────────────────────────────────────────────
     ("effets secondaires paracétamol", ["paracetamol", "doliprane", "hepatotox", "surdosage"]),
     ("contre-indications ibuprofène grossesse", ["ibuprofene", "grossesse", "24 SA", "contre"]),
     ("posologie amoxicilline angine adulte", ["amoxicilline", "angine", "1g", "streptocoque"]),
@@ -42,36 +42,84 @@ TEST_SET = [
     ("oméprazole reflux gastrique posologie", ["omeprazole", "reflux", "IPP", "20mg"]),
     ("levothyroxine hypothyroïdie prise à jeun", ["levothyroxine", "thyroide", "jeun", "TSH"]),
     ("salbutamol crise asthme utilisation", ["salbutamol", "asthme", "crise", "bouffee"]),
+    ("metformine effets secondaires digestifs", ["metformine", "digestif", "nausee", "diarrhee"]),
+    ("warfarine surveillance INR saignement", ["warfarine", "INR", "saignement", "anticoagulant"]),
+    ("amoxicilline allergie pénicilline", ["amoxicilline", "allergie", "penicilline", "contre"]),
+    ("atorvastatine douleurs musculaires myopathie", ["atorvastatine", "statine", "myopathie", "muscle"]),
 
-    # Disease queries
+    # ── Disease queries ───────────────────────────────────────────────────────
     ("symptômes infarctus du myocarde urgence", ["infarctus", "I21", "douleur thoracique", "SAMU"]),
     ("traitement hypertension artérielle", ["hypertension", "I10", "IEC", "140/90"]),
     ("diabète type 2 HbA1c objectif", ["diabete", "E11", "HbA1c", "7%", "metformine"]),
     ("symptômes migraine traitement", ["migraine", "G43", "triptan", "pulsatile"]),
     ("pneumonie antibiotique traitement", ["pneumonie", "J18", "amoxicilline", "radiographie"]),
     ("asthme traitement de fond corticoïdes", ["asthme", "J45", "CSI", "corticoide", "SABA"]),
-    ("AVC ischémique urgence thrombolyse", ["AVC", "I63", "thrombolyse", "urgence", "15"]),
+    ("AVC ischémique urgence thrombolyse", ["AVC", "I63", "thrombolyse", "urgence"]),
     ("lombalgie imagerie recommandation", ["lombalgie", "M54", "imagerie", "6 semaines"]),
+    ("insuffisance rénale chronique stades", ["renale", "N18", "chronique", "stade"]),
+    ("fibrillation auriculaire anticoagulation", ["fibrillation", "I48", "anticoagulant", "AVC"]),
+    ("dépression traitement antidépresseurs", ["depression", "F32", "sertraline", "ISRS"]),
+    ("épilepsie traitement antiépileptiques", ["epilepsie", "G40", "valproate", "carbamazepine"]),
 
-    # Symptom queries
+    # ── Symptom queries ───────────────────────────────────────────────────────
     ("j'ai de la fièvre 39 degrés que faire", ["fievre", "R50", "temperature", "infection"]),
     ("douleur abdominale droite appendicite", ["douleur", "R10", "abdominale", "appendicite"]),
     ("toux chronique 3 mois causes", ["toux", "R05", "chronique", "asthme", "RGO"]),
     ("céphalée brutale hémorragie méningée", ["cephalee", "R51", "hemorragie", "urgence", "scanner"]),
     ("dyspnée essoufflement insuffisance cardiaque", ["dyspnee", "insuffisance cardiaque", "I50"]),
+    ("palpitations cardiaques tachycardie", ["palpitation", "R00", "tachycardie", "cardiaque"]),
+    ("oedème membres inférieurs causes", ["oedeme", "R60", "membres", "cardiaque", "renale"]),
+    ("perte de poids inexpliquée cancer", ["perte", "R64", "poids", "amaigrissement", "cancer"]),
 
-    # Guideline queries
+    # ── Guideline queries ─────────────────────────────────────────────────────
     ("recommandation HAS hypertension bilan initial", ["hypertension", "bilan", "glycemie", "ECG"]),
     ("stratégie diabète type 2 étapes traitement", ["diabete", "metformine", "etape", "HbA1c"]),
     ("antibiothérapie rhinopharyngite recommandation", ["rhinopharyngite", "antibiotique", "viral"]),
     ("dépistage cancer sein mammographie", ["cancer", "sein", "mammographie", "50", "74"]),
+    ("prévention cardiovasculaire facteurs de risque", ["cardiovasculaire", "risque", "tabac", "cholesterol"]),
+    ("grossesse diabète gestationnel surveillance", ["grossesse", "diabete", "gestationnel", "glycemie"]),
 
-    # Complex/mixed queries
+    # ── Moroccan context queries ──────────────────────────────────────────────
+    ("numéro urgence médicale Maroc SAMU", ["141", "SAMU", "urgence", "Maroc"]),
+    ("hypertension traitement AMO Maroc remboursé", ["hypertension", "AMO", "Maroc", "141"]),
+    ("diabète médicaments remboursés AMO Maroc", ["diabete", "AMO", "metformine", "remboursement"]),
+    ("tuberculose traitement gratuit Maroc PNLT", ["tuberculose", "PNLT", "gratuit", "Maroc"]),
+    ("assurance maladie RAMED Maroc pauvre", ["RAMED", "AMO", "Maroc", "assurance"]),
+    ("paludisme traitement Maroc chloroquine", ["paludisme", "chloroquine", "Maroc", "artemether"]),
+    ("vaccins obligatoires Maroc enfants PNI", ["vaccin", "PNI", "Maroc", "obligatoire"]),
+    ("hôpital urgence Casablanca Rabat Maroc", ["141", "CHU", "Maroc", "urgence"]),
+    ("cancer Maroc incidence mortalité traitement", ["cancer", "Maroc", "incidence", "traitement"]),
+    ("VIH ARV gratuit Maroc PNLS", ["VIH", "ARV", "gratuit", "Maroc", "PNLS"]),
+    ("antibiotiques résistance Maroc rhinopharyngite", ["antibiotique", "resistance", "Maroc", "viral"]),
+    ("santé maternelle accouchement Maroc maternite", ["maternelle", "Maroc", "accouchement", "maternite"]),
+
+    # ── Moroccan drug price queries (new — DMP data) ──────────────────────────
+    ("prix paracétamol Maroc dhs MAD pharmacie", ["paracetamol", "dhs", "Maroc", "MAD", "PPV"]),
+    ("prix amoxicilline Maroc dirham", ["amoxicilline", "dhs", "Maroc", "MAD", "PPV"]),
+    ("médicament générique moins cher Maroc", ["generique", "Maroc", "moins", "prix"]),
+    ("prix metformine Maroc pharmacie", ["metformine", "dhs", "Maroc", "MAD"]),
+
+    # ── Darija / colloquial queries ───────────────────────────────────────────
+    ("mal de tête fort douleur tête que faire", ["cephalee", "migraine", "R51", "douleur"]),
+    ("je tousse depuis 3 semaines bronchite", ["toux", "bronchite", "J20", "chronique"]),
+    ("tension artérielle élevée que faire", ["hypertension", "tension", "I10", "IEC"]),
+    ("sucre dans le sang élevé diabète symptômes", ["diabete", "glycemie", "E11", "sucre"]),
+    ("mal au ventre diarrhée gastroentérite", ["gastroenterite", "diarrhee", "A09", "abdominale"]),
+    ("douleur poitrine essoufflement coeur", ["cardiaque", "I50", "douleur", "thoracique"]),
+    ("enfant fièvre 40 degrés convulsions", ["fievre", "convulsion", "R50", "enfant", "pediatrique"]),
+    ("grosse fatigue anémie fer sang", ["anemie", "D50", "fer", "fatigue", "hemoglobine"]),
+
+    # ── Complex/mixed queries ─────────────────────────────────────────────────
     ("ibuprofène contre-indiqué asthme AINS", ["ibuprofene", "asthme", "AINS", "contre"]),
     ("paracétamol insuffisance rénale dosage", ["paracetamol", "renale", "insuffisance"]),
     ("prévention AVC aspirine statine", ["AVC", "aspirine", "statine", "prevention"]),
     ("vaccin grippe personnes âgées recommandation", ["vaccin", "grippe", "65", "annuel"]),
     ("obésité IMC chirurgie bariatrique critères", ["obesite", "IMC", "chirurgie", "bariatrique"]),
+    ("insuffisance hépatique médicaments contre-indiqués", ["hepatique", "foie", "contre", "insuffisance"]),
+    ("polymédication personnes âgées interactions", ["interaction", "medicament", "age", "polymédication"]),
+    ("automédication risques Maroc conseil", ["automedication", "risque", "Maroc", "conseil"]),
+    ("nutrition obésité alimentation Maroc", ["nutrition", "obesite", "alimentation", "Maroc"]),
+    ("santé mentale dépression Maroc stigmatisation", ["mentale", "depression", "Maroc", "sante"]),
 ]
 
 
