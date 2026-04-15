@@ -29,175 +29,142 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "real_corpus"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-MEDICAMENT_MA_BASE = "https://medicament.ma/index.php"
+MEDICAMENT_MA_LISTING = "https://medicament.ma/listing-des-medicaments/"
+
+# All 26 letters — covers the full DMP registry (~5,000+ drugs)
+LETTERS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 
-# ── 1. Moroccan drugs from medicament.ma ─────────────────────────────────────
-
-# Common drug names to search (DCI names — same active substance, different Moroccan brand names)
-DRUG_QUERIES = [
-    "paracetamol", "ibuprofene", "amoxicilline", "metformine", "amlodipine",
-    "salbutamol", "levothyroxine", "omeprazole", "atorvastatine", "bisoprolol",
-    "ramipril", "furosemide", "metoprolol", "lisinopril", "enalapril",
-    "captopril", "losartan", "valsartan", "irbesartan", "telmisartan",
-    "simvastatine", "rosuvastatine", "fluvastatine", "pravastatine",
-    "metronidazole", "amoxicilline clavulanate", "azithromycine", "doxycycline",
-    "ciprofloxacine", "ofloxacine", "ceftriaxone", "cefixime", "cotrimoxazole",
-    "isoniazide", "rifampicine", "ethambutol", "pyrazinamide",  # tuberculose (priorité Maroc)
-    "chloroquine", "artemether", "sulfadoxine", "primaquine",    # paludisme
-    "insuline", "glibenclamide", "glimepiride", "sitagliptine", "metformine",
-    "prednisolone", "dexamethasone", "betamethasone", "hydrocortisone",
-    "cetirizine", "loratadine", "desloratadine", "fexofenadine",
-    "omeprazole", "lansoprazole", "esomeprazole", "pantoprazole", "ranitidine",
-    "domperidone", "metoclopramide", "hyoscine", "phloroglucinol",
-    "sertraline", "fluoxetine", "paroxetine", "escitalopram", "amitriptyline",
-    "alprazolam", "diazepam", "bromazepam", "clonazepam", "zolpidem",
-    "valproate", "carbamazepine", "phenytoine", "levetiracetam", "lamotrigine",
-    "tramadol", "codeine", "morphine", "nefopam", "ketoprofene",
-    "warfarine", "acenocoumarol", "clopidogrel", "aspirine", "heparine",
-    "fer", "acide folique", "vitamine b12", "calcium", "vitamine d",
-    "sels de rehydratation", "zinc", "albendazole", "mebendazole",  # OMS essentiels
-    "amitriptyline", "nortriptyline", "clomipramine", "imipramine",
-    "haloperidol", "chlorpromazine", "risperidone", "olanzapine",
-    "cotrimoxazole", "dapsone", "streptomycine",
-    "gentamicine", "amikacine", "tobramycine",
-    "fluconazole", "amphotericine", "ketoconazole", "itraconazole",
-    "aciclovir", "valaciclovir",
-]
-
-
-def fetch_moroccan_drugs(queries: list[str] = DRUG_QUERIES) -> list[dict]:
+def fetch_moroccan_drugs(letters: list[str] = LETTERS, max_pages_per_letter: int = 50) -> list[dict]:
     """
-    Fetch drug data from medicament.ma.
+    Fetch all drugs from medicament.ma using the letter-based listing pages.
 
-    Scrapes search results for each DCI query and extracts:
-    - Nom commercial (Moroccan brand name)
-    - Présentation
-    - PPV (prix public de vente) in MAD
-    - Prix hospitalier in MAD
-    - Distributeur
-    - Princeps/générique indicator
+    URL pattern: https://medicament.ma/listing-des-medicaments/?lettre=A
+    Pagination:  https://medicament.ma/listing-des-medicaments/page/2/?lettre=A
+
+    Each listing item provides:
+      - Drug name + dosage + form (from <p class="primary">)
+      - Presentation + PPV in dhs + Distributeur (from <span class="secondary">)
+      - Individual drug page URL (for optional detail fetch)
+
+    Returns one chunk per drug with PPV, distributeur, presentation.
     """
     try:
         import httpx
-        from html.parser import HTMLParser
+        import re
     except ImportError:
         print("  [ERROR] pip install httpx")
         return []
 
-    print(f"\n[medicament.ma] Fetching {len(queries)} drug queries...")
+    print(f"\n[medicament.ma] Scraping letter-based listing (A-Z)...")
 
-    class RowParser(HTMLParser):
-        def __init__(self):
-            super().__init__()
-            self.rows = []
-            self.current_row = []
-            self.current_cell = ""
-            self.in_td = False
-            self.in_tr = False
-
-        def handle_starttag(self, tag, attrs):
-            attrs_dict = dict(attrs)
-            if tag == "tr":
-                self.in_tr = True
-                self.current_row = []
-            elif tag == "td":
-                self.in_td = True
-                self.current_cell = ""
-
-        def handle_endtag(self, tag):
-            if tag == "td":
-                self.current_row.append(self.current_cell.strip())
-                self.in_td = False
-            elif tag == "tr":
-                if self.current_row and any(c.strip() for c in self.current_row):
-                    self.rows.append(self.current_row[:])
-                self.in_tr = False
-
-        def handle_data(self, data):
-            if self.in_td:
-                self.current_cell += " " + data.strip()
+    _ITEM_RE = re.compile(
+        r'<li class="listing-item">.*?<a href="([^"]+)"[^>]*>.*?'
+        r'<p class="primary">([^<]+)</p>.*?'
+        r'<span class="secondary">([^<]+)</span>',
+        re.DOTALL,
+    )
+    _PAGE_RE = re.compile(r'/page/(\d+)/\?lettre=')
+    _PPV_RE = re.compile(r'PPV:\s*([\d.,]+)\s*dhs', re.IGNORECASE)
+    _DIST_RE = re.compile(r'-\s*([A-Z][^-]+)$')
 
     all_chunks = []
-    seen_names = set()
+    seen_slugs: set[str] = set()
 
     with httpx.Client(
-        timeout=10.0,
-        headers={"User-Agent": "MediSense-AI/1.0"},
+        timeout=15.0,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; MediSense-AI/1.0; medical research)"},
         follow_redirects=True,
     ) as client:
-        for i, query in enumerate(queries):
-            try:
-                resp = client.get(
-                    MEDICAMENT_MA_BASE,
-                    params={"page": "medicament", "action": "recherche", "quel": query},
+        for letter in letters:
+            letter_total = 0
+            page = 1
+
+            while page <= max_pages_per_letter:
+                url = (
+                    f"{MEDICAMENT_MA_LISTING}?lettre={letter}"
+                    if page == 1
+                    else f"{MEDICAMENT_MA_LISTING}page/{page}/?lettre={letter}"
                 )
-                resp.raise_for_status()
-                html = resp.text
+                try:
+                    resp = client.get(url)
+                    if resp.status_code == 404:
+                        break  # no more pages
+                    resp.raise_for_status()
+                    html = resp.text
 
-                parser = RowParser()
-                parser.feed(html)
+                    # Detect max pages for this letter (first page only)
+                    if page == 1:
+                        found_pages = _PAGE_RE.findall(html)
+                        max_page = max((int(p) for p in found_pages), default=1)
+                    else:
+                        max_page = max_pages_per_letter  # already discovered
 
-                count_added = 0
-                for row in parser.rows:
-                    if len(row) < 3:
-                        continue
-                    name = row[0].strip()
-                    if not name or len(name) < 3:
-                        continue
-                    if name in seen_names or name.lower() in ("désignation", "nom", "medicament"):
-                        continue
-                    seen_names.add(name)
+                    items = _ITEM_RE.findall(html)
+                    if not items:
+                        break  # empty page
 
-                    presentation = row[1].strip() if len(row) > 1 else ""
-                    ppv = row[2].strip() if len(row) > 2 else ""
-                    prix_hosp = row[3].strip() if len(row) > 3 else ""
-                    distributeur = row[4].strip() if len(row) > 4 else ""
-                    princeps = row[5].strip() if len(row) > 5 else ""
+                    for slug_url, primary, secondary in items:
+                        slug = slug_url.rstrip("/").split("/")[-1]
+                        if slug in seen_slugs:
+                            continue
+                        seen_slugs.add(slug)
 
-                    # Build rich text for RAG
-                    text_parts = [f"{name}"]
-                    if presentation:
-                        text_parts.append(f"Présentation: {presentation}.")
-                    if ppv:
-                        text_parts.append(f"Prix public de vente (Maroc): {ppv} MAD.")
-                    if prix_hosp:
-                        text_parts.append(f"Prix hospitalier: {prix_hosp} MAD.")
-                    if distributeur:
-                        text_parts.append(f"Distributeur au Maroc: {distributeur}.")
-                    if princeps:
-                        text_parts.append(f"Statut: {princeps}.")
-                    text_parts.append(f"Substance active recherchée: {query}.")
+                        name = primary.strip()
+                        secondary = secondary.strip()
 
-                    all_chunks.append({
-                        "text": " ".join(text_parts),
-                        "source": "dmp_maroc",
-                        "type": "drug",
-                        "name": name,
-                        "icd10_codes": [],
-                        "language": "fr",
-                        "section": "fiche_medicament_maroc",
-                        "country": "MA",
-                        "currency": "MAD",
-                        "ppv_dh": ppv,
-                        "distributeur": distributeur,
-                        "substance_active": query,
-                    })
-                    count_added += 1
+                        ppv_match = _PPV_RE.search(secondary)
+                        ppv = ppv_match.group(1) if ppv_match else ""
 
-                if (i + 1) % 10 == 0 or count_added > 0:
-                    print(f"  [{i+1}/{len(queries)}] '{query}': +{count_added} → total {len(all_chunks)}")
+                        # Presentation is everything before " - PPV"
+                        presentation = secondary.split(" - PPV:")[0].strip() if " - PPV:" in secondary else secondary
 
-                time.sleep(0.5)  # polite to the server
+                        # Distributeur is last segment after last " - "
+                        dist_match = _DIST_RE.search(secondary)
+                        distributeur = dist_match.group(1).strip() if dist_match else ""
 
-            except Exception as e:
-                print(f"  [WARN] '{query}' failed: {e}")
-                time.sleep(2)
+                        # Build RAG-friendly text
+                        parts = [f"Médicament marocain: {name}."]
+                        if presentation:
+                            parts.append(f"Présentation: {presentation}.")
+                        if ppv:
+                            parts.append(f"Prix public de vente au Maroc (PPV): {ppv} dhs (MAD).")
+                        if distributeur:
+                            parts.append(f"Distributeur/fabricant au Maroc: {distributeur}.")
+                        parts.append("Source: DMP — Direction du Médicament et de la Pharmacie, Maroc.")
 
-    print(f"\n[medicament.ma] {len(all_chunks)} unique drug entries fetched")
+                        all_chunks.append({
+                            "text": " ".join(parts),
+                            "source": "dmp_maroc",
+                            "type": "drug",
+                            "name": name,
+                            "icd10_codes": [],
+                            "language": "fr",
+                            "section": "fiche_medicament_maroc",
+                            "country": "MA",
+                            "currency": "MAD",
+                            "ppv_dh": ppv,
+                            "distributeur": distributeur,
+                            "slug": slug,
+                        })
+                        letter_total += 1
+
+                    if page >= max_page:
+                        break
+                    page += 1
+                    time.sleep(1.0)  # polite — 1 req/sec
+
+                except Exception as e:
+                    print(f"  [WARN] {letter} p{page}: {e}")
+                    time.sleep(3)
+                    break
+
+            print(f"  [{letter}] {letter_total} drugs (total: {len(all_chunks)})")
+
+    print(f"\n[medicament.ma] {len(all_chunks)} unique drugs fetched from DMP registry")
 
     if not all_chunks:
-        print("  [INFO] medicament.ma is JS-rendered — falling back to hardcoded drug monographies")
+        print("  [INFO] No data fetched — falling back to hardcoded drug monographies")
         all_chunks = _build_fallback_drug_chunks()
 
     return all_chunks
