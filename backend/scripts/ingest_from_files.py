@@ -25,7 +25,17 @@ from app.rag.embedder import embed_passages_batch
 from app.rag.vectorstore import ensure_collection, upsert_points, get_collection_info
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "real_corpus"
-FILES = ["icd10_full.json", "ansm_drugs.json", "has_guidelines.json"]
+FILES = [
+    "icd10_full.json",
+    "ansm_drugs.json",  # intact
+    "has_guidelines.json",
+    "bdpm_france.json",
+    "extended_drugs.json",
+    "drug_interactions.json",
+    "biological_references.json",
+    "moroccan_protocols_extended.json",
+    "clinical_pharmacology.json",
+]
 
 
 def _uid(text: str) -> str:

@@ -1,0 +1,1352 @@
+[
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Warfarine + AINS. Sévérité: Majeure. Conséquence clinique: Risque hémorragique digestif accru. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Warfarine / AINS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Metformine + Produit de contraste iodé. Sévérité: Majeure. Conséquence clinique: Risque d'acidose lactique sur insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Metformine / Produit de contraste iodé",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Simvastatine + Clarithromycine. Sévérité: Majeure. Conséquence clinique: Risque de rhabdomyolyse par inhibition CYP3A4. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Simvastatine / Clarithromycine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : IEC + AINS + Diurétique. Sévérité: Majeure. Conséquence clinique: Triple whammy avec insuffisance rénale aiguë. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "IEC / AINS + Diurétique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Tramadol + ISRS/IRSN. Sévérité: Majeure. Conséquence clinique: Risque de syndrome sérotoninergique. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Tramadol / ISRS/IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (urgence) : Digoxine + Amiodarone. Sévérité: Modérée. Conséquence clinique: Augmentation des concentrations plasmatiques de digoxine. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Digoxine / Amiodarone",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (hospitalisation) : Spironolactone + Supplément potassique. Sévérité: Majeure. Conséquence clinique: Hyperkaliémie sévère. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Spironolactone / Supplément potassique",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (consultation externe) : Clopidogrel + Oméprazole. Sévérité: Modérée. Conséquence clinique: Réduction potentielle de l'effet antiagrégant. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Clopidogrel / Oméprazole",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (pharmacie clinique) : Insuline + Bêtabloquant. Sévérité: Modérée. Conséquence clinique: Masquage des symptômes d'hypoglycémie. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Insuline / Bêtabloquant",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  },
+  {
+    "text": "Interaction médicamenteuse (suivi ambulatoire) : Fluoroquinolone + Corticothérapie. Sévérité: Majeure. Conséquence clinique: Risque accru de tendinopathie/rupture. CAT: réévaluer l'association, surveiller biologie et signes d'alerte.",
+    "source": "interactions_matrix",
+    "type": "interaction",
+    "name": "Fluoroquinolone / Corticothérapie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "interaction_detail"
+  }
+]

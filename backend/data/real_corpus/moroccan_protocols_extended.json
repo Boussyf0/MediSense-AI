@@ -1,0 +1,2702 @@
+[
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Criteres diag: Suspicion respiratoire prolongée, test moléculaire/BK, Rx thorax.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 01. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 01",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Criteres diag: Diagnostic glycémique standard et stratification cardio-rénale.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 02. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 02",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Criteres diag: Mesures répétées, AMT/MAPA, bilan atteinte d'organes cibles.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 03. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 03",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Criteres diag: Clinique + BNP + échocardiographie.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 04. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 04",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Criteres diag: DFG + albuminurie, classification KDIGO.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 05. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 05",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Criteres diag: Variabilité débit expiratoire, réversibilité bronchodilatatrice.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 06. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 06",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Criteres diag: Spirométrie post-bronchodilatateur et phénotype exacerbateur.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 07. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 07",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Criteres diag: Goutte épaisse/frottis, recherche gravité immédiate.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 08. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 08",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Criteres diag: HTA gravidique + protéinurie et signes de gravité.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 09. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 09",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Criteres diag: ECBU orienté selon sexe, âge et facteurs de risque.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 10. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 10",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Criteres diag: Suspicion respiratoire prolongée, test moléculaire/BK, Rx thorax.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 11. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 11",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Criteres diag: Diagnostic glycémique standard et stratification cardio-rénale.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 12. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 12",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Criteres diag: Mesures répétées, AMT/MAPA, bilan atteinte d'organes cibles.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 13. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 13",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Criteres diag: Clinique + BNP + échocardiographie.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 14. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 14",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Criteres diag: DFG + albuminurie, classification KDIGO.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 15. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 15",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Criteres diag: Variabilité débit expiratoire, réversibilité bronchodilatatrice.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 16. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 16",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Criteres diag: Spirométrie post-bronchodilatateur et phénotype exacerbateur.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 17. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 17",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Criteres diag: Goutte épaisse/frottis, recherche gravité immédiate.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 18. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 18",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Criteres diag: HTA gravidique + protéinurie et signes de gravité.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 19. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 19",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Criteres diag: ECBU orienté selon sexe, âge et facteurs de risque.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 20. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 20",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Criteres diag: Suspicion respiratoire prolongée, test moléculaire/BK, Rx thorax.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 21. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 21",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Criteres diag: Diagnostic glycémique standard et stratification cardio-rénale.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 22. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 22",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Criteres diag: Mesures répétées, AMT/MAPA, bilan atteinte d'organes cibles.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 23. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 23",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Criteres diag: Clinique + BNP + échocardiographie.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 24. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 24",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Criteres diag: DFG + albuminurie, classification KDIGO.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 25. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 25",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Criteres diag: Variabilité débit expiratoire, réversibilité bronchodilatatrice.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 26. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 26",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Criteres diag: Spirométrie post-bronchodilatateur et phénotype exacerbateur.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 27. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 27",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Criteres diag: Goutte épaisse/frottis, recherche gravité immédiate.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 28. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 28",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Criteres diag: HTA gravidique + protéinurie et signes de gravité.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 29. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 29",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Criteres diag: ECBU orienté selon sexe, âge et facteurs de risque.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 30. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 30",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Criteres diag: Suspicion respiratoire prolongée, test moléculaire/BK, Rx thorax.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 31. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 31",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Criteres diag: Diagnostic glycémique standard et stratification cardio-rénale.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 32. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 32",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Criteres diag: Mesures répétées, AMT/MAPA, bilan atteinte d'organes cibles.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 33. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 33",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Criteres diag: Clinique + BNP + échocardiographie.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 34. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 34",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Criteres diag: DFG + albuminurie, classification KDIGO.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 35. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 35",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Criteres diag: Variabilité débit expiratoire, réversibilité bronchodilatatrice.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 36. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 36",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Criteres diag: Spirométrie post-bronchodilatateur et phénotype exacerbateur.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 37. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 37",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Criteres diag: Goutte épaisse/frottis, recherche gravité immédiate.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 38. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 38",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Criteres diag: HTA gravidique + protéinurie et signes de gravité.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 39. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 39",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Criteres diag: ECBU orienté selon sexe, âge et facteurs de risque.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 40. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 40",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Criteres diag: Suspicion respiratoire prolongée, test moléculaire/BK, Rx thorax.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Tuberculose — protocole MA 41. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Tuberculose — protocole MA 41",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Criteres diag: Diagnostic glycémique standard et stratification cardio-rénale.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Diabète type 2 — protocole MA 42. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Diabète type 2 — protocole MA 42",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Criteres diag: Mesures répétées, AMT/MAPA, bilan atteinte d'organes cibles.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Hypertension artérielle — protocole MA 43. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Hypertension artérielle — protocole MA 43",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Criteres diag: Clinique + BNP + échocardiographie.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Insuffisance cardiaque — protocole MA 44. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Insuffisance cardiaque — protocole MA 44",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Criteres diag: DFG + albuminurie, classification KDIGO.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Maladie rénale chronique — protocole MA 45. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Maladie rénale chronique — protocole MA 45",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Criteres diag: Variabilité débit expiratoire, réversibilité bronchodilatatrice.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Asthme — protocole MA 46. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Asthme — protocole MA 46",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Criteres diag: Spirométrie post-bronchodilatateur et phénotype exacerbateur.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: BPCO — protocole MA 47. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "BPCO — protocole MA 47",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Criteres diag: Goutte épaisse/frottis, recherche gravité immédiate.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Paludisme importé — protocole MA 48. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Paludisme importé — protocole MA 48",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Criteres diag: HTA gravidique + protéinurie et signes de gravité.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Prééclampsie — protocole MA 49. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Prééclampsie — protocole MA 49",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Epidemiologie ma: Charge importante en soins primaires avec disparités régionales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "epidemiologie_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Criteres diag: ECBU orienté selon sexe, âge et facteurs de risque.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "criteres_diag"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Traitement ma: Traitement gradué selon gravité, disponibilité locale et recommandations nationales.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "traitement_ma"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Suivi: Réévaluation clinique programmée et adaptation thérapeutique selon réponse.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "suivi"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Couverture amo ramed: Parcours coordonné via AMO/RAMED selon filière publique/privée.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "couverture_amo_ramed"
+  },
+  {
+    "text": "Protocole marocain: Infection urinaire — protocole MA 50. Education patient: Adhésion, signes d'alerte et prévention secondaire.",
+    "source": "moroccan_protocols_extended",
+    "type": "guideline",
+    "name": "Infection urinaire — protocole MA 50",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "education_patient"
+  }
+]

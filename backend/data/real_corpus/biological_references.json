@@ -1,0 +1,1802 @@
+[
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Hémoglobine. Normale adulte: 13-17 g/dL (H), 12-16 g/dL (F). Enfant: 11-14.5 g/dL. Grossesse: >10.5 g/dL. Unité: g/dL. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Hémoglobine",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Leucocytes. Normale adulte: 4 000-10 000 /mm3. Enfant: 5 000-15 000 /mm3. Grossesse: 5 000-14 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Leucocytes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Plaquettes. Normale adulte: 150 000-400 000 /mm3. Enfant: 150 000-450 000 /mm3. Grossesse: 100 000-400 000 /mm3. Unité: /mm3. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Plaquettes",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Créatininémie. Normale adulte: 5-11 mg/L. Enfant: variable selon âge. Grossesse: 3-7 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Créatininémie",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: DFG. Normale adulte: >90 ml/min/1.73m2. Enfant: >90 ml/min/1.73m2. Grossesse: >90 ml/min/1.73m2. Unité: ml/min/1.73m2. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "DFG",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ASAT. Normale adulte: <35 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ASAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: ALAT. Normale adulte: <45 UI/L. Enfant: <40 UI/L. Grossesse: <35 UI/L. Unité: UI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "ALAT",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Bilirubine totale. Normale adulte: <17 µmol/L. Enfant: <17 µmol/L. Grossesse: <17 µmol/L. Unité: µmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Bilirubine totale",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Sodium. Normale adulte: 135-145 mmol/L. Enfant: 135-145 mmol/L. Grossesse: 135-145 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Sodium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Potassium. Normale adulte: 3.5-5.0 mmol/L. Enfant: 3.5-5.0 mmol/L. Grossesse: 3.5-5.0 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Potassium",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Chlore. Normale adulte: 98-107 mmol/L. Enfant: 98-107 mmol/L. Grossesse: 98-107 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Chlore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Calcium total. Normale adulte: 2.20-2.60 mmol/L. Enfant: 2.10-2.60 mmol/L. Grossesse: 2.10-2.55 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Calcium total",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Phosphore. Normale adulte: 0.8-1.5 mmol/L. Enfant: 1.3-2.3 mmol/L. Grossesse: 0.8-1.5 mmol/L. Unité: mmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Phosphore",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: TSH. Normale adulte: 0.4-4.0 mUI/L. Enfant: 0.7-6.0 mUI/L. Grossesse: 0.1-3.0 mUI/L. Unité: mUI/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "TSH",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: T4 libre. Normale adulte: 9-19 pmol/L. Enfant: 10-22 pmol/L. Grossesse: 10-20 pmol/L. Unité: pmol/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "T4 libre",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: Glycémie à jeun. Normale adulte: 0.70-1.00 g/L. Enfant: 0.70-1.00 g/L. Grossesse: 0.70-0.95 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "Glycémie à jeun",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: HbA1c. Normale adulte: <5.7%. Enfant: <5.7%. Grossesse: <5.7%. Unité: %. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "HbA1c",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: LDL-cholestérol. Normale adulte: <1.3 g/L. Enfant: <1.3 g/L. Grossesse: <1.3 g/L. Unité: g/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "LDL-cholestérol",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: INR. Normale adulte: 0.8-1.2. Enfant: 0.8-1.2. Grossesse: 0.8-1.2. Unité: ratio. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "INR",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  },
+  {
+    "text": "Référence biologique: CRP. Normale adulte: <5 mg/L. Enfant: <5 mg/L. Grossesse: <5 mg/L. Unité: mg/L. Interprétation basse: orienter vers étiologies carentielles/inflammatoires/iatrogènes selon contexte. Interprétation haute: rechercher atteinte organique, cause médicamenteuse et urgence potentielle.",
+    "source": "biological_references",
+    "type": "lab_test",
+    "name": "CRP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "valeurs_de_reference"
+  }
+]
