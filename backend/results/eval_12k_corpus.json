@@ -1,0 +1,223 @@
+{
+  "timestamp": "2026-04-14T20:54:24.021021",
+  "corpus_size": "see Qdrant dashboard",
+  "metrics": {
+    "mrr_at_10": 1.0,
+    "ndcg_at_5": 0.9861,
+    "precision_at_3": 0.9333,
+    "top1_accuracy": 1.0
+  },
+  "reranker": null,
+  "per_query": [
+    {
+      "query": "effets secondaires paracétamol",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Paracetamol (Doliprane) — Effets Secondaires: Rares: reactions cutanees allergiq",
+      "top1_score": 0.5
+    },
+    {
+      "query": "contre-indications ibuprofène grossesse",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Ibuprofène (Advil, Nurofen, Brufen) — Contre Indications: Ulcère gastroduodénal ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "posologie amoxicilline angine adulte",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Amoxicilline (Clamoxyl) — Posologie Adulte: 1g toutes les 8 heures (soit 3g/jour",
+      "top1_score": 0.5
+    },
+    {
+      "query": "interactions médicamenteuses metformine alcool",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Metformine (Glucophage, Stagid) — Interactions: Alcool (acidose lactique). Produ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "surdosage paracétamol antidote",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Paracetamol (Doliprane) — Surdosage: URGENCE. Risque d'hepatite cytolytique. Ant",
+      "top1_score": 0.5
+    },
+    {
+      "query": "oméprazole reflux gastrique posologie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Omeprazole (Mopral) — Indications: Reflux gastro-oesophagien. Ulcere gastro-duod",
+      "top1_score": 0.5
+    },
+    {
+      "query": "levothyroxine hypothyroïdie prise à jeun",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Levothyroxine (Levothyrox) (substance active: Levothyroxine sodique). Indication",
+      "top1_score": 0.5
+    },
+    {
+      "query": "salbutamol crise asthme utilisation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Salbutamol (Ventoline) — Indications: Traitement symptomatique de la crise d'ast",
+      "top1_score": 0.5
+    },
+    {
+      "query": "symptômes infarctus du myocarde urgence",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Infarctus du myocarde (I21): URGENCE VITALE. Douleur thoracique intense > 20 min",
+      "top1_score": 0.5
+    },
+    {
+      "query": "traitement hypertension artérielle",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Hypertension artérielle de l'adulte — Traitement de 1re ligne: IEC/ARA2, inhibit",
+      "top1_score": 0.5
+    },
+    {
+      "query": "diabète type 2 HbA1c objectif",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Diabète de type 2 — stratégie médicamenteuse — Objectif HbA1c < 7% pour la plupa",
+      "top1_score": 0.5
+    },
+    {
+      "query": "symptômes migraine traitement",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Migraine (G43): Cephalees recurrentes pulsatiles, unilaterales, duree 4-72h. Sym",
+      "top1_score": 0.5
+    },
+    {
+      "query": "pneumonie antibiotique traitement",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Pneumonie (J18): Infection du parenchyme pulmonaire. Symptomes: fievre elevee, t",
+      "top1_score": 0.5
+    },
+    {
+      "query": "asthme traitement de fond corticoïdes",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Asthme (J45) — Traitement: corticoides inhales (fond) + beta-2 mimétiques (crise",
+      "top1_score": 0.5
+    },
+    {
+      "query": "AVC ischémique urgence thrombolyse",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "AVC ischemique (I63): URGENCE VITALE. Deficit neurologique brutal: paralysie fac",
+      "top1_score": 0.5
+    },
+    {
+      "query": "lombalgie imagerie recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Prise en charge de la lombalgie commune de l'adulte — Imagerie: PAS d'imagerie s",
+      "top1_score": 0.5
+    },
+    {
+      "query": "j'ai de la fièvre 39 degrés que faire",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Fievre (R50): Temperature > 38.3C. Causes: infection, inflammation, neoplasie. U",
+      "top1_score": 0.5
+    },
+    {
+      "query": "douleur abdominale droite appendicite",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Douleur abdominale (R10) — Fosse iliaque droite: appendicite.",
+      "top1_score": 0.5
+    },
+    {
+      "query": "toux chronique 3 mois causes",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Toux (R05): Toux aigue < 3 semaines: infection virale (rhinopharyngite). Toux ch",
+      "top1_score": 0.5
+    },
+    {
+      "query": "céphalée brutale hémorragie méningée",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Cephalee (R51) — Urgence: cephalee brutale (thunderclap) → hemorragie meningee.",
+      "top1_score": 0.5
+    },
+    {
+      "query": "dyspnée essoufflement insuffisance cardiaque",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Insuffisance cardiaque (I50): Incapacite du coeur a assurer un debit adequat. Sy",
+      "top1_score": 0.5
+    },
+    {
+      "query": "recommandation HAS hypertension bilan initial",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Recommandation HAS — Hypertension artérielle de l'adulte: Recommandation de bonn",
+      "top1_score": 0.5
+    },
+    {
+      "query": "stratégie diabète type 2 étapes traitement",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Strategie diagnostique et therapeutique du diabete de type 2 — Etape 1: mesures ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "antibiothérapie rhinopharyngite recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Antibiothérapie ORL — recommandations: Rhinopharyngite: JAM",
+      "top1_score": 0.5
+    },
+    {
+      "query": "dépistage cancer sein mammographie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Cancer du sein (C50): Tumeur maligne mammaire. Depistage: mammographie tous les ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "ibuprofène contre-indiqué asthme AINS",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Ibuprofene (Advil, Nurofen) — Contre Indications: Ulcere gastro-duodenal evoluti",
+      "top1_score": 0.5
+    },
+    {
+      "query": "paracétamol insuffisance rénale dosage",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Paracetamol (Doliprane) — Surdosage: URGENCE. Risque d'hepatite cytolytique. Ant",
+      "top1_score": 0.5
+    },
+    {
+      "query": "prévention AVC aspirine statine",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "AVC ischémique — prise en charge urgence — Prévention secondaire: antiagrégants ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "vaccin grippe personnes âgées recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Vaccination chez l'adulte — calendrier vaccinal: Vaccinatio",
+      "top1_score": 0.5
+    },
+    {
+      "query": "obésité IMC chirurgie bariatrique critères",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Obésité — prise en charge multidisciplinaire — Chirurgie bariatrique si IMC ≥ 40",
+      "top1_score": 0.5
+    }
+  ]
+}

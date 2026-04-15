@@ -44,9 +44,11 @@ class Settings(BaseSettings):
     QDRANT_PORT: int = 6333
 
     # Ollama (used Sprint 3)
+    # Pull with: docker exec medisense_ollama ollama pull llama3.1:8b
+    # Fallback:  docker exec medisense_ollama ollama pull mistral:7b-instruct
     OLLAMA_HOST: str = "ollama"
     OLLAMA_PORT: int = 11434
-    OLLAMA_MODEL: str = "mistral:7b"
+    OLLAMA_MODEL: str = "llama3.1:8b"
 
     @property
     def DATABASE_URL(self) -> str:

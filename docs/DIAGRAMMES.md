@@ -44,7 +44,7 @@
 
 6. [Architecture des Pipelines IA](#6-architecture-des-pipelines-ia)
    - 6.1 Pipeline 1 — IoT & LSTM Bidirectionnel
-   - 6.2 Pipeline 2 — RAG & Mistral 7B
+   - 6.2 Pipeline 2 — RAG & Llama 3.1 8B
    - 6.3 Pipeline 3 — XGBoost No-Show
    - 6.4 Intégration CRM Salesforce
 
@@ -77,10 +77,10 @@ flowchart TB
 
     subgraph P2["Pipeline 2 — RAG / LLM"]
         direction LR
-        NLP["Prétraitement NLP<br/>Embedding"]
-        QDRANT["Qdrant<br/>84k chunks médicaux"]
-        CE["Cross-Encoder<br/>Re-ranking"]
-        MISTRAL["Mistral 7B<br/>via Ollama"]
+        NLP["Prétraitement NLP<br/>Détection langue + Entités"]
+        QDRANT["Qdrant<br/>30 184 points médicaux"]
+        SAFETY["Couche Sécurité<br/>141 SAMU / Disclaimer"]
+        LLAMA["Llama 3.1 8B<br/>via Ollama"]
     end
 
     subgraph P3["Pipeline 3 — ML Prédictif"]
@@ -110,8 +110,8 @@ flowchart TB
     PUSH --> APP
 
     APP -->|"message chat"| API
-    API --> NLP --> QDRANT --> CE --> MISTRAL
-    MISTRAL -->|"réponse RAG"| API
+    API --> NLP --> QDRANT --> SAFETY --> LLAMA
+    LLAMA -->|"réponse RAG (SSE)"| API
 
     WEB --> API
     API --> FE --> XGB --> AGENDA
@@ -148,7 +148,7 @@ flowchart TB
             end
 
             subgraph AI["Intelligence Artificielle"]
-                OLLAMA_C["medisense_ollama<br/>ollama/ollama<br/>Port: 11434<br/>Volume: ollama_models<br/>Mistral 7B (4GB)"]
+                OLLAMA_C["medisense_ollama<br/>ollama/ollama<br/>Port: 11434<br/>Volume: ollama_models<br/>Llama 3.1 8B (4.7GB)"]
             end
         end
 
@@ -326,22 +326,25 @@ flowchart LR
     subgraph A["Acteurs"]
         PATIENT(["Patient"])
         DOCTOR(["Médecin"])
-        SYS(["Mistral 7B<br/>Ollama"])
+        SYS(["Llama 3.1 8B<br/>Ollama"])
     end
 
     subgraph UC["Sprint 3 — US-09 à US-12"]
-        UC9["US-09: Interroger Mistral 7B<br/>Latence P95 < 150ms<br/>Ollama local"]
-        UC10["US-10: Indexer la base médicale<br/>84 000 chunks dans Qdrant<br/>(ICD-10, DSM-5, Vidal)"]
-        UC11["US-11: Chatter en FR/AR/Darija<br/>Symptômes → triage cognitif"]
-        UC12["US-12: Re-ranking de qualité<br/>Cross-encoder sur top-20 chunks"]
+        UC9["US-09: Interroger Llama 3.1 8B<br/>Latence P95 < 150ms<br/>Ollama local"]
+        UC10["US-10: Indexer la base médicale<br/>30 184 points dans Qdrant<br/>(ICD-10 + DMP Maroc + Protocoles MA)"]
+        UC11["US-11: Chatter en FR/AR/Darija<br/>Détection langue → normalisation → RAG"]
+        UC12["US-12: Recherche hybride<br/>Dense + BM25 + RRF fusion"]
+        SAFE["Couche sécurité<br/>141 SAMU / confidence gate / disclaimer"]
+        EVAL["Évaluation RAGAS<br/>ctx_prec=0.84 ctx_rec=0.95"]
         MEM["Mémoire de conversation<br/>Redis TTL 24h"]
     end
 
     PATIENT --> UC11
     UC11 --> UC9 & UC10 & UC12
+    UC12 --> SAFE
     SYS --> UC9
     UC11 --> MEM
-    DOCTOR --> UC10
+    DOCTOR --> UC10 & EVAL
 ```
 
 ---
@@ -823,34 +826,67 @@ sequenceDiagram
     actor Patient
     participant API as FastAPI /chat
     participant REDIS as Redis<br/>(Historique conv.)
-    participant NLP as NLP Preprocessor<br/>(Embedding)
-    participant QDR as Qdrant<br/>(84k chunks)
-    participant CE as Cross-Encoder<br/>(Re-ranking)
-    participant LLM as Mistral 7B<br/>(Ollama local)
+    participant LANG as Détection Langue<br/>+ Normalisation
+    participant NLP as Extracteur Entités<br/>(drug_names, icd10, urgent)
+    participant QDR as Qdrant<br/>(30 184 points — Dense+BM25+RRF)
+    participant MCP as MCP Server<br/>(medicament.ma DMP Maroc)
+    participant SAFE as Couche Sécurité<br/>(pre/post-check)
+    participant LLM as Llama 3.1 8B<br/>(Ollama local — SSE)
 
     Patient->>API: POST /api/v1/chat<br/>{"message": "j'ai du mal à respirer la nuit"}
     Note over API: Vérifie consent_nlp == true
 
     API->>REDIS: GET conv:{patient_uuid} → historique [N derniers messages]
 
-    API->>NLP: embed(message) → vecteur [1536 dims]
-    NLP-->>API: query_vector
+    Note over LANG: Étape 1 — Détection langue
+    API->>LANG: detect_language(message)
+    LANG-->>API: lang="fr" | "ar" | "darija"
+    alt Darija ou Arabe
+        API->>LANG: normalize_to_french(message) via LLM
+        LANG-->>API: message normalisé en français
+    end
 
-    API->>QDR: search(query_vector, top_k=20, collection="medical")<br/>Recherche cosine similarity
-    QDR-->>API: 20 chunks candidats (ICD-10, Vidal, DSM-5)
+    Note over NLP: Étape 2 — Extraction entités
+    API->>NLP: extract_entities(message)
+    NLP-->>API: {drug_names[], icd10_codes[], is_urgent:bool, confidence}
 
-    API->>CE: rerank(query, top_20_chunks)
-    Note over CE: Scoring cross-encoder plus précis<br/>que la similarité cosine seule
-    CE-->>API: Top 5 chunks re-rankés + scores
+    Note over SAFE: Étape 3 — Pré-check sécurité
+    API->>SAFE: pre_generation_check(entities)
+    alt is_urgent == true (URGENCY_PATTERNS détecté)
+        SAFE-->>API: urgency_response "Appelez le 141 (SAMU Maroc)"
+        API-->>Patient: SSE: urgency_message + 141 Maroc
+    else confidence < 0.30
+        SAFE-->>API: refus "Question hors scope médical"
+        API-->>Patient: SSE: refus_message
+    else OK — continuer
+        Note over QDR,MCP: Étape 4 — Recherche parallèle
+        par
+            API->>QDR: hybrid_search(query, limit=5)<br/>Dense(multilingual-e5-base 768d) + BM25 + RRF
+            QDR-->>API: top-5 chunks + rrf_score [ICD-10 / DMP / Protocoles MA]
+        and
+            API->>MCP: fetch_mcp_context(drug_names)<br/>medicament.ma PPV + distributeur
+            MCP-->>API: {ppv_dh, classe_therapeutique, atc_code}
+        end
 
-    API->>LLM: POST /api/generate<br/>{system_prompt, context_chunks, history, query, lang:"fr"}
-    Note over LLM: Génération guidée par le contexte médical<br/>Jamais de diagnostic définitif (disclaimer)
-    LLM-->>API: Réponse médicale (streaming)
+        Note over LLM: Étape 5 — Génération (streaming SSE)
+        API->>LLM: POST /api/generate (stream:true)<br/>{system_prompt_médical, context_chunks, mcp_data, history, query}
+        Note over LLM: Prompt: "Tu es un assistant médical marocain.<br/>Réponds en français. Contexte fourni uniquement."
+        loop Tokens SSE
+            LLM-->>API: token stream
+            API-->>Patient: SSE: data:{token}
+        end
 
-    API->>REDIS: SET conv:{patient_uuid} [history + new_turn] TTL:24h
+        Note over SAFE: Étape 6 — Post-check sécurité
+        API->>SAFE: post_generation_check(answer)
+        alt Réponse contient posologie / dosage
+            SAFE-->>API: inject DOSAGE_DISCLAIMER
+            API-->>Patient: SSE: data:{disclaimer}
+        end
 
-    API-->>Patient: 200 OK<br/>{response, sources[chunk_ids], lang:"fr", latency_ms}
-    Note over API: Latence P95 cible: < 150ms
+        API->>REDIS: SET conv:{patient_uuid} [history + new_turn] TTL:24h
+        API-->>Patient: SSE: data:[DONE]<br/>event: sources {chunk_ids[], lang, latency_ms}
+    end
+    Note over API: Latence P95 cible: < 150ms (retrieval)<br/>Génération: streaming SSE dès 1er token
 ```
 
 ---
@@ -990,7 +1026,7 @@ flowchart TD
     G["📱 Push notification<br/>'Votre bilan mérite attention'"]
     H["Patient ouvre l'app<br/>→ Chatbot RAG démarre"]
     I["Triage cognitif NLP<br/>Questions: durée, intensité, contexte"]
-    J["RAG: Qdrant → Cross-Encoder → Mistral 7B<br/>Réponse contextualisée FR/AR/Darija"]
+    J["RAG: Qdrant hybrid (30 184 pts) → Llama 3.1 8B<br/>Réponse contextualisée FR/AR/Darija + 141 SAMU si urgent"]
     K["Score urgence calculé<br/>urgency_flag: ANOMALIE_IOT_ESSOUFFLEMENT<br/>urgency_score: 0.82"]
     L["XGBoost: Prédiction No-Show<br/>Prob: 0.73 → RISQUE ÉLEVÉ"]
     M["📅 RDV créé automatiquement<br/>10h30 — Dr. Benali<br/>Durée: 20min"]
@@ -1131,32 +1167,46 @@ flowchart LR
 
 ---
 
-### 6.2 Pipeline 2 — RAG & Mistral 7B
+### 6.2 Pipeline 2 — RAG & Llama 3.1 8B
 
 ```mermaid
 flowchart TB
     subgraph CORPUS["Corpus Médical — Indexation Offline"]
-        DOCS["Documents médicaux<br/>ICD-10, DSM-5, Vidal,<br/>Guidelines OMS"]
-        CHUNK["Chunking<br/>512 tokens, overlap 64"]
-        EMBED["Embedding<br/>all-MiniLM-L6-v2<br/>(384 dims)"]
-        INDEX["Index Qdrant<br/>84 000 chunks<br/>HNSW index"]
+        D1["ICD-10 (CIM-10)<br/>12 243 codes diagnostics"]
+        D2["DMP Maroc (medicament.ma)<br/>5 019 médicaments A-Z<br/>PPV dhs + distributeur"]
+        D3["Protocoles marocains<br/>AMO / RAMED / PNLT / PNLS<br/>94 chunks guideline"]
+        CHUNK["Chunking adaptatif<br/>512 tokens, overlap 64"]
+        EMBED["Embedding<br/>multilingual-e5-base<br/>(768 dims — FR/AR/Darija)"]
+        BM25_I["Index BM25<br/>(keyword sparse)"]
+        DENSE_I["Index Dense HNSW<br/>(Qdrant on_disk=True)"]
     end
 
     subgraph QUERY["Requête Patient — Runtime"]
         MSG["Message patient<br/>(FR / AR / Darija)"]
-        QEMBED["Embedding requête<br/>(même modèle)"]
-        SEARCH["Recherche vectorielle<br/>Cosine similarity, top_k=20"]
-        RERANK["Cross-Encoder<br/>BERT fine-tuned médical<br/>Top 5 chunks"]
-        CONTEXT["Contexte assemblé<br/>(5 chunks + historique Redis)"]
-        PROMPT["Prompt Engineering<br/>System prompt médical<br/>+ sécurité (pas de diagnostic)"]
-        MISTRAL_M["Mistral 7B Q4_K_M<br/>(Ollama — 4.1GB RAM)<br/>latence P95 < 150ms"]
-        RESPONSE["Réponse structurée<br/>+ sources + disclaimer"]
+        LANGDET["Détection langue<br/>+ normalisation français"]
+        ENTITY["Extraction entités<br/>drug_names / ICD10 / is_urgent"]
+        QEMBED["Embedding requête<br/>prefix: 'query: ' (E5 asymmetric)"]
+        HYBRIDS["Hybrid Search<br/>Dense + BM25 → RRF fusion<br/>top-5 chunks"]
+        MCPCTX["MCP Context<br/>medicament.ma<br/>ppv_dh + classe ATC"]
+        SAFETY_PRE["Pré-check sécurité<br/>URGENCY → 141 SAMU Maroc<br/>confidence < 0.30 → refuse"]
+        CONTEXT["Contexte assemblé<br/>(5 chunks + MCP + historique Redis)"]
+        PROMPT["Prompt médical marocain<br/>FR-only output<br/>no diagnostic définitif"]
+        LLAMA_M["Llama 3.1 8B<br/>(Ollama — 4.7GB RAM)<br/>streaming SSE"]
+        SAFETY_POST["Post-check<br/>injection DOSAGE_DISCLAIMER<br/>si posologie détectée"]
+        RESPONSE["Réponse SSE<br/>+ sources + disclaimer + lang"]
     end
 
-    DOCS --> CHUNK --> EMBED --> INDEX
-    MSG --> QEMBED --> SEARCH
-    INDEX --> SEARCH --> RERANK --> CONTEXT
-    CONTEXT --> PROMPT --> MISTRAL_M --> RESPONSE
+    D1 & D2 & D3 --> CHUNK --> EMBED
+    EMBED --> DENSE_I
+    CHUNK --> BM25_I
+
+    MSG --> LANGDET --> ENTITY --> QEMBED
+    QEMBED --> HYBRIDS
+    DENSE_I & BM25_I --> HYBRIDS
+    ENTITY --> MCPCTX
+    HYBRIDS & MCPCTX --> SAFETY_PRE
+    SAFETY_PRE -->|"OK"| CONTEXT
+    CONTEXT --> PROMPT --> LLAMA_M --> SAFETY_POST --> RESPONSE
 ```
 
 ---
@@ -1368,7 +1418,7 @@ flowchart TB
 | **Flux Métier** | Consultation augmentée | 5.2 |
 | **Flux Métier** | MLOps réentraînement | 5.3 |
 | **Pipelines IA** | IoT + LSTM détail | 6.1 |
-| **Pipelines IA** | RAG + Mistral détail | 6.2 |
+| **Pipelines IA** | RAG + Llama 3.1 8B détail | 6.2 |
 | **Pipelines IA** | XGBoost No-Show détail | 6.3 |
 | **Pipelines IA** | Intégration Salesforce | 6.4 |
 | **Sécurité** | Architecture sécurité couches | 7.1 |

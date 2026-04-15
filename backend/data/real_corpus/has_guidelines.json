@@ -1,0 +1,942 @@
+[
+  {
+    "text": "Guide clinique Maroc — Hypertension artérielle — Protocole thérapeutique Maroc (AMO): L'HTA touche 33% des adultes marocains > 45 ans. Objectif PA < 140/90 mmHg. Traitement de 1re ligne disponible au Maroc: IEC (captopril, lisinopril, ramipril), ARA2 (losartan, valsartan), inhibiteurs calciques (amlodipine, nifédipine), diurétiques (hydrochlorothiazide). Prise en charge dans le cadre de l'AMO/RAMED. Urgence hypertensive: appeler le 141 (SAMU Maroc) ou le 15.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO) — L'HTA touche 33% des adultes marocains > 45 ans.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO) — Traitement de 1re ligne disponible au Maroc: IEC (captopril, lisinopril, ramipril), ARA2 (losartan, valsartan), inhibiteurs calciques (amlodipine, nifédipine), diurétiques (hydrochlorothiazide).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO) — Prise en charge dans le cadre de l'AMO/RAMED.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO) — Urgence hypertensive: appeler le 141 (SAMU Maroc) ou le 15.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Hypertension artérielle — Protocole thérapeutique Maroc (AMO)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Diabète de type 2 — Protocole AMO Maroc: Le diabète affecte 10,6% de la population adulte marocaine (IDF 2021). Médicaments remboursés par l'AMO: metformine (1re intention), glibenclamide, glimepiride, insuline humaine NPH, insuline rapide. Objectif HbA1c < 7%. Surveillance: glycémie capillaire, HbA1c tous les 3 mois, fond d'œil annuel. Centres de diabétologie disponibles dans tous les CHU marocains.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Diabète de type 2 — Protocole AMO Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Diabète de type 2 — Protocole AMO Maroc — Le diabète affecte 10,6% de la population adulte marocaine (IDF 2021).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Diabète de type 2 — Protocole AMO Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Diabète de type 2 — Protocole AMO Maroc — Médicaments remboursés par l'AMO: metformine (1re intention), glibenclamide, glimepiride, insuline humaine NPH, insuline rapide.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Diabète de type 2 — Protocole AMO Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Diabète de type 2 — Protocole AMO Maroc — Surveillance: glycémie capillaire, HbA1c tous les 3 mois, fond d'œil annuel.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Diabète de type 2 — Protocole AMO Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Diabète de type 2 — Protocole AMO Maroc — Centres de diabétologie disponibles dans tous les CHU marocains.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Diabète de type 2 — Protocole AMO Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Tuberculose — Guide national de prise en charge Maroc: Le Maroc est pays à incidence intermédiaire (82/100 000). Programme National de Lutte contre la Tuberculose (PNLT). Traitement GRATUIT au Maroc (dispensaires antituberculeux). Schéma standard: 2RHZE/4RH (rifampicine, isoniazide, pyrazinamide, éthambutol). Durée: 6 mois minimum. Respect de l'observance OBLIGATOIRE (DOT — traitement directement observé). En cas de toux > 3 semaines: consultation obligatoire, crachat BK.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — Le Maroc est pays à incidence intermédiaire (82/100 000).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — Programme National de Lutte contre la Tuberculose (PNLT).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — Traitement GRATUIT au Maroc (dispensaires antituberculeux).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — Schéma standard: 2RHZE/4RH (rifampicine, isoniazide, pyrazinamide, éthambutol).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — Respect de l'observance OBLIGATOIRE (DOT — traitement directement observé).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Tuberculose — Guide national de prise en charge Maroc — En cas de toux > 3 semaines: consultation obligatoire, crachat BK.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Tuberculose — Guide national de prise en charge Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Urgences médicales au Maroc — Numéros et procédures: Numéros d'urgence au Maroc: 141 = SAMU (urgences médicales), 150 = Pompiers/Secours, 177 = Gendarmerie Royale, 19 = Police. SAMU disponible 24h/24 dans les grandes villes (Casablanca, Rabat, Marrakech, Fès, Agadir). Hôpitaux universitaires (CHU): Ibn Rochd (Casablanca), Ibn Sina (Rabat), Mohammed VI (Marrakech), Hassan II (Fès). Urgence cardiaque: appeler le 141 immédiatement.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Urgences médicales au Maroc — Numéros et procédures",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Urgences médicales au Maroc — Numéros et procédures — Numéros d'urgence au Maroc: 141 = SAMU (urgences médicales), 150 = Pompiers/Secours, 177 = Gendarmerie Royale, 19 = Police.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Urgences médicales au Maroc — Numéros et procédures",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Urgences médicales au Maroc — Numéros et procédures — SAMU disponible 24h/24 dans les grandes villes (Casablanca, Rabat, Marrakech, Fès, Agadir).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Urgences médicales au Maroc — Numéros et procédures",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Urgences médicales au Maroc — Numéros et procédures — Hôpitaux universitaires (CHU): Ibn Rochd (Casablanca), Ibn Sina (Rabat), Mohammed VI (Marrakech), Hassan II (Fès).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Urgences médicales au Maroc — Numéros et procédures",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Urgences médicales au Maroc — Numéros et procédures — Urgence cardiaque: appeler le 141 immédiatement.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Urgences médicales au Maroc — Numéros et procédures",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Régime d'assurance maladie au Maroc — AMO/RAMED: Assurance Maladie Obligatoire (AMO): pour salariés secteur public (CNOPS) et privé (CNSS). RAMED (Régime d'Assistance Médicale): pour population démunie, soins gratuits dans établissements publics. Médicaments remboursables: liste publiée par le Ministère de la Santé, prix plafonné (PPV). Taux de remboursement AMO: 70-90% selon médicament et spécialité. Pour connaître si un médicament est remboursé: consulter medicament.ma ou votre médecin traitant.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Régime d'assurance maladie au Maroc — AMO/RAMED — Assurance Maladie Obligatoire (AMO): pour salariés secteur public (CNOPS) et privé (CNSS).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Régime d'assurance maladie au Maroc — AMO/RAMED — RAMED (Régime d'Assistance Médicale): pour population démunie, soins gratuits dans établissements publics.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Régime d'assurance maladie au Maroc — AMO/RAMED — Médicaments remboursables: liste publiée par le Ministère de la Santé, prix plafonné (PPV).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Régime d'assurance maladie au Maroc — AMO/RAMED — Taux de remboursement AMO: 70-90% selon médicament et spécialité.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Régime d'assurance maladie au Maroc — AMO/RAMED — Pour connaître si un médicament est remboursé: consulter medicament.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Régime d'assurance maladie au Maroc — AMO/RAMED",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Paludisme — Prévention et traitement Maroc: Le Maroc est officiellement certifié exempt de paludisme autochtone depuis 2010 (OMS). Risque uniquement pour voyageurs en zone d'endémie (Afrique subsaharienne, Asie). Prophylaxie pour voyageurs: chloroquine (zones résistance faible) ou atovaquone-proguanil/méfloquine (zones haute résistance). Symptômes à surveiller: fièvre, frissons, maux de tête au retour de voyage. Diagnostic: test de diagnostic rapide (TDR) disponible dans les hôpitaux marocains.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Paludisme — Prévention et traitement Maroc — Le Maroc est officiellement certifié exempt de paludisme autochtone depuis 2010 (OMS).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Paludisme — Prévention et traitement Maroc — Risque uniquement pour voyageurs en zone d'endémie (Afrique subsaharienne, Asie).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Paludisme — Prévention et traitement Maroc — Prophylaxie pour voyageurs: chloroquine (zones résistance faible) ou atovaquone-proguanil/méfloquine (zones haute résistance).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Paludisme — Prévention et traitement Maroc — Symptômes à surveiller: fièvre, frissons, maux de tête au retour de voyage.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Paludisme — Prévention et traitement Maroc — Diagnostic: test de diagnostic rapide (TDR) disponible dans les hôpitaux marocains.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Paludisme — Prévention et traitement Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Santé maternelle et néonatale — Maroc: Objectifs Plan Santé Maroc 2025: réduire mortalité maternelle à < 42/100 000. Consultations prénatales: au moins 4 visites recommandées (semaines 12, 20, 28, 36). Supplémentation systématique: acide folique 0,4mg/j avant conception et T1, fer 30-60mg/j T2-T3, calcium si carence. Accouchement: favoriser maternités publiques (gratuit sous RAMED). Allaitement maternel recommandé jusqu'à 6 mois exclusif, 2 ans total.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Santé maternelle et néonatale — Maroc — Objectifs Plan Santé Maroc 2025: réduire mortalité maternelle à < 42/100 000.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Santé maternelle et néonatale — Maroc — Consultations prénatales: au moins 4 visites recommandées (semaines 12, 20, 28, 36).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Santé maternelle et néonatale — Maroc — Supplémentation systématique: acide folique 0,4mg/j avant conception et T1, fer 30-60mg/j T2-T3, calcium si carence.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Santé maternelle et néonatale — Maroc — Accouchement: favoriser maternités publiques (gratuit sous RAMED).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Santé maternelle et néonatale — Maroc — Allaitement maternel recommandé jusqu'à 6 mois exclusif, 2 ans total.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé maternelle et néonatale — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Vaccination — Programme National d'Immunisation Maroc (PNI): Vaccinations GRATUITES dans centres de santé publics marocains. Calendrier vaccinal Maroc 2024: BCG (naissance), Hépatite B (0-1-6 mois), Penta DTC-HiB-HépB (2-3-4 mois), Polio IPV, Pneumocoque PCV13, ROR (9 mois et 15-18 mois), Méningocoque (9 mois). Rappels: dTPolio adulte (tous les 10 ans). Grippe saisonnière: recommandée pour > 65 ans, femmes enceintes, patients chroniques.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Vaccination — Programme National d'Immunisation Maroc (PNI)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Vaccination — Programme National d'Immunisation Maroc (PNI) — Vaccinations GRATUITES dans centres de santé publics marocains.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Vaccination — Programme National d'Immunisation Maroc (PNI)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Vaccination — Programme National d'Immunisation Maroc (PNI) — Calendrier vaccinal Maroc 2024: BCG (naissance), Hépatite B (0-1-6 mois), Penta DTC-HiB-HépB (2-3-4 mois), Polio IPV, Pneumocoque PCV13, ROR (9 mois et 15-18 mois), Méningocoque (9 mois).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Vaccination — Programme National d'Immunisation Maroc (PNI)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Vaccination — Programme National d'Immunisation Maroc (PNI) — Rappels: dTPolio adulte (tous les 10 ans).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Vaccination — Programme National d'Immunisation Maroc (PNI)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Vaccination — Programme National d'Immunisation Maroc (PNI) — Grippe saisonnière: recommandée pour > 65 ans, femmes enceintes, patients chroniques.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Vaccination — Programme National d'Immunisation Maroc (PNI)",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Maladies cardiovasculaires — Contexte marocain: Les maladies cardiovasculaires sont la 1re cause de mortalité au Maroc (34%). Facteurs de risque prioritaires au Maroc: HTA (33%), tabagisme, dyslipidémie, diabète, obésité. Statines disponibles et remboursées AMO: simvastatine, atorvastatine. Aspirine 75-100mg/j en prévention secondaire. Réhabilitation cardiaque: disponible dans CHU, insuffisante en zones rurales. IDM: appeler 141 immédiatement. Thrombolyse disponible dans CHU si pas de cathlab.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Les maladies cardiovasculaires sont la 1re cause de mortalité au Maroc (34%).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Facteurs de risque prioritaires au Maroc: HTA (33%), tabagisme, dyslipidémie, diabète, obésité.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Statines disponibles et remboursées AMO: simvastatine, atorvastatine.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Aspirine 75-100mg/j en prévention secondaire.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Réhabilitation cardiaque: disponible dans CHU, insuffisante en zones rurales.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Maladies cardiovasculaires — Contexte marocain — Thrombolyse disponible dans CHU si pas de cathlab.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Maladies cardiovasculaires — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Santé mentale — Resources disponibles au Maroc: Prévalence troubles mentaux au Maroc: 48,9% de la population a un trouble mental courant (OMS). Dépression: traitement de 1re ligne disponible AMO: antidépresseurs ISRS (fluoxétine, sertraline). Ligne d'écoute psychologique: disponible dans certaines villes. Structures spécialisées: CHU Ibn Rushd Casablanca (psychiatrie), CHU Rabat. Stigmatisation: principal obstacle au traitement au Maroc. Crise suicidaire: appeler le 141 ou se rendre aux urgences les plus proches.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Prévalence troubles mentaux au Maroc: 48,9% de la population a un trouble mental courant (OMS).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Dépression: traitement de 1re ligne disponible AMO: antidépresseurs ISRS (fluoxétine, sertraline).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Ligne d'écoute psychologique: disponible dans certaines villes.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Structures spécialisées: CHU Ibn Rushd Casablanca (psychiatrie), CHU Rabat.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Stigmatisation: principal obstacle au traitement au Maroc.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Santé mentale — Resources disponibles au Maroc — Crise suicidaire: appeler le 141 ou se rendre aux urgences les plus proches.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Santé mentale — Resources disponibles au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Prescription et automédication — Contexte marocain: Au Maroc, de nombreux médicaments vendus sans ordonnance en pratique. Risque majeur: antibiotiques (amoxicilline, cotrimoxazole) achetés sans prescription = résistances. Médicaments nécessitant ordonnance obligatoire: psychotropes (liste A et B), opioïdes (ordonnance sécurisée), anticancéreux. Prix des médicaments: PPV plafonné par l'État pour médicaments essentiels. Médicaments génériques: mêmes effets que princeps, prix réduit de 30-50%. Pharmacies de garde: consultez votre mairie ou l'application locale.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Au Maroc, de nombreux médicaments vendus sans ordonnance en pratique.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Risque majeur: antibiotiques (amoxicilline, cotrimoxazole) achetés sans prescription = résistances.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Médicaments nécessitant ordonnance obligatoire: psychotropes (liste A et B), opioïdes (ordonnance sécurisée), anticancéreux.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Prix des médicaments: PPV plafonné par l'État pour médicaments essentiels.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Médicaments génériques: mêmes effets que princeps, prix réduit de 30-50%.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Prescription et automédication — Contexte marocain — Pharmacies de garde: consultez votre mairie ou l'application locale.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Prescription et automédication — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Cancer — Dépistage et accès aux soins au Maroc: Plan National de Prévention et Contrôle du Cancer (PNPCC) 2020-2029. Cancers les plus fréquents au Maroc: sein (1re chez femme), poumon (1er chez homme), col utérin, colorectal, lymphome. Dépistage cancer du sein: mammographie gratuite dans centres de santé référents. Dépistage col utérin: frottis/IVA dans centres de santé. Centres oncologie: INO Rabat, CAC Casablanca, centres régionaux. Médicaments anticancéreux: remboursement AMO progressif selon liste nationale.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Plan National de Prévention et Contrôle du Cancer (PNPCC) 2020-2029.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Cancers les plus fréquents au Maroc: sein (1re chez femme), poumon (1er chez homme), col utérin, colorectal, lymphome.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Dépistage cancer du sein: mammographie gratuite dans centres de santé référents.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Dépistage col utérin: frottis/IVA dans centres de santé.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Centres oncologie: INO Rabat, CAC Casablanca, centres régionaux.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Cancer — Dépistage et accès aux soins au Maroc — Médicaments anticancéreux: remboursement AMO progressif selon liste nationale.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Cancer — Dépistage et accès aux soins au Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Nutrition et malnutrition — Maroc: Double fardeau nutritionnel au Maroc: obésité (26,8% adultes) ET malnutrition en zones rurales. Carence en fer: fréquente chez femmes en âge de procréer et enfants < 5 ans. Supplémentation recommandée: fer chez femmes enceintes, vitamine D chez nourrissons. Allaitement maternel exclusif jusqu'à 6 mois. Régime méditerranéen/marocain traditionnel: protecteur si maintenu (huile d'argan, légumineuses). Obésité: facteur de risque HTA, diabète, cancer — prise en charge multidisciplinaire.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Double fardeau nutritionnel au Maroc: obésité (26,8% adultes) ET malnutrition en zones rurales.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Carence en fer: fréquente chez femmes en âge de procréer et enfants < 5 ans.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Supplémentation recommandée: fer chez femmes enceintes, vitamine D chez nourrissons.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Allaitement maternel exclusif jusqu'à 6 mois.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Régime méditerranéen/marocain traditionnel: protecteur si maintenu (huile d'argan, légumineuses).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Nutrition et malnutrition — Maroc — Obésité: facteur de risque HTA, diabète, cancer — prise en charge multidisciplinaire.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Nutrition et malnutrition — Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — SIDA/VIH — Programme national Maroc: Prévalence VIH au Maroc: 0,1% (épidémie concentrée). Traitement antirétroviral (ARV): GRATUIT au Maroc via Programme National (PNLS). Dépistage volontaire et confidentiel: centres de dépistage anonyme dans grandes villes. Prophylaxie pré-exposition (PrEP): disponible dans certains centres référents. ARV de 1re ligne disponibles: TDF+3TC+EFV (ligne fixe). PTME (prévention transmission mère-enfant): prise en charge intégrée en maternités.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — Prévalence VIH au Maroc: 0,1% (épidémie concentrée).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — Traitement antirétroviral (ARV): GRATUIT au Maroc via Programme National (PNLS).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — Dépistage volontaire et confidentiel: centres de dépistage anonyme dans grandes villes.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — Prophylaxie pré-exposition (PrEP): disponible dans certains centres référents.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — ARV de 1re ligne disponibles: TDF+3TC+EFV (ligne fixe).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "SIDA/VIH — Programme national Maroc — PTME (prévention transmission mère-enfant): prise en charge intégrée en maternités.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "SIDA/VIH — Programme national Maroc",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  },
+  {
+    "text": "Guide clinique Maroc — Antibiothérapie responsable — Contexte marocain: Résistance aux antibiotiques: problème majeur de santé publique au Maroc. JAMAIS d'antibiotiques pour: rhinopharyngite, grippe, bronchite virale (viral = pas d'antibiotiques). Prescription obligatoire recommandée (pas toujours respectée en pratique). Antibiotiques de référence au Maroc pour infections courantes: amoxicilline (angine TDR+), cotrimoxazole ou amoxicilline (IU simple), amoxicilline (pneumonie communautaire). Durée de traitement: respecter strictement la durée prescrite. Ne jamais partager ses antibiotiques ni conserver pour une prochaine fois.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "protocole_maroc",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — Résistance aux antibiotiques: problème majeur de santé publique au Maroc.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_1",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — JAMAIS d'antibiotiques pour: rhinopharyngite, grippe, bronchite virale (viral = pas d'antibiotiques).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_2",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — Prescription obligatoire recommandée (pas toujours respectée en pratique).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_3",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — Antibiotiques de référence au Maroc pour infections courantes: amoxicilline (angine TDR+), cotrimoxazole ou amoxicilline (IU simple), amoxicilline (pneumonie communautaire).",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_4",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — Durée de traitement: respecter strictement la durée prescrite.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_5",
+    "country": "MA"
+  },
+  {
+    "text": "Antibiothérapie responsable — Contexte marocain — Ne jamais partager ses antibiotiques ni conserver pour une prochaine fois.",
+    "source": "ministere_sante_maroc",
+    "type": "guideline",
+    "name": "Antibiothérapie responsable — Contexte marocain",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "point_6",
+    "country": "MA"
+  }
+]

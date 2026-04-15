@@ -1,0 +1,1442 @@
+[
+  {
+    "text": "Pharmacologie clinique: IEC. Mecanisme: IEC: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Molecules representatives: Ramipril, Lisinopril",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: IEC. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IEC",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Mecanisme: ARA2: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Molecules representatives: Losartan, Valsartan",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: ARA2. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ARA2",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Mecanisme: Bêtabloquants: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Molecules representatives: Bisoprolol, Carvédilol",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Bêtabloquants. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Bêtabloquants",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Mecanisme: Diurétiques de l'anse: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Molecules representatives: Furosémide, Bumétanide",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques de l'anse. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques de l'anse",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Mecanisme: Diurétiques thiazidiques: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Molecules representatives: Hydrochlorothiazide, Indapamide",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Diurétiques thiazidiques. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Diurétiques thiazidiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Mecanisme: Anticalciques: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Molecules representatives: Amlodipine, Diltiazem",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticalciques. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticalciques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Mecanisme: Statines: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Molecules representatives: Atorvastatine, Rosuvastatine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Statines. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Statines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Mecanisme: Fibrates: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Molecules representatives: Fénofibrate, Bézafibrate",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Fibrates. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fibrates",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Mecanisme: Anticoagulants AVK: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Molecules representatives: Warfarine, Acénocoumarol",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Anticoagulants AVK. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Anticoagulants AVK",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Mecanisme: AOD: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Molecules representatives: Apixaban, Rivaroxaban",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: AOD. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "AOD",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Mecanisme: Antidiabétiques biguanides: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Molecules representatives: Metformine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Antidiabétiques biguanides. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antidiabétiques biguanides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Mecanisme: Insulines basales: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Molecules representatives: Glargine, Détémir",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Insulines basales. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Insulines basales",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Mecanisme: ISRS: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Molecules representatives: Sertraline, Escitalopram",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: ISRS. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "ISRS",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Mecanisme: IRSN: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Molecules representatives: Venlafaxine, Duloxétine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: IRSN. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IRSN",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Mecanisme: Antipsychotiques atypiques: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Molecules representatives: Olanzapine, Quétiapine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Antipsychotiques atypiques. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Antipsychotiques atypiques",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Mecanisme: Pénicillines: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Molecules representatives: Amoxicilline, Pipéracilline",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Pénicillines. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Pénicillines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Mecanisme: Céphalosporines: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Molecules representatives: Céftriaxone, Céfixime",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Céphalosporines. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Céphalosporines",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Mecanisme: Macrolides: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Molecules representatives: Azithromycine, Clarithromycine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Macrolides. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Macrolides",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Mecanisme: Fluoroquinolones: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Molecules representatives: Ciprofloxacine, Lévofloxacine",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: Fluoroquinolones. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "Fluoroquinolones",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Mecanisme: IPP: cible moléculaire principale et effet pharmacodynamique attendu.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "mecanisme"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Molecules representatives: Oméprazole, Pantoprazole",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "molecules_representatives"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Pk comparative: Comparaison biodisponibilité, demi-vie et variabilité inter-individuelle.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "pk_comparative"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Ajustements ir: Adapter la dose en insuffisance rénale selon DFG et risque d'accumulation.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ir"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Ajustements ih: Adapter la posologie en atteinte hépatique selon Child-Pugh et tolérance.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "ajustements_ih"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Monitorage: Surveillance clinique et biologique orientée par la classe.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "monitorage"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Risques cles: Identifier EI graves, interactions critiques et signaux d'alerte.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "risques_cles"
+  },
+  {
+    "text": "Pharmacologie clinique: IPP. Points pratiques: Messages de bon usage, observance et éducation thérapeutique.",
+    "source": "clinical_pharmacology",
+    "type": "drug_class",
+    "name": "IPP",
+    "icd10_codes": [],
+    "language": "fr",
+    "section": "points_pratiques"
+  }
+]

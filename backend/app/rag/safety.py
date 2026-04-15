@@ -33,14 +33,14 @@ _DOSAGE_RE = re.compile("|".join(_DOSAGE_PATTERNS), re.IGNORECASE)
 
 URGENCY_MESSAGE = (
     "URGENCE: Les symptomes decrits necessitent une prise en charge immediate. "
-    "Appelez le 15 (SAMU) ou le 141 immediatement. "
+    "Appelez le 141 (SAMU Maroc) ou le 15 (urgences) immediatement. "
     "Ne prenez aucun medicament sans avis medical dans cette situation."
 )
 
 LOW_CONFIDENCE_MESSAGE = (
     "Je ne dispose pas d'informations suffisamment fiables pour repondre "
     "a cette question. Veuillez consulter votre medecin traitant ou appeler "
-    "le 15 en cas d'urgence."
+    "le 141 (SAMU Maroc) en cas d'urgence."
 )
 
 DOSAGE_DISCLAIMER = (
