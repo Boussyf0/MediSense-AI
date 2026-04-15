@@ -22,31 +22,54 @@ from app.mcp.icd11_server import search_disease
 
 @dataclass
 class CircuitBreaker:
-    """Simple circuit breaker for external API calls."""
+    """
+    Circuit breaker for external API calls.
+
+    States:
+      CLOSED    — normal, all calls pass through
+      OPEN      — too many failures, all calls skipped for cooldown_seconds
+      HALF-OPEN — after cooldown, exactly ONE probe request is allowed;
+                  subsequent calls are blocked until the probe resolves.
+                  Success → CLOSED. Failure → OPEN (resets cooldown).
+    """
     failure_threshold: int = 5
     cooldown_seconds: float = 60.0
     _failure_count: int = field(default=0, init=False)
     _last_failure_time: float = field(default=0.0, init=False)
     _state: str = field(default="closed", init=False)  # closed | open | half-open
+    _probe_in_flight: bool = field(default=False, init=False)
 
     @property
     def is_open(self) -> bool:
         if self._state == "open":
             if time.monotonic() - self._last_failure_time >= self.cooldown_seconds:
+                # Transition to half-open and allow exactly one probe
                 self._state = "half-open"
+                self._probe_in_flight = True
                 return False
             return True
+        if self._state == "half-open":
+            # Block all concurrent callers while the probe is in flight
+            return self._probe_in_flight
         return False
 
     def record_success(self) -> None:
         self._failure_count = 0
         self._state = "closed"
+        self._probe_in_flight = False
 
     def record_failure(self) -> None:
-        self._failure_count += 1
         self._last_failure_time = time.monotonic()
+        if self._state == "half-open":
+            # Probe failed — re-open immediately and reset cooldown
+            self._failure_count = self.failure_threshold
+            self._state = "open"
+            self._probe_in_flight = False
+            return
+        self._failure_count += 1
         if self._failure_count >= self.failure_threshold:
             self._state = "open"
+            self._probe_in_flight = False
 
 
 # Global circuit breakers (one per MCP server)

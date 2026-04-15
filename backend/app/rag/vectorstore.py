@@ -25,6 +25,7 @@ from qdrant_client.models import (
     NamedVector,
     NamedSparseVector,
     SparseVector,
+    Document,
     Filter,
     FieldCondition,
     MatchValue,
@@ -156,7 +157,11 @@ def hybrid_search(
 
     search_filter = Filter(must=conditions) if conditions else None
 
-    # Hybrid search using Qdrant's query API with RRF fusion
+    # Hybrid search using Qdrant's query API with RRF fusion.
+    # Dense path: embed the query and search by cosine similarity.
+    # BM25 path: pass the raw query text so Qdrant tokenises it with the same
+    # analyser used at index time — an empty SparseVector would score 0 on every
+    # document and make BM25 a no-op, reducing the hybrid to dense-only.
     results = client.query_points(
         collection_name=COLLECTION_NAME,
         prefetch=[
@@ -167,10 +172,7 @@ def hybrid_search(
                 filter=search_filter,
             ),
             Prefetch(
-                query=models.SparseVector(
-                    indices=[],  # Qdrant handles BM25 tokenization internally
-                    values=[],
-                ),
+                query=models.Document(text=query_text),
                 using="bm25",
                 limit=_PREFETCH_LIMIT,
                 filter=search_filter,

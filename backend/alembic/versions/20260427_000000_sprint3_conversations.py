@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
         sa.Column("patient_id", UUID(as_uuid=True), sa.ForeignKey("secure.patients.id", ondelete="CASCADE"), nullable=False, index=True),
         sa.Column("title", sa.String(255), nullable=True),
-        sa.Column("language", sa.String(10), server_default="fr"),
+        sa.Column("language", sa.String(10), server_default=sa.text("'fr'")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )

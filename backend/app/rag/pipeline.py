@@ -97,7 +97,7 @@ async def run(
     )
 
     # [7] Safety post-check
-    reply = post_generation_check(raw_reply, safety.disclaimers)
+    reply = post_generation_check(raw_reply, safety.disclaimers, patient_allergies)
 
     # Format sources for response
     sources = [
@@ -184,7 +184,7 @@ async def run_stream(
         yield {"type": "token", "value": token}
 
     # [7] Post-check — append disclaimers as final tokens
-    checked = post_generation_check(full_response, safety.disclaimers)
+    checked = post_generation_check(full_response, safety.disclaimers, patient_allergies)
     extra = checked[len(full_response):]
     if extra:
         yield {"type": "token", "value": extra}

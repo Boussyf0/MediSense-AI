@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """
-Medical corpus ingestion script — indexes ~84k chunks into Qdrant.
+Medical corpus ingestion script — indexes medical chunks into Qdrant.
 
-Data sources (all open & legal):
-  1. WHO ICD-10 codes (disease classification)
-  2. ANSM open drug data (French drug database)
-  3. HAS clinical guidelines (simulated from public summaries)
-  4. PubMed Open Access abstracts (French medical subset)
+DEVELOPMENT MODE (current):
+  Generates a representative but minimal corpus from embedded seed data.
+  Sources: ICD-10 (curated), ANSM drugs (8 entries), HAS guidelines (4 documents).
+  Expected chunk count: ~500-1000 (NOT the 84k production target).
+  Use this to validate the pipeline end-to-end without downloading real data.
+
+PRODUCTION MODE (to implement):
+  Replace each generate_*() function with a real fetcher:
+  1. WHO ICD-10 XML   → https://icd.who.int/browse10/Content/statichtml/ICD10Volume2_en_2019.pdf
+  2. ANSM Open Data   → https://base-donnees-publique.medicaments.gouv.fr/telechargement.php
+  3. HAS guidelines   → https://www.has-sante.fr (public PDFs, use pdfplumber)
+  4. PubMed OA        → https://pubmed.ncbi.nlm.nih.gov/download/ (baseline ~36M abstracts)
+  Production target: ~84 000 chunks (ICD-10: 18k, ANSM: 45k, HAS: 15k, PubMed: 6k)
 
 Usage:
   cd backend
   python scripts/ingest_medical_corpus.py
-
-For development/demo: generates synthetic but realistic medical data
-that mirrors the structure of real sources. In production, replace the
-generators with actual API fetchers.
 """
 import json
 import uuid
@@ -344,16 +348,21 @@ def _deterministic_uuid(text: str) -> str:
 
 def _compute_bm25_sparse(text: str) -> tuple[list[int], list[float]]:
     """
-    Compute a simple BM25-like sparse vector.
+    Compute a deterministic sparse TF vector for BM25 indexing.
 
-    Uses token hashing for sparse indices and TF for values.
-    Qdrant's built-in BM25 handles this better in production,
-    but we need explicit sparse vectors for the current API.
+    Uses hashlib.md5 (not Python's built-in hash()) so the mapping is stable
+    across runs regardless of PYTHONHASHSEED. The same token always maps to
+    the same index, which is required for correct BM25 retrieval at query time.
+
+    Note: at query time, vectorstore.py passes the raw text via models.Document
+    so Qdrant tokenises it with its own analyser. This sparse vector is only
+    used during ingestion to populate the sparse index.
     """
     tokens = text.lower().split()
     token_freq: dict[int, float] = {}
     for token in tokens:
-        idx = hash(token) % 100_000  # hash to sparse index space
+        # md5 is deterministic across processes and platforms
+        idx = int(hashlib.md5(token.encode()).hexdigest(), 16) % 100_000
         token_freq[idx] = token_freq.get(idx, 0) + 1.0
 
     indices = list(token_freq.keys())
