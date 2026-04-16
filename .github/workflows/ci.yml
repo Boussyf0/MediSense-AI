@@ -44,7 +44,6 @@ jobs:
       POSTGRES_PASSWORD: medisense_test_pw
       REDIS_HOST: 127.0.0.1
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ci_dummy_redis_pw
       JWT_SECRET_KEY: ci_dummy_secret
       PGCRYPTO_KEY: ci_dummy_pgcrypto_key
 
