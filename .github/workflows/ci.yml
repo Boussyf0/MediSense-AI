@@ -69,5 +69,11 @@ jobs:
           cd backend
           pytest -q
 
+      - name: Free disk space before Docker build
+        run: |
+          docker system prune -af || true
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache || true
+          df -h
+
       - name: Docker build smoke check
-        run: docker build -t medisense-backend-ci ./backend
+        run: docker build --build-arg PIP_REQUIREMENTS=requirements-ci.txt -t medisense-backend-ci ./backend

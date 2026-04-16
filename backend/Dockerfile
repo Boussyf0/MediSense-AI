@@ -11,9 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-# Layer is cached by Docker as long as requirements.txt doesn't change
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Layer is cached by Docker as long as requirements*.txt doesn't change
+ARG PIP_REQUIREMENTS=requirements.txt
+COPY requirements*.txt ./
+RUN test -f "${PIP_REQUIREMENTS}" && pip install --no-cache-dir -r "${PIP_REQUIREMENTS}"
 
 # Download Swagger UI assets locally (avoid CDN dependency at runtime)
 ARG SWAGGER_UI_VERSION=5.11.0
