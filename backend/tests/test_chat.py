@@ -62,7 +62,7 @@ class TestChatEndpoint:
     async def test_chat_requires_auth(self, client):
         """Chat endpoint requires JWT authentication."""
         response = await client.post("/api/v1/chat", json={"message": "test"})
-        assert response.status_code == 401
+        assert response.status_code == 403  # HTTPBearer: missing token -> 403
 
     @pytest.mark.asyncio
     async def test_chat_empty_message_rejected(self, client):
@@ -89,19 +89,19 @@ class TestConversationEndpoints:
     @pytest.mark.asyncio
     async def test_list_conversations_requires_auth(self, client):
         response = await client.get("/api/v1/chat")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_get_conversation_requires_auth(self, client):
         fake_id = str(uuid.uuid4())
         response = await client.get(f"/api/v1/chat/{fake_id}")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_delete_conversation_requires_auth(self, client):
         fake_id = str(uuid.uuid4())
         response = await client.delete(f"/api/v1/chat/{fake_id}")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 # ── MCP Circuit Breaker Tests ────────────────────────────

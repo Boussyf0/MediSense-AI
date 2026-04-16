@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - sprint/**
+      - release/**
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: medisense_db
+          POSTGRES_USER: medisense_user
+          POSTGRES_PASSWORD: medisense_test_pw
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medisense_user -d medisense_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: medisense_db
+      POSTGRES_USER: medisense_user
+      POSTGRES_PASSWORD: medisense_test_pw
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ci_dummy_redis_pw
+      JWT_SECRET_KEY: ci_dummy_secret
+      PGCRYPTO_KEY: ci_dummy_pgcrypto_key
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Compile Python sources
+        run: python -m compileall -q backend/app backend/scripts
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest -q
+
+      - name: Docker build smoke check
+        run: docker build -t medisense-backend-ci ./backend

@@ -109,8 +109,33 @@ def _parse_search_result(html: str, query: str) -> dict[str, Any] | None:
     return None
 
 
-def _format_drug(row: list[str], query: str) -> dict[str, Any]:
-    """Normalize a table row into a consistent drug schema."""
+def _format_drug(raw: list[str] | dict[str, Any], query: str | None = None) -> dict[str, Any]:
+    """
+    Normalize drug payloads into a consistent schema.
+
+    Supports:
+      - medicament.ma parsed rows (list[str])
+      - legacy/compat dict payloads used by unit tests
+    """
+    query = query or ""
+
+    if isinstance(raw, dict):
+        name = raw.get("denomination") or raw.get("name") or query
+        substance = (
+            raw.get("substance")
+            or raw.get("substanceActive")
+            or raw.get("substance_active")
+            or ""
+        )
+        indications = raw.get("indicationsTherapeutiques") or raw.get("indications") or ""
+        return {
+            "name": name,
+            "substance": substance,
+            "indications": indications,
+            "source": raw.get("source", "ANSM (open-medicaments.fr)"),
+        }
+
+    row = raw
     name = row[0] if len(row) > 0 else query
     presentation = row[1] if len(row) > 1 else ""
     ppv = row[2] if len(row) > 2 else ""
