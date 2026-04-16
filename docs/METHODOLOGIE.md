@@ -22,6 +22,7 @@
 9. [Gestion des Risques](#9-gestion-des-risques)
 10. [Environnement & Outils de Travail](#10-environnement--outils-de-travail)
 11. [Processus Git & CI/CD](#11-processus-git--cicd)
+12. [Plan d'Implémentation — Objectif 10/10](#12-plan-dimplémentation--objectif-1010)
 
 ---
 
@@ -946,13 +947,13 @@ flowchart LR
 
     subgraph HOW["Comment ?"]
         B1["Scrum<br/>2 semaines/sprint"]
-        B2["38 User Stories<br/>251 Story Points"]
+        B2["52 User Stories<br/>329 Story Points"]
         B3["Git branch/sprint<br/>+ PR + CI/CD"]
         B4["DoD stricte<br/>pytest ≥ 80%"]
     end
 
     subgraph WHAT["Résultat attendu"]
-        C1["8 sprints livrés<br/>mai 2026"]
+        C1["10 sprints livrés<br/>août 2026"]
         C2["Plateforme IA<br/>production-ready"]
         C3["Rapport PFE<br/>complet"]
         C4["Soutenance<br/>EMSI Marrakech"]
@@ -960,3 +961,67 @@ flowchart LR
 
     WHY --> HOW --> WHAT
 ```
+
+---
+
+## 12. Plan d'Implémentation — Objectif 10/10
+
+Cette section transforme la roadmap qualité en **plan d'exécution concret** pour atteindre un niveau jury maximal (stabilité technique + preuves mesurables + démonstration reproductible).
+
+### 12.1 Axes de mise en œuvre
+
+| Axe | Action d'implémentation | Critère de réussite |
+|-----|--------------------------|---------------------|
+| **1. Branche de référence** | Créer `release/jury`, merger `main` + branche sprint active, geler les merges directs | Une seule branche source de vérité |
+| **2. CI unifiée** | Pipeline unique lint + tests + build + smoke ingestion | 100% checks verts sur PR |
+| **3. Qualité tests** | Corriger les tests instables, couvrir auth/safety/RAG/MCP/ingestion | Suite stable et reproductible |
+| **4. Tuning hybride retriever** | Fusion pondérée Dense/BM25 + grid search alpha/k sur benchmark | MRR/NDCG/Recall@k améliorés et tracés |
+| **5. Safety clinique** | Jeu red-team (urgences, dosage, injections prompt) + assertions automatiques | Taux de blocage/sécurité mesuré |
+| **6. Performance** | Mesurer p95 retrieval, p95 first-token SSE, p95 réponse finale | SLA documentés et respectés |
+| **7. Gouvernance données** | Manifeste corpus (source, licence, date, checksum) + procédure refresh | Traçabilité complète des données |
+| **8. Observabilité** | Logs structurés pipeline + métriques + dashboard synthèse | Diagnostic incident en quelques minutes |
+| **9. Documentation jury** | Consolidation architecture + choix + limites + résultats avant/après | Dossier défendable en soutenance |
+| **10. Démo scriptée** | Scénarios fixes FR/Darija/urgence/prix/fallback | Démo stable sans improvisation |
+
+### 12.2 Ordre d'exécution recommandé
+
+```mermaid
+flowchart LR
+    A["1) Branche release/jury"] --> B["2) CI unifiée"]
+    B --> C["3) Stabilisation tests"]
+    C --> D["4) Tuning Dense/BM25"]
+    D --> E["5) Safety red-team"]
+    E --> F["6) Benchmark performance"]
+    F --> G["7) Gouvernance corpus"]
+    G --> H["8) Observabilité"]
+    H --> I["9) Documentation jury"]
+    I --> J["10) Démo finale scriptée"]
+```
+
+### 12.3 Livrables attendus (preuves)
+
+| Domaine | Livrable concret |
+|---------|------------------|
+| Git | Branche `release/jury` propre + historique lisible |
+| CI/CD | Workflow GitHub Actions vert sur PR et push |
+| Tests | Rapport tests + couverture + scénarios critiques |
+| Retrieval | Rapport tuning (alpha/k) avec métriques comparatives |
+| Sécurité | Rapport red-team + comportements de blocage validés |
+| Performance | Tableau p95 par étape du pipeline |
+| Données | `corpus_manifest` versionné (provenance/licence/checksum) |
+| Ops | Dashboard métriques + logs structurés exploitables |
+| Jury | README/Docs harmonisés avec résultats finals |
+| Démo | Script opératoire de soutenance (pas à pas) |
+
+### 12.4 Definition of Done global (objectif 10/10)
+
+Le projet est considéré **10/10 prêt soutenance** si :
+
+1. CI verte en continu sur la branche de référence.
+2. Tests critiques stables (aucun échec intermittent).
+3. Retriever hybride réglé sur benchmark avec gains mesurés.
+4. Safety clinique validée par red-team scénarisé.
+5. Performance p95 documentée et conforme aux objectifs.
+6. Données traçables (source/licence/date/checksum) et reproductibles.
+7. Documentation finale cohérente avec l'état réel du code.
+8. Démo scriptée exécutable de bout en bout.

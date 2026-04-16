@@ -3,7 +3,7 @@
 **Candidate:** Abderrahim Boussyf
 **Institution:** EMSI Marrakech — Data Science & IA
 **Company:** n.synergy
-**Duration:** 4 months — 8 Sprints — 2025/2026
+**Duration:** 5 months — 10 Sprints — 2025/2026
 
 ---
 
@@ -89,7 +89,10 @@ MediSense-AI/
 │   │   ├── test_health.py          # US-01: health endpoint tests
 │   │   └── test_auth.py            # US-03/04: JWT + RBAC tests
 │   ├── requirements.txt
-│   └── Dockerfile                  # Multi-stage build (builder + runtime)
+│   └── Dockerfile                  # Single-stage build (arm64-friendly)
+├── .github/
+│   └── workflows/
+│       └── ci.yml                  # CI: compile + tests + Docker build smoke check
 ├── nginx/
 │   └── nginx.conf                  # TLS 1.3, rate limiting, HTTP→HTTPS redirect
 ├── scripts/
@@ -159,7 +162,7 @@ User Stories: US-06 (granular consent), US-07 (RGPD data export), US-08 (right t
 ---
 
 ### Sprint 3 — RAG Pipeline & LLM Agents (upcoming)
-**Branch:** `sprint/3-rag-llm`
+**Branch:** `sprint/3-rag-pipeline`
 
 User Stories: US-09 (Mistral 7B via Ollama < 150ms), US-10 (84k chunks in Qdrant), US-11 (symptom chatbot FR/AR/Darija), US-12 (cross-encoder re-ranking)
 
@@ -197,6 +200,20 @@ User Stories: US-25 (Kafka ingestion 10 msg/s), US-26 (TimescaleDB hypertable), 
 **Branch:** `sprint/8-integration-production`
 
 User Stories: US-30 (Kafka degraded mode), US-34 (Airflow weekly retraining), US-35 (Evidently AI drift detection), US-36 (auto-rollback F1 < 10%)
+
+---
+
+### Sprint 9 — Flutter Mobile Patient App (upcoming)
+**Branch:** `sprint/9-flutter-mobile`
+
+User Stories: US-47 (onboarding + auth + consent), US-48 (chatbot Darija/FR/AR + voice), US-49 (IoT dashboard), US-50 (booking + Salesforce sync), US-55/56/59 (results + reminders + medication alerts)
+
+---
+
+### Sprint 10 — Doctor Dashboard & Monitoring (upcoming)
+**Branch:** `sprint/10-nextjs-dashboard`
+
+User Stories: US-51/52/53 (doctor dashboard + DPA + smart agenda), US-54 (WebSocket alerts + Twilio), US-57 (Grafana dashboards), US-60 (admin UI)
 
 ---
 

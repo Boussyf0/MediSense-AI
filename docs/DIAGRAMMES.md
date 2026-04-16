@@ -1425,4 +1425,4 @@ flowchart TB
 | **Sécurité** | Modèle RBAC | 7.2 |
 | **Sécurité** | Privacy by Design RGPD | 7.3 |
 
-**Total : 28 diagrammes** couvrant l'ensemble du 8 sprints du rapport PFE.
+**Total : 28 diagrammes** couvrant l'ensemble des 10 sprints du rapport PFE.

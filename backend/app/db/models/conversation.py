@@ -38,7 +38,7 @@ class Conversation(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     patient_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("secure.patients.id", ondelete="CASCADE"),
+        ForeignKey("public.patients.patient_uuid", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
