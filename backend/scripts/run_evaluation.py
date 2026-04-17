@@ -19,6 +19,8 @@ import sys
 import os
 import math
 import argparse
+import asyncio
+import time
 from pathlib import Path
 from datetime import datetime
 
@@ -164,24 +166,91 @@ def compute_precision_at_k(results_per_query: list[list[tuple[str, bool]]], k: i
     return p_sum / len(results_per_query)
 
 
+def _percentile(values: list[float], p: float) -> float:
+    """Compute percentile with linear interpolation (p in [0, 100])."""
+    if not values:
+        return 0.0
+    if len(values) == 1:
+        return values[0]
+    ordered = sorted(values)
+    rank = (len(ordered) - 1) * (p / 100.0)
+    low = int(math.floor(rank))
+    high = int(math.ceil(rank))
+    if low == high:
+        return ordered[low]
+    weight = rank - low
+    return ordered[low] * (1 - weight) + ordered[high] * weight
+
+
+async def _measure_first_token_latencies(
+    queries: list[str],
+) -> list[float]:
+    """
+    Measure end-to-first-token latency (ms) using run_stream().
+
+    Returns one latency value per successful query.
+    """
+    from app.rag.pipeline import run_stream
+
+    latencies_ms: list[float] = []
+    for query in queries:
+        started = time.perf_counter()
+        try:
+            async for event in run_stream(query):
+                event_type = event.get("type")
+                if event_type == "token":
+                    latencies_ms.append((time.perf_counter() - started) * 1000)
+                    break
+                if event_type == "done":
+                    # Safety block / empty token path fallback
+                    latencies_ms.append((time.perf_counter() - started) * 1000)
+                    break
+        except Exception:
+            continue
+    return latencies_ms
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run RAG evaluation")
     parser.add_argument("--output", type=str, default=None, help="Save results to JSON file")
     parser.add_argument("--reranker", action="store_true", help="Also run cross-encoder reranker comparison")
+    parser.add_argument(
+        "--measure-first-token",
+        action="store_true",
+        help="Also measure end-to-first-token latency via run_stream()",
+    )
+    parser.add_argument(
+        "--first-token-sample",
+        type=int,
+        default=20,
+        help="How many queries to sample for first-token latency (default: 20)",
+    )
     args = parser.parse_args()
 
-    from app.rag.vectorstore import hybrid_search
+    from app.rag.vectorstore import hybrid_search, get_collection_info
+
+    try:
+        collection_info = get_collection_info()
+        corpus_points = int(collection_info.get("points_count", 0) or 0)
+    except Exception:
+        collection_info = None
+        corpus_points = 0
 
     print("=" * 60)
     print("MediSense RAG Evaluation")
     print(f"Test set: {len(TEST_SET)} queries")
+    if corpus_points:
+        print(f"Qdrant points: {corpus_points:,}")
     print("=" * 60)
 
     rrf_results_per_query = []
     query_details = []
+    retrieval_latencies_ms: list[float] = []
 
     for i, (query, relevant_keywords) in enumerate(TEST_SET):
+        t0 = time.perf_counter()
         results = hybrid_search(query, limit=10)
+        retrieval_latencies_ms.append((time.perf_counter() - t0) * 1000)
         ranked = [(r["text"], _is_relevant(r["text"], relevant_keywords)) for r in results]
         rrf_results_per_query.append(ranked)
 
@@ -203,6 +272,10 @@ def main():
     ndcg5 = compute_ndcg(rrf_results_per_query, k=5)
     p3 = compute_precision_at_k(rrf_results_per_query, k=3)
     top1_acc = sum(1 for d in query_details if d["top1_relevant"]) / len(query_details)
+    retrieval_p50 = _percentile(retrieval_latencies_ms, 50)
+    retrieval_p95 = _percentile(retrieval_latencies_ms, 95)
+    retrieval_p99 = _percentile(retrieval_latencies_ms, 99)
+    retrieval_mean = sum(retrieval_latencies_ms) / len(retrieval_latencies_ms) if retrieval_latencies_ms else 0.0
 
     print("\n" + "=" * 60)
     print("RESULTS — RRF (Dense + BM25)")
@@ -211,6 +284,31 @@ def main():
     print(f"  NDCG@5        : {ndcg5:.4f}")
     print(f"  Precision@3   : {p3:.4f}")
     print(f"  Top-1 Accuracy: {top1_acc:.4f} ({sum(1 for d in query_details if d['top1_relevant'])}/{len(query_details)})")
+    print(f"  Retrieval p50 : {retrieval_p50:.2f} ms")
+    print(f"  Retrieval p95 : {retrieval_p95:.2f} ms")
+    print(f"  Retrieval p99 : {retrieval_p99:.2f} ms")
+    print(f"  Retrieval mean: {retrieval_mean:.2f} ms")
+
+    first_token_metrics = None
+    if args.measure_first_token:
+        sample_size = max(1, min(args.first_token_sample, len(TEST_SET)))
+        sampled_queries = [q for q, _ in TEST_SET[:sample_size]]
+        print(f"\n[Latency] Measuring end-to-first-token on {sample_size} queries...")
+        first_token_latencies = asyncio.run(_measure_first_token_latencies(sampled_queries))
+        if first_token_latencies:
+            first_token_metrics = {
+                "count": len(first_token_latencies),
+                "p50_ms": round(_percentile(first_token_latencies, 50), 2),
+                "p95_ms": round(_percentile(first_token_latencies, 95), 2),
+                "p99_ms": round(_percentile(first_token_latencies, 99), 2),
+                "mean_ms": round(sum(first_token_latencies) / len(first_token_latencies), 2),
+            }
+            print(f"  First-token p50 : {first_token_metrics['p50_ms']:.2f} ms")
+            print(f"  First-token p95 : {first_token_metrics['p95_ms']:.2f} ms")
+            print(f"  First-token p99 : {first_token_metrics['p99_ms']:.2f} ms")
+            print(f"  First-token mean: {first_token_metrics['mean_ms']:.2f} ms")
+        else:
+            print("  [WARN] No first-token latency samples collected.")
 
     # Cross-encoder comparison
     reranker_metrics = None
@@ -251,13 +349,20 @@ def main():
         output_path.parent.mkdir(parents=True, exist_ok=True)
         report = {
             "timestamp": datetime.now().isoformat(),
-            "corpus_size": "see Qdrant dashboard",
+            "corpus_points": corpus_points if corpus_points else "unknown",
             "metrics": {
                 "mrr_at_10": round(mrr, 4),
                 "ndcg_at_5": round(ndcg5, 4),
                 "precision_at_3": round(p3, 4),
                 "top1_accuracy": round(top1_acc, 4),
+                "retrieval_latency_ms": {
+                    "p50": round(retrieval_p50, 2),
+                    "p95": round(retrieval_p95, 2),
+                    "p99": round(retrieval_p99, 2),
+                    "mean": round(retrieval_mean, 2),
+                },
             },
+            "first_token_latency_ms": first_token_metrics,
             "reranker": reranker_metrics,
             "per_query": query_details,
         }

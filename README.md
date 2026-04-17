@@ -263,9 +263,9 @@ curl -k -X POST https://localhost/api/v1/auth/login \
 open https://localhost/api/v1/docs
 ```
 
-### 5. Pull Mistral 7B (for Sprint 3 — 4GB download)
+### 5. Pull Mistral 7B Instruct (recommended for Sprint 3 — ~4.4GB download)
 ```bash
-docker exec medisense_ollama ollama pull mistral:7b
+docker exec medisense_ollama ollama pull mistral:7b-instruct
 ```
 
 ---

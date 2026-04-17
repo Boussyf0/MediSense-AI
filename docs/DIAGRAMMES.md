@@ -44,7 +44,7 @@
 
 6. [Architecture des Pipelines IA](#6-architecture-des-pipelines-ia)
    - 6.1 Pipeline 1 — IoT & LSTM Bidirectionnel
-   - 6.2 Pipeline 2 — RAG & Llama 3.1 8B
+   - 6.2 Pipeline 2 — RAG & Mistral 7B Instruct
    - 6.3 Pipeline 3 — XGBoost No-Show
    - 6.4 Intégration CRM Salesforce
 
@@ -80,7 +80,7 @@ flowchart TB
         NLP["Prétraitement NLP<br/>Détection langue + Entités"]
         QDRANT["Qdrant<br/>30 184 points médicaux"]
         SAFETY["Couche Sécurité<br/>141 SAMU / Disclaimer"]
-        LLAMA["Llama 3.1 8B<br/>via Ollama"]
+        LLAMA["Mistral 7B Instruct<br/>via Ollama"]
     end
 
     subgraph P3["Pipeline 3 — ML Prédictif"]
@@ -148,7 +148,7 @@ flowchart TB
             end
 
             subgraph AI["Intelligence Artificielle"]
-                OLLAMA_C["medisense_ollama<br/>ollama/ollama<br/>Port: 11434<br/>Volume: ollama_models<br/>Llama 3.1 8B (4.7GB)"]
+                OLLAMA_C["medisense_ollama<br/>ollama/ollama<br/>Port: 11434<br/>Volume: ollama_models<br/>Mistral 7B Instruct (~4.4GB)"]
             end
         end
 
@@ -326,11 +326,11 @@ flowchart LR
     subgraph A["Acteurs"]
         PATIENT(["Patient"])
         DOCTOR(["Médecin"])
-        SYS(["Llama 3.1 8B<br/>Ollama"])
+        SYS(["Mistral 7B Instruct<br/>Ollama"])
     end
 
     subgraph UC["Sprint 3 — US-09 à US-12"]
-        UC9["US-09: Interroger Llama 3.1 8B<br/>Latence P95 < 150ms<br/>Ollama local"]
+        UC9["US-09: Interroger Mistral 7B Instruct<br/>Latence P95 < 150ms<br/>Ollama local"]
         UC10["US-10: Indexer la base médicale<br/>30 184 points dans Qdrant<br/>(ICD-10 + DMP Maroc + Protocoles MA)"]
         UC11["US-11: Chatter en FR/AR/Darija<br/>Détection langue → normalisation → RAG"]
         UC12["US-12: Recherche hybride<br/>Dense + BM25 + RRF fusion"]
@@ -831,7 +831,7 @@ sequenceDiagram
     participant QDR as Qdrant<br/>(30 184 points — Dense+BM25+RRF)
     participant MCP as MCP Server<br/>(medicament.ma DMP Maroc)
     participant SAFE as Couche Sécurité<br/>(pre/post-check)
-    participant LLM as Llama 3.1 8B<br/>(Ollama local — SSE)
+    participant LLM as Mistral 7B Instruct<br/>(Ollama local — SSE)
 
     Patient->>API: POST /api/v1/chat<br/>{"message": "j'ai du mal à respirer la nuit"}
     Note over API: Vérifie consent_nlp == true
@@ -1026,7 +1026,7 @@ flowchart TD
     G["📱 Push notification<br/>'Votre bilan mérite attention'"]
     H["Patient ouvre l'app<br/>→ Chatbot RAG démarre"]
     I["Triage cognitif NLP<br/>Questions: durée, intensité, contexte"]
-    J["RAG: Qdrant hybrid (30 184 pts) → Llama 3.1 8B<br/>Réponse contextualisée FR/AR/Darija + 141 SAMU si urgent"]
+    J["RAG: Qdrant hybrid (30 184 pts) → Mistral 7B Instruct<br/>Réponse contextualisée FR/AR/Darija + 141 SAMU si urgent"]
     K["Score urgence calculé<br/>urgency_flag: ANOMALIE_IOT_ESSOUFFLEMENT<br/>urgency_score: 0.82"]
     L["XGBoost: Prédiction No-Show<br/>Prob: 0.73 → RISQUE ÉLEVÉ"]
     M["📅 RDV créé automatiquement<br/>10h30 — Dr. Benali<br/>Durée: 20min"]
@@ -1167,7 +1167,7 @@ flowchart LR
 
 ---
 
-### 6.2 Pipeline 2 — RAG & Llama 3.1 8B
+### 6.2 Pipeline 2 — RAG & Mistral 7B Instruct
 
 ```mermaid
 flowchart TB
@@ -1191,7 +1191,7 @@ flowchart TB
         SAFETY_PRE["Pré-check sécurité<br/>URGENCY → 141 SAMU Maroc<br/>confidence < 0.30 → refuse"]
         CONTEXT["Contexte assemblé<br/>(5 chunks + MCP + historique Redis)"]
         PROMPT["Prompt médical marocain<br/>FR-only output<br/>no diagnostic définitif"]
-        LLAMA_M["Llama 3.1 8B<br/>(Ollama — 4.7GB RAM)<br/>streaming SSE"]
+        LLAMA_M["Mistral 7B Instruct<br/>(Ollama — ~4.4GB RAM)<br/>streaming SSE"]
         SAFETY_POST["Post-check<br/>injection DOSAGE_DISCLAIMER<br/>si posologie détectée"]
         RESPONSE["Réponse SSE<br/>+ sources + disclaimer + lang"]
     end
@@ -1418,7 +1418,7 @@ flowchart TB
 | **Flux Métier** | Consultation augmentée | 5.2 |
 | **Flux Métier** | MLOps réentraînement | 5.3 |
 | **Pipelines IA** | IoT + LSTM détail | 6.1 |
-| **Pipelines IA** | RAG + Llama 3.1 8B détail | 6.2 |
+| **Pipelines IA** | RAG + Mistral 7B Instruct détail | 6.2 |
 | **Pipelines IA** | XGBoost No-Show détail | 6.3 |
 | **Pipelines IA** | Intégration Salesforce | 6.4 |
 | **Sécurité** | Architecture sécurité couches | 7.1 |
