@@ -69,6 +69,34 @@ jobs:
           cd backend
           pytest -q
 
+      - name: Run red-team safety smoke
+        run: |
+          cd backend
+          python scripts/run_red_team_eval.py --output results/red_team_eval_ci.json
+
+      - name: Enforce red-team strict pass
+        run: |
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          report_path = Path("backend/results/red_team_eval_ci.json")
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          strict = float(report.get("strict_pass_rate", 0.0))
+          infra = int(report.get("infra_error_cases", 0))
+
+          print(f"strict_pass_rate={strict:.4f} infra_error_cases={infra}")
+          if strict < 1.0 or infra != 0:
+              sys.exit(1)
+          PY
+
+      - name: Upload red-team report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: red-team-ci-report
+          path: backend/results/red_team_eval_ci.json
+
       - name: Free disk space before Docker build
         run: |
           docker system prune -af || true

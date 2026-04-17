@@ -15,7 +15,7 @@
 5. [Étape 3 — Détection de langue & Normalisation](#5-étape-3--détection-de-langue--normalisation)
 6. [Étape 4 — Extraction d'entités médicales](#6-étape-4--extraction-dentités-médicales)
 7. [Étape 5 — Couche de sécurité (Safety Layer)](#7-étape-5--couche-de-sécurité-safety-layer)
-8. [Étape 6 — LLM Génération (Mistral 7B via Ollama)](#8-étape-6--llm-génération-mistral-7b-via-ollama)
+8. [Étape 6 — LLM Génération (Ollama local ou Groq API)](#8-étape-6--llm-génération-ollama-local-ou-groq-api)
 9. [Étape 7 — MCP Server (medicament.ma)](#9-étape-7--mcp-server-medicamentma)
 10. [Orchestrateur RAG — pipeline.py](#10-orchestrateur-rag--pipelinepy)
 11. [Corpus médical marocain — 30 184 points](#11-corpus-médical-marocain--30-184-points)
@@ -72,7 +72,7 @@ Patient query (FR / AR / Darija)
 │       │  (urgency → 141 SAMU Maroc / low confidence → refuse)  │
 │       │                                                         │
 │  [6] LLM Generation ───────────────────────── llm.py           │
-│       │  (Mistral 7B via Ollama, local, RGPD)                  │
+│       │  (Provider LLM: Ollama local ou Groq API)              │
 │       │                                                         │
 │  [7] Safety post-check ────────────────────── safety.py        │
 │       (dosage warnings, standard disclaimer)                    │
@@ -285,10 +285,10 @@ async def normalize_to_french(text: str, lang: str) -> str:
     if lang == "fr":
         return _normalize_fr(text)        # accents, abréviations médicales
     else:
-        return await _translate_via_llm(text, lang)  # LLM local Ollama
+        return await _translate_via_llm(text, lang)  # provider LLM selon LLM_PROVIDER
 ```
 
-Pour le darija et l'arabe, on utilise Ollama lui-même pour traduire et reformuler en français clinique :
+Pour le darija et l'arabe, on utilise le provider configuré (`ollama` ou `groq`) pour traduire et reformuler en français clinique :
 
 ```
 Input (darija):  "3ndi douleur f rass dial bzzaf w sokhra"
@@ -395,11 +395,18 @@ Avec 30 184 points dans Qdrant et une requête médicale standard, le top-1 a g�
 
 ---
 
-## 8. Étape 6 — LLM Génération (Mistral 7B via Ollama)
+## 8. Étape 6 — LLM Génération (Ollama local ou Groq API)
 
-**Fichier** : `app/rag/llm.py` (175 lignes)
+**Fichier** : `app/rag/llm.py` (302 lignes)
 
-### Pourquoi Ollama + modèle local ?
+### Modes de provider (`LLM_PROVIDER`)
+
+| Provider | Cas d'usage | Latence typique | RGPD |
+|---|---|---|---|
+| `ollama` | Mode local/on-prem (prod) | CPU Docker: lente, Metal M1 natif: meilleure | ✅ Oui |
+| `groq` | Démo jury / fallback rapide | Très rapide (cloud) | ❌ Non (données sortent de l'infra) |
+
+### Pourquoi garder Ollama + modèle local en production ?
 
 | Solution | Conformité RGPD | Coût | Latence CPU | Contrôle total |
 |---|---|---|---|---|
@@ -408,7 +415,7 @@ Avec 30 184 points dans Qdrant et une requête médicale standard, le top-1 a g�
 | Mistral API | ❌ données → France | €€ | ~1s | ❌ |
 | **Ollama local** | **✅ on-prem** | **0€** | **~5-6s** | **✅** |
 
-Le Maroc dispose de sa propre réglementation sur la protection des données de santé. Ollama tourne dans le même `docker-compose.yml` → **aucune donnée patient ne quitte l'infrastructure**.
+Le Maroc dispose de sa propre réglementation sur la protection des données de santé. En mode `LLM_PROVIDER=ollama`, Ollama tourne dans la stack locale → **aucune donnée patient ne quitte l'infrastructure**.
 
 ### Évolution des modèles
 
@@ -419,11 +426,17 @@ Le Maroc dispose de sa propre réglementation sur la protection des données de 
 | `llama3.1:8b` (optionnel) | Bon raisonnement médical/multilingue | Plus lourd sur CPU (latence/mémoire), moins stable localement |
 
 ```bash
-# Modèle recommandé
+# Mode Ollama recommandé
 docker exec medisense_ollama ollama pull mistral:7b-instruct
 
 # Puis configurer .env
+LLM_PROVIDER=ollama
 OLLAMA_MODEL=mistral:7b-instruct
+
+# Mode Groq (démo rapide)
+LLM_PROVIDER=groq
+GROQ_API_KEY=gsk_...
+GROQ_MODEL=llama-3.1-8b-instant
 ```
 
 ### System prompt médical — règles non négociables
@@ -445,11 +458,16 @@ DONNÉES TEMPS RÉEL: {résultat MCP medicament.ma}
 ### Paramètres de génération
 
 ```python
+# mode Ollama
 "options": {
-    "temperature": 0.3,   # ← crucial pour médical : faible créativité, peu d'hallucinations
-    "num_predict": 384,   # max tokens par réponse
+    "temperature": 0.3,
+    "num_predict": 80,   # limite courte en CPU local pour éviter les timeouts
     "top_p": 0.9,
 }
+
+# mode Groq (chat-completions)
+"temperature": 0.3
+"max_tokens": 512
 ```
 
 `temperature=0.3` est le réglage le plus important. Une temperature de 0.8+ donne des réponses variées mais le modèle peut inventer des dosages ou des contre-indications. En médical, la reproductibilité prime sur la créativité.
@@ -779,7 +797,7 @@ def answer_relevance(answer, query) -> float:
 | Après ICD-10 | 12 829 pts | 1.000* | 0.986 | 0.933 | ~90% |
 | Corpus 25k | 25 166 pts | 0.972 | 0.952 | 0.889 | 96.7% |
 | Final 30k | 30 184 pts | 0.943 | 0.934 | 0.880 | 93.1% |
-| **Final 83k — 96 303 pts Qdrant** | **96 303 pts** | **0.828** | **0.858** | **0.718** | **70.8%** |
+| **Final 83k — 96 303 pts Qdrant** | **96 303 pts** | **0.8275** | **0.8574** | **0.7500** | **70.8%** |
 
 *MRR=1.0 artificiel avec seulement 30 requêtes simples sur 211 chunks.
 
@@ -791,13 +809,13 @@ Context Recall    : 0.95  →  95% des faits attendus couverts par le contexte
 
 **Latences de retrieval (96 303 pts, 72 requêtes)** :
 ```
-p50  =  85.5 ms
-p95  = 265.8 ms
-p99  = 3 076 ms   (pic BM25 froid, rare)
-mean = 239.8 ms
+p50  =   92.65 ms
+p95  =  278.44 ms
+p99  = 1 389.38 ms
+mean =  171.40 ms
 ```
 
-**Interprétation** : La baisse de MRR de 0.943 → 0.828 est attendue et saine lors du passage de 30k → 96k points. Le corpus est 3× plus grand, le test set de 72 requêtes reste fixe (conçu pour 30k), et le retrieval doit maintenant discriminer parmi 3× plus de candidats. p95 < 270 ms sur CPU confirme que la latence reste largement acceptable.
+**Interprétation** : La baisse de MRR de 0.943 → 0.8275 est attendue et saine lors du passage de 30k → 96k points. Le corpus est 3× plus grand, le test set de 72 requêtes reste fixe (conçu pour 30k), et le retrieval doit maintenant discriminer parmi 3× plus de candidats. p95 < 300 ms sur CPU reste compatible avec un usage clinique assisté.
 
 ---
 
@@ -959,6 +977,19 @@ Infra errors        : 0
 Executable pass rate: 100%  (10/10)
 ```
 
+### Reproduction (artefacts)
+
+```bash
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/run_red_team_eval.py --output results/red_team_eval_final.json"
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/run_evaluation.py --output results/evaluation_83k.json"
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/benchmark_llm_provider.py --output results/llm_provider_benchmark.json"
+```
+
+Artefacts attendus:
+- `backend/results/red_team_eval_final.json`
+- `backend/results/evaluation_83k.json`
+- `backend/results/llm_provider_benchmark.json`
+
 | ID | Attendu | Résultat | Mécanisme de blocage |
 |---|---|---|---|
 | rt-01 | dosage_disclaimer | ✓ **PASS** | `_DOSAGE_ADVERSARIAL_RE` "sans disclaimer" + warfarine → pré-LLM |
@@ -988,7 +1019,7 @@ pre_generation_check(entities, scores, query_text=query_fr)
 ```
 
 **Clé architecturale** : tous les cas adversariaux sont bloqués **avant** l'appel LLM.
-Zéro timeout Ollama, zéro dépendance GPU pour la couche de sécurité.
+La safety layer reste déterministe même en mode CPU; le mode `groq` supprime les timeouts infra pendant l'évaluation.
 
 **Bug corrigé** (rt-04) : `"perdu connaissance"` (passé composé) n'était pas dans
 `URGENCY_KEYWORDS`, uniquement `"perte de connaissance"` (substantif). Corrigé dans
@@ -1030,7 +1061,7 @@ backend/
 │   │   ├── normalizer.py        57 L  ← Darija → French normalization
 │   │   ├── medical_entities.py 116 L  ← extraction drugs, ICD-10, urgence
 │   │   ├── safety.py           131 L  ← garde-fous médicaux (141 Maroc)
-│   │   ├── llm.py              175 L  ← Mistral 7B via Ollama, SSE stream
+│   │   ├── llm.py              302 L  ← provider toggle Ollama/Groq + SSE stream
 │   │   ├── pipeline.py         204 L  ← orchestrateur 7 étapes
 │   │   └── reranker.py         123 L  ← cross-encoder optionnel
 │   │
@@ -1038,7 +1069,7 @@ backend/
 │   │   └── ansm_server.py      129 L  ← lookup live medicament.ma (PPV MAD)
 │   │
 │   └── core/
-│       └── config.py            89 L  ← OLLAMA_MODEL configurable via .env
+│       └── config.py            95 L  ← LLM_PROVIDER + OLLAMA/GROQ settings via .env
 │
 ├── scripts/
 │   ├── build_corpus_local.py   592 L  ← ICD-10 + 33 monographies (offline)
@@ -1046,6 +1077,7 @@ backend/
 │   ├── build_extended_corpus.py 710 L ← extension BDPM + sources offline A→F (>80k)
 │   ├── ingest_from_files.py     98 L  ← embed + upsert Qdrant (9 fichiers)
 │   ├── run_evaluation.py       290 L  ← 72 requêtes, MRR/NDCG/P@3, latences p50/p95
+│   ├── benchmark_llm_provider.py 175 L ← bench provider LLM (first-token/total/retrieval)
 │   ├── run_ragas_eval.py       290 L  ← context precision/recall, faithfulness
 │   └── run_red_team_eval.py    224 L  ← 10 cas adversariaux (urgence/dosage/refus)
 │
@@ -1065,8 +1097,9 @@ backend/
 │   ├── eval_12k_corpus.json           ← MRR=1.0,   NDCG=0.986 (30 requêtes)
 │   ├── eval_moroccan_corpus.json      ← MRR=0.972, NDCG=0.952 (30 requêtes)
 │   ├── evaluation_30184_latency.json  ← MRR=0.943, NDCG=0.934, p95=933ms (72q)
-│   ├── evaluation_83k.json            ← MRR=0.828, NDCG=0.858, p95=266ms (72q, 96k pts)
-│   └── red_team_eval_final.json       ← 10 cas adversariaux (voir section 15)
+│   ├── evaluation_83k.json            ← MRR=0.8275, NDCG=0.8574, p95=278ms (72q, 96k pts)
+│   ├── llm_provider_benchmark.json    ← provider=groq, first-token p95=834ms, total p95=1368ms
+│   └── red_team_eval_final.json       ← red-team 10/10, infra_error=0
 │
 └── Dockerfile                   ← single-stage, arm64 compatible, ~32min build
 ```
@@ -1083,14 +1116,16 @@ backend/
 |---|---|---|
 | Corpus Qdrant final | **96 303 points** | ICD-10 + BDPM France + 5 019 drugs DMP + corpus offline |
 | Chunks ingérés (nouveaux) | **83 802** | 9 fichiers JSON, pipeline d'ingestion validé |
-| MRR@10 | **0.828** | ~1er résultat pertinent dans le top 2 |
-| NDCG@5 | **0.858** | Top-5 très pertinents sur corpus 3× plus grand |
-| Precision@3 | **0.718** | 71.8% des 3 premiers résultats pertinents |
+| MRR@10 | **0.8275** | ~1er résultat pertinent dans le top 2 |
+| NDCG@5 | **0.8574** | Top-5 très pertinents sur corpus 3× plus grand |
+| Precision@3 | **0.7500** | 75.0% des 3 premiers résultats pertinents |
 | Top-1 Accuracy | **70.8%** (51/72) | Légère baisse attendue sur corpus 3× agrandi |
 | Context Precision | **0.84** | 84% des chunks retrieved sont utiles |
 | Context Recall | **0.95** | 95% de la connaissance attendue dans le contexte |
-| Latence retrieval p50 | **85.5 ms** | Très rapide sur CPU |
-| Latence retrieval p95 | **265.8 ms** | Acceptable pour usage médical |
+| Latence retrieval p50 | **92.65 ms** | Très rapide sur CPU |
+| Latence retrieval p95 | **278.44 ms** | Acceptable pour usage médical |
+| LLM first-token p95 (Groq) | **834 ms** | Démo fluide via provider cloud |
+| LLM total p95 (Groq) | **1 368 ms** | Réponse complète < 1.5s p95 |
 | Médicaments DMP | **5 019** | Vrais prix en dhs, distributeurs marocains réels |
 | Protocoles Maroc | **300** | 15 protocoles × 20 sections (HTA, diabète, urgences…) |
 

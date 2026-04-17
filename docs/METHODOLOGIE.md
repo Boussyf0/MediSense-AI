@@ -232,7 +232,7 @@ flowchart TB
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-09 | Mistral 7B via Ollama. Latence retrieval P95 = 265 ms (CPU) | 8 | Must | ✅ Done |
+| US-09 | LLM provider toggle (`ollama` local / `groq` démo). Latence retrieval P95 = 265 ms (CPU) | 8 | Must | ✅ Done |
 | US-10 | Indexer 96 303 pts Qdrant (ICD-10, BDPM France, medicament.ma, corpus offline) | 13 | Must | ✅ Done |
 | US-11 | Chatbot symptômes FR/AR/Darija avec triage cognitif + 141 SAMU Maroc | 8 | Must | ✅ Done |
 | US-12 | Hybrid Dense+BM25+RRF, safety layer code-level, red-team 10 cas | 5 | Should | ✅ Done |
@@ -336,7 +336,7 @@ flowchart TB
         end
 
         subgraph S3["Sprint 3<br/>27 Avr – 10 Mai<br/>⏳ À venir"]
-            T3["Mistral 7B Ollama<br/>84k chunks Qdrant<br/>Chatbot FR/AR/Darija<br/>Cross-encoder<br/>34 pts"]
+            T3["LLM Ollama/Groq<br/>84k chunks Qdrant<br/>Chatbot FR/AR/Darija<br/>Cross-encoder<br/>34 pts"]
         end
 
         subgraph S4["Sprint 4<br/>11 Mai – 24 Mai<br/>⏳ À venir"]
@@ -807,7 +807,7 @@ flowchart TB
             DL["PyTorch<br/>LSTM Bidirectionnel"]
         end
         subgraph RAG_LIB["RAG"]
-            RA["Sentence-Transformers<br/>Qdrant Client<br/>Ollama Python SDK<br/>Cross-Encoder"]
+            RA["Sentence-Transformers<br/>Qdrant Client<br/>HTTPX (Ollama/Groq)<br/>Cross-Encoder"]
         end
     end
 
@@ -825,7 +825,8 @@ flowchart TB
             NGX["Nginx Alpine<br/>TLS 1.3"]
         end
         subgraph AI_INFRA["IA Locale"]
-            OLL["Ollama<br/>Mistral 7B Q4_K_M"]
+            OLL["Ollama local<br/>Mistral 7B Q4_K_M"]
+            GROQ["Groq API (optionnel)<br/>llama-3.1-8b-instant"]
         end
     end
 
