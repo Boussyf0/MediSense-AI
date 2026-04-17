@@ -1,7 +1,7 @@
 """Sprint 3 — conversations and messages tables for RAG chatbot.
 
-Revision ID: sprint3_conversations
-Revises: 20260413_000000
+Revision ID: 20260427_000000
+Revises: s2_models_0002
 Create Date: 2026-04-27 00:00:00.000000
 """
 from alembic import op
@@ -10,7 +10,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 # revision identifiers
 revision = "20260427_000000"
-down_revision = "20260413_000000"
+down_revision = "s2_models_0002"
 branch_labels = None
 depends_on = None
 
@@ -22,9 +22,9 @@ def upgrade() -> None:
     op.create_table(
         "conversations",
         sa.Column("id", UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
-        sa.Column("patient_id", UUID(as_uuid=True), sa.ForeignKey("secure.patients.id", ondelete="CASCADE"), nullable=False, index=True),
+        sa.Column("patient_id", UUID(as_uuid=True), sa.ForeignKey("public.patients.patient_uuid", ondelete="CASCADE"), nullable=False, index=True),
         sa.Column("title", sa.String(255), nullable=True),
-        sa.Column("language", sa.String(10), server_default="fr"),
+        sa.Column("language", sa.String(10), server_default=sa.text("'fr'")),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )

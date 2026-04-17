@@ -3,6 +3,7 @@ MediSense AI — FastAPI Application Entry Point
 """
 from contextlib import asynccontextmanager
 from pathlib import Path
+import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
@@ -15,6 +16,7 @@ from app.db.session import engine
 from app.api.v1.router import api_router
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -37,16 +39,18 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠ Qdrant not available (RAG endpoints will fail): {e}")
 
-    # Ollama (non-blocking — check if Mistral model is loaded)
+    # LLM provider health check (non-blocking)
     try:
         from app.rag.llm import check_health
-        ollama_ok = await check_health()
-        if ollama_ok:
-            print("✓ Ollama + Mistral 7B ready")
+        provider = settings.LLM_PROVIDER.upper()
+        llm_ok = await check_health()
+        if llm_ok:
+            model = settings.GROQ_MODEL if settings.LLM_PROVIDER == "groq" else settings.OLLAMA_MODEL
+            print(f"✓ LLM provider [{provider}] ready — model: {model}")
         else:
-            print("⚠ Ollama reachable but Mistral model not loaded (run: ollama pull mistral:7b)")
+            print(f"⚠ LLM provider [{provider}] not reachable (chat will fail)")
     except Exception as e:
-        print(f"⚠ Ollama not available (chat will fail): {e}")
+        print(f"⚠ LLM provider check failed: {e}")
 
     yield
 
@@ -71,7 +75,10 @@ app = FastAPI(
 # ── Static files (Swagger UI assets) ─────────────────────
 # Path resolves relative to this file → works both inside Docker and locally
 _STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
-app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
+if _STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
+else:
+    logger.warning("Static directory not found at %s; skipping /static mount", _STATIC_DIR)
 
 # ── CORS ──────────────────────────────────────────────────
 app.add_middleware(

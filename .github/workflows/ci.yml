@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - sprint/**
+      - release/**
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: medisense_db
+          POSTGRES_USER: medisense_user
+          POSTGRES_PASSWORD: medisense_test_pw
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medisense_user -d medisense_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: medisense_db
+      POSTGRES_USER: medisense_user
+      POSTGRES_PASSWORD: medisense_test_pw
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      JWT_SECRET_KEY: ci_dummy_secret
+      PGCRYPTO_KEY: ci_dummy_pgcrypto_key
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Compile Python sources
+        run: python -m compileall -q backend/app backend/scripts
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest -q
+
+      - name: Run red-team safety smoke
+        run: |
+          cd backend
+          python scripts/run_red_team_eval.py --output results/red_team_eval_ci.json
+
+      - name: Enforce red-team strict pass
+        run: |
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          report_path = Path("backend/results/red_team_eval_ci.json")
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          strict = float(report.get("strict_pass_rate", 0.0))
+          infra = int(report.get("infra_error_cases", 0))
+
+          print(f"strict_pass_rate={strict:.4f} infra_error_cases={infra}")
+          if strict < 1.0 or infra != 0:
+              sys.exit(1)
+          PY
+
+      - name: Upload red-team report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: red-team-ci-report
+          path: backend/results/red_team_eval_ci.json
+
+      - name: Free disk space before Docker build
+        run: |
+          docker system prune -af || true
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache || true
+          df -h
+
+      - name: Docker build smoke check
+        run: docker build --build-arg PIP_REQUIREMENTS=requirements-ci.txt -t medisense-backend-ci ./backend

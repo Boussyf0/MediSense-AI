@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # Redis
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
-    REDIS_PASSWORD: str
+    REDIS_PASSWORD: str = ""
 
     # JWT
     JWT_SECRET_KEY: str
@@ -43,12 +43,19 @@ class Settings(BaseSettings):
     QDRANT_HOST: str = "qdrant"
     QDRANT_PORT: int = 6333
 
-    # Ollama (used Sprint 3)
-    # Pull with: docker exec medisense_ollama ollama pull llama3.1:8b
-    # Fallback:  docker exec medisense_ollama ollama pull mistral:7b-instruct
+    # LLM provider — "ollama" (local) or "groq" (cloud, fast demo)
+    LLM_PROVIDER: str = "ollama"
+
+    # Ollama — local inference (Docker service or native on host with Metal GPU)
+    # Native Mac M1: set OLLAMA_HOST=host.docker.internal + run `ollama serve` on host
     OLLAMA_HOST: str = "ollama"
     OLLAMA_PORT: int = 11434
     OLLAMA_MODEL: str = "llama3.1:8b"
+
+    # Groq — cloud inference, ~300 tok/s, free tier (console.groq.com)
+    # Set LLM_PROVIDER=groq and GROQ_API_KEY=gsk_... in .env
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.1-8b-instant"
 
     @property
     def DATABASE_URL(self) -> str:
@@ -68,7 +75,9 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL(self) -> str:
-        return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+        if self.REDIS_PASSWORD:
+            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     model_config = SettingsConfigDict(
         env_file=".env",

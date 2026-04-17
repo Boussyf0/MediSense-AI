@@ -12,6 +12,7 @@ Why Qdrant hybrid search?
   Reciprocal Rank Fusion (RRF) merges both ranked lists — near cross-encoder
   accuracy at ~15ms instead of ~200ms.
 """
+import hashlib
 import uuid
 from typing import Any
 
@@ -42,6 +43,7 @@ COLLECTION_NAME = "medisense_medical"
 
 # RRF top-k per sub-query before fusion
 _PREFETCH_LIMIT = 20
+_ICD10_BOOST_PREFETCH_LIMIT = 12
 
 
 def _get_client() -> QdrantClient:
@@ -129,6 +131,22 @@ def upsert_points(
     return total
 
 
+def _build_sparse_query(text: str) -> SparseVector | None:
+    """Build sparse query vector using the same deterministic hashing as ingestion."""
+    token_freq: dict[int, float] = {}
+    for token in text.lower().split():
+        idx = int(hashlib.md5(token.encode()).hexdigest(), 16) % 100_000
+        token_freq[idx] = token_freq.get(idx, 0.0) + 1.0
+
+    if not token_freq:
+        return None
+
+    return SparseVector(
+        indices=list(token_freq.keys()),
+        values=list(token_freq.values()),
+    )
+
+
 def hybrid_search(
     query_text: str,
     limit: int = 5,
@@ -147,35 +165,51 @@ def hybrid_search(
     client = _get_client()
     query_vector = embed_query(query_text)
 
-    # Build optional filter
-    conditions = []
+    # Build base filter (strict only for source). ICD-10 is applied as a BOOST path,
+    # not as a hard filter, so sources without icd10_codes (e.g. BDPM) can still surface.
+    base_conditions = []
     if source_filter:
-        conditions.append(FieldCondition(key="source", match=MatchValue(value=source_filter)))
-    if icd10_filter:
-        conditions.append(FieldCondition(key="icd10_codes", match=MatchAny(any=icd10_filter)))
+        base_conditions.append(FieldCondition(key="source", match=MatchValue(value=source_filter)))
 
-    search_filter = Filter(must=conditions) if conditions else None
+    search_filter = Filter(must=base_conditions) if base_conditions else None
 
-    # Hybrid search using Qdrant's query API with RRF fusion
-    results = client.query_points(
-        collection_name=COLLECTION_NAME,
-        prefetch=[
+    # Hybrid search using Qdrant's query API with RRF fusion.
+    # Dense path: embed the query and search by cosine similarity.
+    # BM25 path: use the same deterministic sparse hashing as ingestion.
+    sparse_query = _build_sparse_query(query_text)
+    prefetches = [
+        Prefetch(
+            query=query_vector,
+            using="dense",
+            limit=_PREFETCH_LIMIT,
+            filter=search_filter,
+        ),
+    ]
+    if sparse_query is not None:
+        prefetches.append(
             Prefetch(
-                query=query_vector,
-                using="dense",
-                limit=_PREFETCH_LIMIT,
-                filter=search_filter,
-            ),
-            Prefetch(
-                query=models.SparseVector(
-                    indices=[],  # Qdrant handles BM25 tokenization internally
-                    values=[],
-                ),
+                query=sparse_query,
                 using="bm25",
                 limit=_PREFETCH_LIMIT,
                 filter=search_filter,
-            ),
-        ],
+            )
+        )
+
+    # Soft ICD-10 boost path (extra prefetch + RRF fusion) instead of hard filtering.
+    if icd10_filter:
+        icd10_conditions = [*base_conditions, FieldCondition(key="icd10_codes", match=MatchAny(any=icd10_filter))]
+        prefetches.append(
+            Prefetch(
+                query=query_vector,
+                using="dense",
+                limit=_ICD10_BOOST_PREFETCH_LIMIT,
+                filter=Filter(must=icd10_conditions),
+            )
+        )
+
+    results = client.query_points(
+        collection_name=COLLECTION_NAME,
+        prefetch=prefetches,
         query=FusionQuery(fusion=Fusion.RRF),
         limit=limit,
     )

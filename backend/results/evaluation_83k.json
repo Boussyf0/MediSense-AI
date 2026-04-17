@@ -1,0 +1,524 @@
+{
+  "timestamp": "2026-04-17T11:04:46.639041",
+  "corpus_points": 96303,
+  "metrics": {
+    "mrr_at_10": 0.8275,
+    "ndcg_at_5": 0.8574,
+    "precision_at_3": 0.75,
+    "top1_accuracy": 0.7083,
+    "retrieval_latency_ms": {
+      "p50": 92.65,
+      "p95": 278.44,
+      "p99": 1389.38,
+      "mean": 171.4
+    }
+  },
+  "first_token_latency_ms": null,
+  "reranker": null,
+  "per_query": [
+    {
+      "query": "effets secondaires paracétamol",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Tiotropium (Spiriva) (DCI: Tiotropium bromure). Indications: Traitement bronchod",
+      "top1_score": 0.5
+    },
+    {
+      "query": "contre-indications ibuprofène grossesse",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Ibuprofène (Advil, Nurofen, Brufen) (DCI: Ibuprofène). Indications: Douleurs, fi",
+      "top1_score": 0.75
+    },
+    {
+      "query": "posologie amoxicilline angine adulte",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Amoxicilline-acide clavulanique (Augmentin) (DCI: Amoxicilline + acide clavulani",
+      "top1_score": 0.5
+    },
+    {
+      "query": "interactions médicamenteuses metformine alcool",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Metformine — fiche prioritaire 123 (DCI: Metformine). Interactions: Produits de ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "surdosage paracétamol antidote",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Composition BDPM de CETAFEN 10 mg/3 mg par mL, solution pour perfusion (CIS 6424",
+      "top1_score": 0.5
+    },
+    {
+      "query": "oméprazole reflux gastrique posologie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour CIS 68486879 (CIS 68486879) le 20111019: niveau Faible. ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "levothyroxine hypothyroïdie prise à jeun",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour ERELZI 50 mg, solution injectable en seringue préremplie",
+      "top1_score": 0.5
+    },
+    {
+      "query": "salbutamol crise asthme utilisation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Salbutamol (Ventoline) (DCI: Salbutamol sulfate). Indications: Bronchodilatateur",
+      "top1_score": 0.6666667
+    },
+    {
+      "query": "metformine effets secondaires digestifs",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Metformine — fiche prioritaire 183 (DCI: Metformine). Effets secondaires: Troubl",
+      "top1_score": 0.5
+    },
+    {
+      "query": "warfarine surveillance INR saignement",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Warfarine — fiche prioritaire 049 (DCI: Warfarine). Surveillance: INR rapproché,",
+      "top1_score": 0.6666667
+    },
+    {
+      "query": "amoxicilline allergie pénicilline",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Antibioprophylaxie en chirurgie: Amoxicilline-acide clavula",
+      "top1_score": 0.5
+    },
+    {
+      "query": "atorvastatine douleurs musculaires myopathie",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour OXYCODONE DELBERT 10 mg/mL, solution injectable (CIS 696",
+      "top1_score": 0.5
+    },
+    {
+      "query": "symptômes infarctus du myocarde urgence",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour PLAVIX 75 mg, comprimé pelliculé (CIS 63564053) le 20160",
+      "top1_score": 0.5909091
+    },
+    {
+      "query": "traitement hypertension artérielle",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour OPDIVO 10 mg/ml, solution a diluer pour perfusion (CIS 6",
+      "top1_score": 0.5
+    },
+    {
+      "query": "diabète type 2 HbA1c objectif",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Diabète de type 2 — stratégie médicamenteuse — Objectif HbA1c < 7% pour la plupa",
+      "top1_score": 0.6
+    },
+    {
+      "query": "symptômes migraine traitement",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour CIS 67340750 (CIS 67340750) le 20220914: niveau Importan",
+      "top1_score": 0.5
+    },
+    {
+      "query": "pneumonie antibiotique traitement",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour OPDIVO 10 mg/ml, solution a diluer pour perfusion (CIS 6",
+      "top1_score": 0.5
+    },
+    {
+      "query": "asthme traitement de fond corticoïdes",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Asthme (J45) — Traitement: corticoides inhales (fond) + beta-2 mimétiques (crise",
+      "top1_score": 0.5
+    },
+    {
+      "query": "AVC ischémique urgence thrombolyse",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "AVC ischémique — prise en charge urgence — Thrombolyse IV rtPA < 4h30 ou thrombe",
+      "top1_score": 0.75
+    },
+    {
+      "query": "lombalgie imagerie recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Lombalgie commune de l'adulte: Pas d'imagerie systématique ",
+      "top1_score": 0.5833334
+    },
+    {
+      "query": "insuffisance rénale chronique stades",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Insuffisance rénale chronique — surveillance et ralentissement de la progression",
+      "top1_score": 0.6666667
+    },
+    {
+      "query": "fibrillation auriculaire anticoagulation",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour PLAVIX 75 mg, comprimé pelliculé (CIS 63564053) le 20160",
+      "top1_score": 0.5714286
+    },
+    {
+      "query": "dépression traitement antidépresseurs",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Recommandation HAS — Dépression caractérisée de l'adulte: Antidépresseurs en 1re",
+      "top1_score": 0.5
+    },
+    {
+      "query": "épilepsie traitement antiépileptiques",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Epilepsie (G40) — Traitement: antiepileptiques (valproate, lamotrigine, levetira",
+      "top1_score": 0.5
+    },
+    {
+      "query": "j'ai de la fièvre 39 degrés que faire",
+      "top1_relevant": false,
+      "top3_relevant_count": 0,
+      "top1_text_snippet": "Trench fever (ICD-10: A79.0). Catégorie: Ot.",
+      "top1_score": 0.5
+    },
+    {
+      "query": "douleur abdominale droite appendicite",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour ESKESIA 25 mg/mL, solution injectable/pour perfusion (CI",
+      "top1_score": 0.5
+    },
+    {
+      "query": "toux chronique 3 mois causes",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Toux (R05): Toux aigue < 3 semaines: infection virale (rhinopharyngite). Toux ch",
+      "top1_score": 0.5
+    },
+    {
+      "query": "céphalée brutale hémorragie méningée",
+      "top1_relevant": false,
+      "top3_relevant_count": 0,
+      "top1_text_snippet": "Haemorrhage into co-twin (ICD-10: P50.3). Catégorie: Fe.",
+      "top1_score": 0.5
+    },
+    {
+      "query": "dyspnée essoufflement insuffisance cardiaque",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Insuffisance cardiaque (I50): Incapacite du coeur a assurer un debit adequat. Sy",
+      "top1_score": 0.5
+    },
+    {
+      "query": "palpitations cardiaques tachycardie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour METOPROLOL ARROW LAB 50 mg, comprimé pelliculé sécable (",
+      "top1_score": 0.5
+    },
+    {
+      "query": "oedème membres inférieurs causes",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour CIS 62418729 (CIS 62418729) le 20061004: niveau Faible. ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "perte de poids inexpliquée cancer",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour ENBREL 25 mg, solution injectable en cartouche distribut",
+      "top1_score": 0.5
+    },
+    {
+      "query": "recommandation HAS hypertension bilan initial",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Hypertension artérielle de l'adulte: Recommandation de bonn",
+      "top1_score": 1.0
+    },
+    {
+      "query": "stratégie diabète type 2 étapes traitement",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour OPDIVO 10 mg/ml, solution a diluer pour perfusion (CIS 6",
+      "top1_score": 0.5
+    },
+    {
+      "query": "antibiothérapie rhinopharyngite recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Antibiothérapie ORL — recommandations: Rhinopharyngite: JAM",
+      "top1_score": 0.8333334
+    },
+    {
+      "query": "dépistage cancer sein mammographie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Cancer du sein (C50): Tumeur maligne mammaire. Depistage: mammographie tous les ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "prévention cardiovasculaire facteurs de risque",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour AMGEVITA 40 mg, solution injectable en seringue prérempl",
+      "top1_score": 0.5
+    },
+    {
+      "query": "grossesse diabète gestationnel surveillance",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour COLPRONE 5 mg, comprimé (CIS 69346531) le 20250115: nive",
+      "top1_score": 0.5
+    },
+    {
+      "query": "numéro urgence médicale Maroc SAMU",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Guide clinique Maroc — Urgences médicales au Maroc — Numéros et procédures: Numé",
+      "top1_score": 1.0
+    },
+    {
+      "query": "hypertension traitement AMO Maroc remboursé",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Guide clinique Maroc — Hypertension artérielle — Protocole thérapeutique Maroc (",
+      "top1_score": 0.5
+    },
+    {
+      "query": "diabète médicaments remboursés AMO Maroc",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Guide clinique Maroc — Diabète de type 2 — Protocole AMO Maroc: Le diabète affec",
+      "top1_score": 1.0
+    },
+    {
+      "query": "tuberculose traitement gratuit Maroc PNLT",
+      "top1_relevant": true,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Guide clinique Maroc — Tuberculose — Guide national de prise en charge Maroc: Le",
+      "top1_score": 0.625
+    },
+    {
+      "query": "assurance maladie RAMED Maroc pauvre",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Guide clinique Maroc — Régime d'assurance maladie au Maroc — AMO/RAMED: Assuranc",
+      "top1_score": 0.5
+    },
+    {
+      "query": "paludisme traitement Maroc chloroquine",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Protocole marocain: Paludisme importé — protocole MA 38. Traitement ma: Traiteme",
+      "top1_score": 0.5
+    },
+    {
+      "query": "vaccins obligatoires Maroc enfants PNI",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour BEYFORTUS 50 mg, solution injectable en seringue préremp",
+      "top1_score": 0.5
+    },
+    {
+      "query": "hôpital urgence Casablanca Rabat Maroc",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Guide clinique Maroc — Urgences médicales au Maroc — Numéros et procédures: Numé",
+      "top1_score": 0.8333334
+    },
+    {
+      "query": "cancer Maroc incidence mortalité traitement",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Protocole marocain: BPCO — protocole MA 47. Traitement ma: Traitement gradué sel",
+      "top1_score": 0.5
+    },
+    {
+      "query": "VIH ARV gratuit Maroc PNLS",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Guide clinique Maroc — SIDA/VIH — Programme national Maroc: Prévalence VIH au Ma",
+      "top1_score": 0.8333334
+    },
+    {
+      "query": "antibiotiques résistance Maroc rhinopharyngite",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Guide clinique Maroc — Antibiothérapie responsable — Contexte marocain: Résistan",
+      "top1_score": 1.0
+    },
+    {
+      "query": "santé maternelle accouchement Maroc maternite",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Santé maternelle et néonatale — Maroc — Objectifs Plan Santé Maroc 2025: réduire",
+      "top1_score": 0.64285713
+    },
+    {
+      "query": "prix paracétamol Maroc dhs MAD pharmacie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Médicament marocain: PHYSIOLAC EPISODES DIARRHÉIQUE,  0 à 12 mois. Présentation:",
+      "top1_score": 0.5
+    },
+    {
+      "query": "prix amoxicilline Maroc dirham",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Médicament marocain: AMOXICILLINE SP 500 MG, Comprimé dispersible. Présentation:",
+      "top1_score": 0.64285713
+    },
+    {
+      "query": "médicament générique moins cher Maroc",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Médicament marocain: MELIMAG, Gélule. Présentation: Boite de 30 - PPC: 95.00 dhs",
+      "top1_score": 0.5
+    },
+    {
+      "query": "prix metformine Maroc pharmacie",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Médicament marocain: DIAFORMINE 850 MG, Comprimé. Présentation: Boite de 30. Pri",
+      "top1_score": 0.5
+    },
+    {
+      "query": "mal de tête fort douleur tête que faire",
+      "top1_relevant": false,
+      "top3_relevant_count": 0,
+      "top1_text_snippet": "Évaluation HAS/SMR pour AMGEVITA 20 mg, solution injectable en seringue prérempl",
+      "top1_score": 0.5
+    },
+    {
+      "query": "je tousse depuis 3 semaines bronchite",
+      "top1_relevant": true,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Toux (R05): Toux aigue < 3 semaines: infection virale (rhinopharyngite). Toux ch",
+      "top1_score": 0.5
+    },
+    {
+      "query": "tension artérielle élevée que faire",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour SIMPONI 50 mg, solution injectable en stylo pré-rempli (",
+      "top1_score": 0.5
+    },
+    {
+      "query": "sucre dans le sang élevé diabète symptômes",
+      "top1_relevant": false,
+      "top3_relevant_count": 0,
+      "top1_text_snippet": "Évaluation HAS/SMR pour OPDIVO 10 mg/ml, solution a diluer pour perfusion (CIS 6",
+      "top1_score": 0.5
+    },
+    {
+      "query": "mal au ventre diarrhée gastroentérite",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Évaluation HAS/SMR pour BEYFORTUS 50 mg, solution injectable en seringue préremp",
+      "top1_score": 0.5
+    },
+    {
+      "query": "douleur poitrine essoufflement coeur",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Angine de poitrine (I20): Douleur thoracique constrictive retrosternale a l'effo",
+      "top1_score": 0.5
+    },
+    {
+      "query": "enfant fièvre 40 degrés convulsions",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Composition BDPM de CURACNE 40 mg, capsule molle (CIS 61654491): ISOTRÉTINOÏNE (",
+      "top1_score": 0.5
+    },
+    {
+      "query": "grosse fatigue anémie fer sang",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour EPREX 2000 UI/mL, solution injectable en seringue prérem",
+      "top1_score": 0.5555556
+    },
+    {
+      "query": "ibuprofène contre-indiqué asthme AINS",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Ibuprofène (Advil, Nurofen, Brufen) — Contre Indications: Ulcère gastroduodénal ",
+      "top1_score": 0.8333334
+    },
+    {
+      "query": "paracétamol insuffisance rénale dosage",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour PARACETAMOL/CODEINE PIERRE FABRE 300 mg/25 mg, comprimé ",
+      "top1_score": 0.5
+    },
+    {
+      "query": "prévention AVC aspirine statine",
+      "top1_relevant": false,
+      "top3_relevant_count": 1,
+      "top1_text_snippet": "Occupant of pick-up truck or van injured in collision with car, pick-up truck or",
+      "top1_score": 0.5
+    },
+    {
+      "query": "vaccin grippe personnes âgées recommandation",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Évaluation HAS/SMR pour CIS 60094805 (CIS 60094805) le 20211201: niveau Importan",
+      "top1_score": 0.8333334
+    },
+    {
+      "query": "obésité IMC chirurgie bariatrique critères",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Recommandation HAS — Obésité de l'adulte — prise en charge multidisciplinaire: I",
+      "top1_score": 0.7
+    },
+    {
+      "query": "insuffisance hépatique médicaments contre-indiqués",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Guide clinique Maroc — Prescription et automédication — Contexte marocain: Au Ma",
+      "top1_score": 0.5
+    },
+    {
+      "query": "polymédication personnes âgées interactions",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Évaluation HAS/SMR pour TAMIFLU 75 mg, gélule (CIS 63601338) le 20260218: niveau",
+      "top1_score": 0.5
+    },
+    {
+      "query": "automédication risques Maroc conseil",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Prescription et automédication — Contexte marocain — Risque majeur: antibiotique",
+      "top1_score": 0.5
+    },
+    {
+      "query": "nutrition obésité alimentation Maroc",
+      "top1_relevant": true,
+      "top3_relevant_count": 3,
+      "top1_text_snippet": "Nutrition et malnutrition — Maroc — Double fardeau nutritionnel au Maroc: obésit",
+      "top1_score": 1.0
+    },
+    {
+      "query": "santé mentale dépression Maroc stigmatisation",
+      "top1_relevant": false,
+      "top3_relevant_count": 2,
+      "top1_text_snippet": "Dépression caractérisée de l'adulte — Hospitalisation si risque suicidaire élevé",
+      "top1_score": 0.5
+    }
+  ]
+}

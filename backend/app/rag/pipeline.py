@@ -13,6 +13,8 @@ Steps:
   [7] Safety post-check (dosage warnings, disclaimers)
 """
 import asyncio
+import logging
+import time
 from dataclasses import dataclass
 from typing import AsyncGenerator, Any
 
@@ -25,6 +27,9 @@ from app.rag.llm import generate, generate_stream
 from app.mcp.client import fetch_mcp_context
 
 
+logger = logging.getLogger(__name__)
+
+
 @dataclass
 class PipelineResult:
     """Full result from the RAG pipeline (non-streaming mode)."""
@@ -35,6 +40,7 @@ class PipelineResult:
     is_urgent: bool
     mcp_data: dict[str, Any]
     query_fr: str  # normalized French query (for audit/debug)
+    timings_ms: dict[str, float] | None = None
 
 
 async def run(
@@ -51,16 +57,26 @@ async def run(
     Returns:
         PipelineResult with reply, sources, confidence, etc.
     """
+    started = time.perf_counter()
+    timings_ms: dict[str, float] = {}
+
     # [1] Language detection
+    t0 = time.perf_counter()
     detected_lang = detect_language(user_message)
+    timings_ms["language_detection"] = (time.perf_counter() - t0) * 1000
 
     # [2] Normalize to French
+    t0 = time.perf_counter()
     query_fr = await normalize_to_french(user_message, detected_lang)
+    timings_ms["normalization"] = (time.perf_counter() - t0) * 1000
 
     # [4] Extract medical entities (from French query)
+    t0 = time.perf_counter()
     entities = extract_entities(query_fr)
+    timings_ms["entity_extraction"] = (time.perf_counter() - t0) * 1000
 
     # [3] Parallel: Qdrant retrieval + MCP fetch
+    t0 = time.perf_counter()
     qdrant_task = asyncio.create_task(
         _safe_hybrid_search(query_fr, entities.icd10_codes)
     )
@@ -72,12 +88,17 @@ async def run(
     )
 
     chunks, mcp_data = await asyncio.gather(qdrant_task, mcp_task)
+    timings_ms["retrieval_and_mcp"] = (time.perf_counter() - t0) * 1000
 
     # [5] Safety pre-check
+    t0 = time.perf_counter()
     scores = [c.get("score", 0.0) for c in chunks]
-    safety = pre_generation_check(entities, scores)
+    safety = pre_generation_check(entities, scores, query_text=query_fr)
+    timings_ms["safety_precheck"] = (time.perf_counter() - t0) * 1000
 
     if safety.should_block:
+        timings_ms["total"] = (time.perf_counter() - started) * 1000
+        logger.info("pipeline_timing_ms=%s", {k: round(v, 2) for k, v in timings_ms.items()})
         return PipelineResult(
             reply=safety.override_response or "",
             sources=[],
@@ -86,18 +107,25 @@ async def run(
             is_urgent=safety.is_urgent,
             mcp_data=mcp_data,
             query_fr=query_fr,
+            timings_ms=timings_ms,
         )
 
     # [6] LLM generation
+    t0 = time.perf_counter()
     raw_reply = await generate(
         user_message=user_message,
         context_chunks=chunks,
         mcp_data=mcp_data,
         response_lang=detected_lang,
     )
+    timings_ms["generation"] = (time.perf_counter() - t0) * 1000
 
     # [7] Safety post-check
-    reply = post_generation_check(raw_reply, safety.disclaimers)
+    t0 = time.perf_counter()
+    reply = post_generation_check(raw_reply, safety.disclaimers, patient_allergies)
+    timings_ms["safety_postcheck"] = (time.perf_counter() - t0) * 1000
+    timings_ms["total"] = (time.perf_counter() - started) * 1000
+    logger.info("pipeline_timing_ms=%s", {k: round(v, 2) for k, v in timings_ms.items()})
 
     # Format sources for response
     sources = [
@@ -118,6 +146,7 @@ async def run(
         is_urgent=False,
         mcp_data=mcp_data,
         query_fr=query_fr,
+        timings_ms=timings_ms,
     )
 
 
@@ -134,17 +163,27 @@ async def run_stream(
       {"type": "token",   "value": "Selon"}
       {"type": "done",    "confidence": 0.82}
     """
+    started = time.perf_counter()
+    timings_ms: dict[str, float] = {}
+
     # [1] Language detection
+    t0 = time.perf_counter()
     detected_lang = detect_language(user_message)
+    timings_ms["language_detection"] = (time.perf_counter() - t0) * 1000
     yield {"type": "lang", "value": detected_lang}
 
     # [2] Normalize to French
+    t0 = time.perf_counter()
     query_fr = await normalize_to_french(user_message, detected_lang)
+    timings_ms["normalization"] = (time.perf_counter() - t0) * 1000
 
     # [4] Extract medical entities
+    t0 = time.perf_counter()
     entities = extract_entities(query_fr)
+    timings_ms["entity_extraction"] = (time.perf_counter() - t0) * 1000
 
     # [3] Parallel retrieval
+    t0 = time.perf_counter()
     qdrant_task = asyncio.create_task(
         _safe_hybrid_search(query_fr, entities.icd10_codes)
     )
@@ -155,10 +194,13 @@ async def run_stream(
         )
     )
     chunks, mcp_data = await asyncio.gather(qdrant_task, mcp_task)
+    timings_ms["retrieval_and_mcp"] = (time.perf_counter() - t0) * 1000
 
     # [5] Safety pre-check
+    t0 = time.perf_counter()
     scores = [c.get("score", 0.0) for c in chunks]
-    safety = pre_generation_check(entities, scores)
+    safety = pre_generation_check(entities, scores, query_text=query_fr)
+    timings_ms["safety_precheck"] = (time.perf_counter() - t0) * 1000
 
     # Emit sources
     sources = [
@@ -169,27 +211,48 @@ async def run_stream(
 
     if safety.should_block:
         yield {"type": "token", "value": safety.override_response or ""}
-        yield {"type": "done", "confidence": safety.confidence, "is_urgent": safety.is_urgent}
+        timings_ms["total"] = (time.perf_counter() - started) * 1000
+        yield {
+            "type": "done",
+            "confidence": safety.confidence,
+            "is_urgent": safety.is_urgent,
+            "timings_ms": {k: round(v, 2) for k, v in timings_ms.items()},
+        }
         return
 
     # [6] Stream LLM tokens
     full_response = ""
+    generation_started = time.perf_counter()
+    first_token_ms: float | None = None
     async for token in generate_stream(
         user_message=user_message,
         context_chunks=chunks,
         mcp_data=mcp_data,
         response_lang=detected_lang,
     ):
+        if first_token_ms is None:
+            first_token_ms = (time.perf_counter() - generation_started) * 1000
         full_response += token
         yield {"type": "token", "value": token}
+    timings_ms["generation"] = (time.perf_counter() - generation_started) * 1000
+    if first_token_ms is not None:
+        timings_ms["first_token"] = first_token_ms
 
     # [7] Post-check — append disclaimers as final tokens
-    checked = post_generation_check(full_response, safety.disclaimers)
+    t0 = time.perf_counter()
+    checked = post_generation_check(full_response, safety.disclaimers, patient_allergies)
+    timings_ms["safety_postcheck"] = (time.perf_counter() - t0) * 1000
     extra = checked[len(full_response):]
     if extra:
         yield {"type": "token", "value": extra}
 
-    yield {"type": "done", "confidence": safety.confidence, "is_urgent": False}
+    timings_ms["total"] = (time.perf_counter() - started) * 1000
+    yield {
+        "type": "done",
+        "confidence": safety.confidence,
+        "is_urgent": False,
+        "timings_ms": {k: round(v, 2) for k, v in timings_ms.items()},
+    }
 
 
 async def _safe_hybrid_search(query_fr: str, icd10_codes: list[str]) -> list[dict]:
