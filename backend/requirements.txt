@@ -14,7 +14,7 @@ redis==5.2.0                # JWT blacklist + conversation memory
 # ── Authentication & Security ─────────────────────────────
 python-jose[cryptography]==3.3.0    # JWT encode/decode
 passlib[bcrypt]==1.7.4              # password hashing (bcrypt rounds=12)
-bcrypt==4.0.1                       # passlib 1.7.4 compatibility (avoids >72-byte backend regression)
+bcrypt==3.2.2                       # passlib 1.7.4 max compatible version (4.x breaks wrap-bug detection → #72)
 python-multipart==0.0.18            # OAuth2 form data parsing
 
 # ── Configuration ─────────────────────────────────────────
