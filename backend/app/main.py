@@ -39,16 +39,18 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠ Qdrant not available (RAG endpoints will fail): {e}")
 
-    # Ollama (non-blocking — check if Mistral model is loaded)
+    # LLM provider health check (non-blocking)
     try:
         from app.rag.llm import check_health
-        ollama_ok = await check_health()
-        if ollama_ok:
-            print("✓ Ollama + Mistral 7B ready")
+        provider = settings.LLM_PROVIDER.upper()
+        llm_ok = await check_health()
+        if llm_ok:
+            model = settings.GROQ_MODEL if settings.LLM_PROVIDER == "groq" else settings.OLLAMA_MODEL
+            print(f"✓ LLM provider [{provider}] ready — model: {model}")
         else:
-            print("⚠ Ollama reachable but Mistral model not loaded (run: ollama pull mistral:7b)")
+            print(f"⚠ LLM provider [{provider}] not reachable (chat will fail)")
     except Exception as e:
-        print(f"⚠ Ollama not available (chat will fail): {e}")
+        print(f"⚠ LLM provider check failed: {e}")
 
     yield
 

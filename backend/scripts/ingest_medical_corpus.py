@@ -354,9 +354,8 @@ def _compute_bm25_sparse(text: str) -> tuple[list[int], list[float]]:
     across runs regardless of PYTHONHASHSEED. The same token always maps to
     the same index, which is required for correct BM25 retrieval at query time.
 
-    Note: at query time, vectorstore.py passes the raw text via models.Document
-    so Qdrant tokenises it with its own analyser. This sparse vector is only
-    used during ingestion to populate the sparse index.
+    Note: at query time, vectorstore.py uses the same md5 token hashing for
+    sparse query vectors so BM25 indices align with indexed chunks.
     """
     tokens = text.lower().split()
     token_freq: dict[int, float] = {}

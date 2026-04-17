@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-04-17T11:04:07.626356",
+  "provider": "groq",
+  "provider_model": "llama-3.1-8b-instant",
+  "samples": 3,
+  "successful_samples": 3,
+  "failed_samples": 0,
+  "metrics_ms": {
+    "first_token": {
+      "p50": 394.38,
+      "p95": 834.28,
+      "mean": 474.11
+    },
+    "total_stream": {
+      "p50": 544.86,
+      "p95": 1367.68,
+      "mean": 716.25
+    },
+    "retrieval_and_mcp": {
+      "p50": 136.47,
+      "p95": 468.19,
+      "mean": 246.8
+    },
+    "generation": {
+      "p50": 694.02,
+      "p95": 919.47,
+      "mean": 694.02
+    }
+  },
+  "per_query": [
+    {
+      "query": "Quels sont les effets secondaires du paracetamol ?",
+      "status": "ok",
+      "attempts": 1,
+      "first_token_ms": 883.16,
+      "total_stream_ms": 1459.11,
+      "retrieval_and_mcp_ms": 505.05,
+      "generation_ms": 944.52,
+      "token_events": 513
+    },
+    {
+      "query": "J'ai une douleur thoracique et je transpire beaucoup.",
+      "status": "ok",
+      "attempts": 1,
+      "first_token_ms": 144.78,
+      "total_stream_ms": 144.79,
+      "retrieval_and_mcp_ms": 136.47,
+      "generation_ms": 0.0,
+      "token_events": 1
+    },
+    {
+      "query": "Quelle est la prise en charge initiale de l'hypertension ?",
+      "status": "ok",
+      "attempts": 1,
+      "first_token_ms": 394.38,
+      "total_stream_ms": 544.86,
+      "retrieval_and_mcp_ms": 98.88,
+      "generation_ms": 443.52,
+      "token_events": 108
+    }
+  ]
+}

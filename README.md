@@ -13,7 +13,7 @@ MediSense AI transforms a medical clinic into a proactive, augmented information
 
 1. Detects a biometric anomaly during a patient's sleep (IoT + LSTM)
 2. Sends a non-alarming push notification at wake-up time
-3. Runs a cognitive triage via natural language chatbot (RAG + Mistral 7B)
+3. Runs a cognitive triage via natural language chatbot (RAG + LLM provider toggle: Ollama/Groq)
 4. Predicts no-show probability and books the appointment (XGBoost)
 5. Syncs the CRM automatically (Salesforce Apex webhook)
 6. Prepares a 3-column AI summary for the doctor — saving 11 minutes per consultation
@@ -27,7 +27,7 @@ Pipeline 1 — IoT / Deep Learning
   Samsung Watch → MQTT/BLE → Kafka → TimescaleDB → LSTM → anomaly_detected
 
 Pipeline 2 — RAG / LLM
-  Patient chat → NLP → Qdrant (84k medical chunks) → cross-encoder → Mistral 7B → response
+  Patient chat → NLP → Qdrant (84k medical chunks) → cross-encoder → Ollama or Groq → response
 
 Pipeline 3 — Predictive ML
   Patient profile → XGBoost (8 features + SHAP) → no-show probability → smart agenda
@@ -43,7 +43,7 @@ Pipeline 3 — Predictive ML
 | Database | PostgreSQL 16 + pgcrypto (AES-256) |
 | Cache / Sessions | Redis 7 |
 | Vector DB | Qdrant |
-| Local LLM | Ollama + Mistral 7B |
+| LLM Inference | Ollama (local) or Groq API (demo mode) |
 | Reverse Proxy | Nginx (TLS 1.3) |
 | ML | XGBoost, LightGBM, Scikit-learn |
 | Deep Learning | PyTorch / TensorFlow (LSTM) |
@@ -164,7 +164,7 @@ User Stories: US-06 (granular consent), US-07 (RGPD data export), US-08 (right t
 ### Sprint 3 — RAG Pipeline & LLM Agents (upcoming)
 **Branch:** `sprint/3-rag-pipeline`
 
-User Stories: US-09 (Mistral 7B via Ollama < 150ms), US-10 (84k chunks in Qdrant), US-11 (symptom chatbot FR/AR/Darija), US-12 (cross-encoder re-ranking)
+User Stories: US-09 (LLM provider toggle Ollama/Groq), US-10 (84k chunks in Qdrant), US-11 (symptom chatbot FR/AR/Darija), US-12 (cross-encoder re-ranking)
 
 ---
 
@@ -263,10 +263,49 @@ curl -k -X POST https://localhost/api/v1/auth/login \
 open https://localhost/api/v1/docs
 ```
 
-### 5. Pull Mistral 7B (for Sprint 3 — 4GB download)
+### 5. Configure LLM provider
+
+#### Option A — Ollama local (default, RGPD-friendly)
 ```bash
-docker exec medisense_ollama ollama pull mistral:7b
+docker exec medisense_ollama ollama pull mistral:7b-instruct
+
+# .env
+LLM_PROVIDER=ollama
+OLLAMA_HOST=ollama
+OLLAMA_MODEL=mistral:7b-instruct
 ```
+
+#### Option B — Groq API (fast jury demo)
+```bash
+# .env
+LLM_PROVIDER=groq
+GROQ_API_KEY=gsk_...      # from https://console.groq.com
+GROQ_MODEL=llama-3.1-8b-instant
+```
+
+> Note: `LLM_PROVIDER=groq` sends prompts to a third-party cloud API (not on-prem RGPD mode).
+
+---
+
+## Evaluation evidence runbook
+
+```bash
+# Retrieval metrics + latencies (writes JSON artifact)
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/run_evaluation.py --output results/evaluation_83k.json"
+
+# LLM provider benchmark (first-token/total/retrieval p50/p95)
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/benchmark_llm_provider.py --output results/llm_provider_benchmark.json"
+
+# Red-team safety campaign (writes JSON artifact)
+docker exec medisense_fastapi bash -lc "cd /app && python scripts/run_red_team_eval.py --output results/red_team_eval_final.json"
+```
+
+Main artifacts:
+- `backend/results/evaluation_83k.json`
+- `backend/results/llm_provider_benchmark.json`
+- `backend/results/red_team_eval_final.json`
+
+CI also uploads `red-team-ci-report` artifact from `.github/workflows/ci.yml` (deterministic safety smoke).
 
 ---
 

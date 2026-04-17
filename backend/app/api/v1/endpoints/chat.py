@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.core.config import get_settings
-from app.core.dependencies import get_current_user
+from app.core.dependencies import TokenPayload, get_current_user
 from app.db.models.conversation import Conversation, Message
 from app.schemas.chat import (
     ChatRequest,
@@ -40,7 +40,7 @@ settings = get_settings()
 async def send_message(
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     """
     Send a message to the MediSense chatbot. Returns a complete JSON response.
@@ -49,7 +49,7 @@ async def send_message(
     - Otherwise, creates a new conversation.
     - For token-by-token streaming use `POST /chat/stream` instead.
     """
-    patient_id = uuid.UUID(current_user["sub"])
+    patient_id = uuid.UUID(current_user.sub)
 
     # Resolve or create conversation
     if body.conversation_id:
@@ -116,7 +116,7 @@ async def send_message(
 async def send_message_stream(
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     """
     Send a message and receive the response as Server-Sent Events (SSE).
@@ -131,7 +131,7 @@ async def send_message_stream(
     - `token`   — one text token from the LLM
     - `done`    — final event with confidence score and conversation_id
     """
-    patient_id = uuid.UUID(current_user["sub"])
+    patient_id = uuid.UUID(current_user.sub)
 
     if body.conversation_id:
         conv = await _get_conversation(db, body.conversation_id, patient_id)
@@ -153,12 +153,12 @@ async def send_message_stream(
 @router.get("", response_model=list[ConversationOut])
 async def list_conversations(
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: TokenPayload = Depends(get_current_user),
     limit: int = Query(default=20, le=100),
     offset: int = Query(default=0, ge=0),
 ):
     """List the patient's conversations (newest first)."""
-    patient_id = uuid.UUID(current_user["sub"])
+    patient_id = uuid.UUID(current_user.sub)
 
     stmt = (
         select(
@@ -195,10 +195,10 @@ async def list_conversations(
 async def get_conversation_history(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     """Get all messages in a conversation (decrypted)."""
-    patient_id = uuid.UUID(current_user["sub"])
+    patient_id = uuid.UUID(current_user.sub)
     conv = await _get_conversation(db, conversation_id, patient_id)
 
     # Decrypt messages using pgcrypto
@@ -231,7 +231,7 @@ async def get_conversation_history(
 async def delete_conversation(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     """
     Delete a conversation and all its messages.
@@ -239,7 +239,7 @@ async def delete_conversation(
     RGPD Article 17 — Right to erasure: patients can delete their chat history.
     CASCADE delete removes all messages automatically.
     """
-    patient_id = uuid.UUID(current_user["sub"])
+    patient_id = uuid.UUID(current_user.sub)
     conv = await _get_conversation(db, conversation_id, patient_id)
     await db.delete(conv)
     await db.commit()

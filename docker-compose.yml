@@ -79,6 +79,15 @@ services:
     networks:
       - medisense_network
 
+  # ── Ollama (LLM_PROVIDER=ollama) ──────────────────────────────────────────
+  # Mac M1/M2 : désactiver ce service et utiliser Ollama natif sur l'hôte pour
+  # bénéficier de l'accélération Metal GPU (~20-40 tok/s vs 0.4 tok/s Docker CPU).
+  #
+  #   1. Sur le Mac : brew install ollama && ollama serve
+  #   2. Dans .env  : OLLAMA_HOST=host.docker.internal
+  #   3. Commenter ce bloc ollama + le volume ollama_models ci-dessous
+  #
+  # Pour LLM_PROVIDER=groq : ce service n'est pas nécessaire du tout.
   ollama:
     image: ollama/ollama:latest
     container_name: medisense_ollama

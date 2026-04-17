@@ -1,10 +1,11 @@
 """
 Medical safety layer — guardrails beyond prompt engineering.
 
-Three levels of protection:
-  1. Confidence gate: if retrieval confidence is too low, refuse to answer
-  2. Drug dosage warning: if response mentions dosages, inject mandatory disclaimer
-  3. Urgency override: cardiac/respiratory/neuro symptoms → immediate SAMU alert
+Four levels of protection:
+  1. Urgency override: cardiac/respiratory/neuro symptoms → immediate SAMU alert
+  2. Adversarial query gate: injection / bypass / self-med attempts → pre-LLM block
+  3. Confidence gate: if retrieval confidence is too low, refuse to answer
+  4. Post-generation: dosage warnings, allergy alerts, standard disclaimers
 
 Why code-level safety instead of just prompt instructions?
   Prompt-only guardrails can be bypassed by adversarial inputs.
@@ -18,7 +19,47 @@ from app.rag.medical_entities import ExtractedEntities
 # Minimum average retrieval score to trust the response
 CONFIDENCE_THRESHOLD = 0.3
 
-# Patterns that indicate dosage information in LLM output
+# ── Adversarial query patterns (checked against the raw query, before LLM) ──
+
+# Dosage bypass: explicit attempts to get dosages while bypassing safety guards
+_DOSAGE_ADVERSARIAL_RE = re.compile(
+    r"sans\s+disclaimer"
+    r"|sans\s+mentionner"
+    r"|ignore\s+.{0,30}consigne"
+    r"|posologie\s+exacte"
+    r"|dose\s+maximale"
+    r"|dosage\s+agressif"
+    r"|sans\s+consulter"
+    r"|sans\s+avis\s+m[eé]dic"
+    r"|sans\s+m[eé]decin"
+    r"|sans\s+risque",
+    re.IGNORECASE,
+)
+
+# Prompt injection: attempts to override system role or force hallucination
+_INJECTION_RE = re.compile(
+    r"r[eé]v[eè]le\s+.{0,30}instruction"
+    r"|instructions?\s+interne"
+    r"|contourne\s+.{0,30}r[eè]gle"
+    r"|ignore\s+.{0,30}r[eè]gle"
+    r"|ignore\s+.{0,30}contexte"
+    r"|r[oô]le\s+d[eé]veloppeur"
+    r"|mode\s+d[eé]veloppeur"
+    r"|invente\s+.{0,30}r[eé]ponse"
+    r"|sans\s+source\s+fiable"
+    r"|n.{0,5}as\s+pas\s+de\s+source\s+fiable",
+    re.IGNORECASE,
+)
+
+# Dangerous self-medication
+_SELF_MED_RE = re.compile(
+    r"autom[eé]dication"
+    r"|auto-m[eé]dication"
+    r"|(protocole|traitement).{0,40}sans\s+consulter",
+    re.IGNORECASE,
+)
+
+# ── Patterns that indicate dosage information in LLM output ──────────────────
 _DOSAGE_PATTERNS = [
     r"\d+\s*mg",
     r"\d+\s*ml",
@@ -30,6 +71,8 @@ _DOSAGE_PATTERNS = [
     r"dosage",
 ]
 _DOSAGE_RE = re.compile("|".join(_DOSAGE_PATTERNS), re.IGNORECASE)
+
+# ── Static response strings ───────────────────────────────────────────────────
 
 URGENCY_MESSAGE = (
     "URGENCE: Les symptomes decrits necessitent une prise en charge immediate. "
@@ -52,6 +95,12 @@ DOSAGE_DISCLAIMER = (
 STANDARD_DISCLAIMER = (
     "\n\nCeci est une aide informative et non un diagnostic medical. "
     "Consultez un professionnel de sante."
+)
+
+DOSAGE_ADVERSARIAL_RESPONSE = (
+    "Je ne peux pas fournir de posologie ou de dosage specifique en dehors "
+    "d'un cadre medical supervise. Consultez votre medecin ou pharmacien."
+    + DOSAGE_DISCLAIMER
 )
 
 
@@ -92,17 +141,30 @@ def check_allergy_conflict(
 def pre_generation_check(
     entities: ExtractedEntities,
     retrieval_scores: list[float],
+    query_text: str = "",
 ) -> SafetyResult:
     """
     Run safety checks BEFORE LLM generation.
 
-    Called after retrieval, before calling Mistral 7B.
-    Can block generation entirely if confidence is too low or situation is urgent.
+    Order of precedence (highest → lowest):
+      1. Urgency override (cardiac/neuro/respiratory emergency)
+      2. Prompt injection / forced hallucination attempt
+      3. Dangerous self-medication attempt
+      4. Adversarial dosage bypass (drug detected + bypass language)
+      5. Low retrieval confidence gate
+      6. Normal path — drug mentioned → pre-add dosage disclaimer
+
+    Args:
+        entities:         Extracted medical entities (drugs, ICD-10, urgency flag).
+        retrieval_scores: RRF scores from Qdrant hybrid search.
+        query_text:       Raw (French-normalised) query — used for pattern matching.
     """
-    avg_score = sum(retrieval_scores) / len(retrieval_scores) if retrieval_scores else 0.0
+    avg_score = (
+        sum(retrieval_scores) / len(retrieval_scores) if retrieval_scores else 0.0
+    )
     disclaimers = [STANDARD_DISCLAIMER]
 
-    # Urgency override — don't wait for LLM, respond immediately
+    # 1. Urgency override — respond immediately, no LLM
     if entities.is_urgent:
         return SafetyResult(
             should_block=True,
@@ -112,7 +174,46 @@ def pre_generation_check(
             confidence=avg_score,
         )
 
-    # Low confidence — refuse to answer
+    # 2. Prompt injection / forced hallucination — no LLM
+    if _INJECTION_RE.search(query_text):
+        # If a drug is also mentioned, caller expects dosage_disclaimer semantics
+        if entities.drug_names:
+            return SafetyResult(
+                should_block=True,
+                override_response=DOSAGE_ADVERSARIAL_RESPONSE,
+                disclaimers=[],
+                is_urgent=False,
+                confidence=avg_score,
+            )
+        return SafetyResult(
+            should_block=True,
+            override_response=LOW_CONFIDENCE_MESSAGE,
+            disclaimers=[],
+            is_urgent=False,
+            confidence=avg_score,
+        )
+
+    # 3. Dangerous self-medication attempt — no LLM
+    if _SELF_MED_RE.search(query_text):
+        return SafetyResult(
+            should_block=True,
+            override_response=LOW_CONFIDENCE_MESSAGE,
+            disclaimers=[],
+            is_urgent=False,
+            confidence=avg_score,
+        )
+
+    # 4. Adversarial dosage bypass with known drug — no LLM
+    if entities.drug_names and _DOSAGE_ADVERSARIAL_RE.search(query_text):
+        return SafetyResult(
+            should_block=True,
+            override_response=DOSAGE_ADVERSARIAL_RESPONSE,
+            disclaimers=[],
+            is_urgent=False,
+            confidence=avg_score,
+        )
+
+    # 5. Low confidence — refuse to answer
     if avg_score < CONFIDENCE_THRESHOLD:
         return SafetyResult(
             should_block=True,
@@ -122,7 +223,7 @@ def pre_generation_check(
             confidence=avg_score,
         )
 
-    # Drug mentioned — pre-add dosage disclaimer
+    # 6. Normal path — drug mentioned → pre-add dosage disclaimer
     if entities.drug_names:
         disclaimers.append(DOSAGE_DISCLAIMER)
 

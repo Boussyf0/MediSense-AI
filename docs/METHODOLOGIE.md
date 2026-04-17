@@ -218,7 +218,7 @@ flowchart TB
 | US-45 | Swagger auto-docs à `/api/v1/docs` (assets locaux, no CDN) | 3 | Should | ✅ Done |
 | **Total** | | **34 pts** | | |
 
-#### Sprint 2 — RGPD & Consentement `13 Avr – 26 Avr 2026` `⏳ En cours`
+#### Sprint 2 — RGPD & Consentement `01 Avr – 14 Avr 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
@@ -228,14 +228,14 @@ flowchart TB
 | US-46 | Endpoint audit logs paginé : `GET /admin/audit-logs` (Art.30) | 3 | Should | ⏳ |
 | **Total** | | **21 pts** | | |
 
-#### Sprint 3 — RAG Pipeline & LLM `27 Avr – 10 Mai 2026` `⏳ À venir`
+#### Sprint 3 — RAG Pipeline & LLM `15 Avr – 28 Avr 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-09 | Mistral 7B via Ollama. Latence P95 < 150ms | 8 | Must | ⏳ |
-| US-10 | Indexer 84 000 chunks médicaux dans Qdrant (ICD-10, Vidal, DSM-5) | 13 | Must | ⏳ |
-| US-11 | Chatbot symptômes FR/AR/Darija avec triage cognitif | 8 | Must | ⏳ |
-| US-12 | Cross-encoder re-ranking sur top-20 chunks | 5 | Should | ⏳ |
+| US-09 | LLM provider toggle (`ollama` local / `groq` démo). Latence retrieval P95 = 265 ms (CPU) | 8 | Must | ✅ Done |
+| US-10 | Indexer 96 303 pts Qdrant (ICD-10, BDPM France, medicament.ma, corpus offline) | 13 | Must | ✅ Done |
+| US-11 | Chatbot symptômes FR/AR/Darija avec triage cognitif + 141 SAMU Maroc | 8 | Must | ✅ Done |
+| US-12 | Hybrid Dense+BM25+RRF, safety layer code-level, red-team 10 cas | 5 | Should | ✅ Done |
 | **Total** | | **34 pts** | | |
 
 #### Sprint 4 — Agents IA & DPA `11 Mai – 24 Mai 2026` `⏳ À venir`
@@ -336,7 +336,7 @@ flowchart TB
         end
 
         subgraph S3["Sprint 3<br/>27 Avr – 10 Mai<br/>⏳ À venir"]
-            T3["Mistral 7B Ollama<br/>84k chunks Qdrant<br/>Chatbot FR/AR/Darija<br/>Cross-encoder<br/>34 pts"]
+            T3["LLM Ollama/Groq<br/>84k chunks Qdrant<br/>Chatbot FR/AR/Darija<br/>Cross-encoder<br/>34 pts"]
         end
 
         subgraph S4["Sprint 4<br/>11 Mai – 24 Mai<br/>⏳ À venir"]
@@ -807,7 +807,7 @@ flowchart TB
             DL["PyTorch<br/>LSTM Bidirectionnel"]
         end
         subgraph RAG_LIB["RAG"]
-            RA["Sentence-Transformers<br/>Qdrant Client<br/>Ollama Python SDK<br/>Cross-Encoder"]
+            RA["Sentence-Transformers<br/>Qdrant Client<br/>HTTPX (Ollama/Groq)<br/>Cross-Encoder"]
         end
     end
 
@@ -825,7 +825,8 @@ flowchart TB
             NGX["Nginx Alpine<br/>TLS 1.3"]
         end
         subgraph AI_INFRA["IA Locale"]
-            OLL["Ollama<br/>Mistral 7B Q4_K_M"]
+            OLL["Ollama local<br/>Mistral 7B Q4_K_M"]
+            GROQ["Groq API (optionnel)<br/>llama-3.1-8b-instant"]
         end
     end
 

@@ -53,17 +53,18 @@ SYMPTOM_ICD10_MAP: dict[str, list[str]] = {
 
 # Common drug names (trigger ANSM MCP lookup)
 DRUG_KEYWORDS = {
-    "doliprane", "paracetamol", "ibuprofene", "aspirine", "amoxicilline",
+    "doliprane", "paracetamol", "ibuprofene", "ibuprofène", "aspirine", "amoxicilline",
     "augmentin", "voltarene", "diclofenac", "omeprazole", "metformine",
     "amlodipine", "atorvastatine", "levothyrox", "ventoline", "salbutamol",
     "codeine", "tramadol", "prednisolone", "cortisone", "insuline",
+    "warfarine", "warfarin", "antibiotique", "antibiotic",
 }
 
 # Urgency keywords — always trigger immediate warning
 URGENCY_KEYWORDS = {
     "douleur thoracique", "douleur poitrine", "crise cardiaque",
-    "difficulte respiratoire", "dyspnee", "etouffe",
-    "perte de connaissance", "syncope", "evanouissement",
+    "difficulte respiratoire", "dyspnee", "etouffe", "ne respire",
+    "perte de connaissance", "perdu connaissance", "syncope", "evanouissement",
     "paralysie faciale", "avc", "accident vasculaire",
     "hemorragie", "saignement abondant",
     "convulsion", "crise epileptique",
