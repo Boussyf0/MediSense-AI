@@ -13,14 +13,23 @@ documents each route's response schema (ChatResponse vs event stream).
 """
 import json
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from pydantic import ValidationError
 from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agents.orchestrator import AgentRoute, run_agent_flow
 from app.db.session import get_db
 from app.core.config import get_settings
+from app.core.conversation_cache import (
+    clear_conversation,
+    get_turns,
+    push_turn,
+    set_conversation_meta,
+)
 from app.core.dependencies import TokenPayload, get_current_user
 from app.db.models.conversation import Conversation, Message
 from app.schemas.chat import (
@@ -60,36 +69,71 @@ async def send_message(
         await db.flush()
 
     # Non-streaming path
-    result = await run(body.message)
+    result = await run(
+        body.message,
+        patient_id=str(patient_id),
+        db=db,
+    )
+    agent_result = await run_agent_flow(
+        query_fr=result.query_fr,
+        patient_id=str(patient_id),
+        conversation_id=str(conv.id),
+        iot_anomalies=result.iot_context.anomalies if result.iot_context else [],
+        is_urgent_from_rag=result.is_urgent,
+        db=db,
+    )
+    final_reply = _merge_agent_message(
+        result.reply,
+        agent_result.chat_message if agent_result.route != AgentRoute.INFO else "",
+    )
+    final_is_urgent = result.is_urgent or agent_result.route == AgentRoute.ESCALATE
 
     # Auto-generate title from first message
     if not conv.title:
         conv.title = body.message[:80]
 
     conv.language = result.language
+    await set_conversation_meta(str(conv.id), str(patient_id), result.language)
+    sources_out = [SourceOut(**s) for s in result.sources]
 
     # Persist user message (encrypted)
-    await _save_message(db, conv.id, "user", body.message)
+    user_msg_id, user_created_at = await _save_message(db, conv.id, "user", body.message)
+    await push_turn(
+        conversation_id=str(conv.id),
+        role="user",
+        content=body.message,
+        message_id=str(user_msg_id),
+        created_at=user_created_at,
+    )
 
     # Persist assistant reply (encrypted)
-    await _save_message(
+    assistant_msg_id, assistant_created_at = await _save_message(
         db,
         conv.id,
         "assistant",
-        result.reply,
-        sources=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in [SourceOut(**s) for s in result.sources]],
+        final_reply,
+        sources=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
         confidence=result.confidence,
+    )
+    await push_turn(
+        conversation_id=str(conv.id),
+        role="assistant",
+        content=final_reply,
+        context_chunks=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
+        confidence=result.confidence,
+        message_id=str(assistant_msg_id),
+        created_at=assistant_created_at,
     )
 
     await db.commit()
 
     return ChatResponse(
-        reply=result.reply,
-        sources=[SourceOut(**s) for s in result.sources],
+        reply=final_reply,
+        sources=sources_out,
         conversation_id=conv.id,
         language=result.language,
         confidence=result.confidence,
-        is_urgent=result.is_urgent,
+        is_urgent=final_is_urgent,
     )
 
 
@@ -139,6 +183,7 @@ async def send_message_stream(
         conv = Conversation(patient_id=patient_id)
         db.add(conv)
         await db.flush()
+    await set_conversation_meta(str(conv.id), str(patient_id), conv.language or "fr")
 
     return StreamingResponse(
         _stream_response(body.message, conv, patient_id, db),
@@ -200,6 +245,12 @@ async def get_conversation_history(
     """Get all messages in a conversation (decrypted)."""
     patient_id = uuid.UUID(current_user.sub)
     conv = await _get_conversation(db, conversation_id, patient_id)
+    cached_turns = await get_turns(str(conversation_id), last_n=2000)
+    cached_messages = _cache_turns_to_messages(cached_turns)
+    if cached_messages:
+        return cached_messages
+    if cached_turns and cached_messages is None:
+        await clear_conversation(str(conversation_id))
 
     # Decrypt messages using pgcrypto
     stmt = text("""
@@ -214,7 +265,7 @@ async def get_conversation_history(
     result = await db.execute(stmt, {"key": settings.PGCRYPTO_KEY, "conv_id": conv.id})
     rows = result.all()
 
-    return [
+    messages = [
         MessageOut(
             id=row.id,
             role=row.role,
@@ -225,6 +276,18 @@ async def get_conversation_history(
         )
         for row in rows
     ]
+    await set_conversation_meta(str(conv.id), str(patient_id), conv.language or "fr")
+    for msg in messages:
+        await push_turn(
+            conversation_id=str(conv.id),
+            role=msg.role,
+            content=msg.content,
+            context_chunks=[s.model_dump() for s in msg.sources] if msg.sources else [],
+            confidence=msg.confidence,
+            message_id=str(msg.id),
+            created_at=msg.created_at,
+        )
+    return messages
 
 
 @router.delete("/{conversation_id}", status_code=204)
@@ -243,6 +306,7 @@ async def delete_conversation(
     conv = await _get_conversation(db, conversation_id, patient_id)
     await db.delete(conv)
     await db.commit()
+    await clear_conversation(str(conversation_id))
 
 
 # ── Helpers ──────────────────────────────────────────────
@@ -272,8 +336,8 @@ async def _save_message(
     content: str,
     sources: list[dict] | None = None,
     confidence: float | None = None,
-) -> None:
-    """Save an encrypted message to the database."""
+) -> tuple[uuid.UUID, str]:
+    """Save an encrypted message to the database and return its ID + timestamp."""
     stmt = text("""
         INSERT INTO messages (id, conversation_id, role, content_encrypted, sources, confidence)
         VALUES (
@@ -284,8 +348,9 @@ async def _save_message(
             :sources,
             :confidence
         )
+        RETURNING id, created_at
     """)
-    await db.execute(
+    result = await db.execute(
         stmt,
         {
             "conv_id": conversation_id,
@@ -296,6 +361,11 @@ async def _save_message(
             "confidence": confidence,
         },
     )
+    row = result.fetchone()
+    if not row:
+        raise RuntimeError("Failed to persist chat message")
+    created_at: datetime = row.created_at
+    return row.id, created_at.isoformat()
 
 
 async def _stream_response(
@@ -308,12 +378,20 @@ async def _stream_response(
     full_reply = ""
     sources_data = []
     confidence = 0.0
+    is_urgent_from_rag = False
+    iot_anomalies: list[dict] = []
+    done_event: dict | None = None
 
-    async for event in run_stream(message):
+    async for event in run_stream(message, patient_id=str(patient_id), db=db):
         event_type = event.get("type", "")
 
         if event_type == "lang":
             conv.language = event["value"]
+            yield f"data: {json.dumps(event)}\n\n"
+
+        elif event_type == "iot":
+            iot_val = event.get("value", [])
+            iot_anomalies = iot_val if isinstance(iot_val, list) else []
             yield f"data: {json.dumps(event)}\n\n"
 
         elif event_type == "sources":
@@ -326,12 +404,100 @@ async def _stream_response(
 
         elif event_type == "done":
             confidence = event.get("confidence", 0.0)
-            yield f"data: {json.dumps({**event, 'conversation_id': str(conv.id)})}\n\n"
+            is_urgent_from_rag = bool(event.get("is_urgent", False))
+            done_event = event
 
     # Persist after streaming completes
     if not conv.title:
         conv.title = message[:80]
+    await set_conversation_meta(str(conv.id), str(patient_id), conv.language or "fr")
+    agent_result = await run_agent_flow(
+        query_fr=message,
+        patient_id=str(patient_id),
+        conversation_id=str(conv.id),
+        iot_anomalies=iot_anomalies,
+        is_urgent_from_rag=is_urgent_from_rag,
+        db=db,
+    )
+    merged_reply = _merge_agent_message(
+        full_reply,
+        agent_result.chat_message if agent_result.route != AgentRoute.INFO else "",
+    )
+    if merged_reply != full_reply:
+        extra = merged_reply[len(full_reply):]
+        if extra:
+            yield f"data: {json.dumps({'type': 'token', 'value': extra})}\n\n"
+    full_reply = merged_reply
 
-    await _save_message(db, conv.id, "user", message)
-    await _save_message(db, conv.id, "assistant", full_reply, sources_data, confidence)
+    user_msg_id, user_created_at = await _save_message(db, conv.id, "user", message)
+    await push_turn(
+        conversation_id=str(conv.id),
+        role="user",
+        content=message,
+        message_id=str(user_msg_id),
+        created_at=user_created_at,
+    )
+    assistant_msg_id, assistant_created_at = await _save_message(
+        db,
+        conv.id,
+        "assistant",
+        full_reply,
+        sources_data,
+        confidence,
+    )
+    await push_turn(
+        conversation_id=str(conv.id),
+        role="assistant",
+        content=full_reply,
+        context_chunks=sources_data,
+        confidence=confidence,
+        message_id=str(assistant_msg_id),
+        created_at=assistant_created_at,
+    )
     await db.commit()
+    final_is_urgent = is_urgent_from_rag or agent_result.route == AgentRoute.ESCALATE
+    final_done = done_event or {"type": "done", "confidence": confidence}
+    final_done["is_urgent"] = final_is_urgent
+    yield f"data: {json.dumps({**final_done, 'conversation_id': str(conv.id)})}\n\n"
+
+
+def _merge_agent_message(base_reply: str, agent_message: str) -> str:
+    """Append orchestrator output while preserving the RAG reply."""
+    if not agent_message:
+        return base_reply
+    if base_reply and agent_message in base_reply:
+        return base_reply
+    if not base_reply:
+        return agent_message
+    return f"{base_reply}\n\n{agent_message}"
+
+
+def _cache_turns_to_messages(cached_turns: list[dict]) -> list[MessageOut] | None:
+    """
+    Convert cached turns to API response models.
+
+    Returns None when cache entries are incomplete/corrupted so caller can fall
+    back to PostgreSQL and repopulate the cache.
+    """
+    if not cached_turns:
+        return []
+    messages: list[MessageOut] = []
+    try:
+        for turn in cached_turns:
+            msg_id = turn.get("message_id")
+            created_at = turn.get("created_at")
+            if not msg_id or not created_at:
+                return None
+            messages.append(
+                MessageOut(
+                    id=uuid.UUID(str(msg_id)),
+                    role=str(turn.get("role", "")),
+                    content=str(turn.get("content", "")),
+                    sources=[SourceOut(**s) for s in turn.get("context_chunks", [])] if turn.get("context_chunks") else None,
+                    confidence=turn.get("confidence"),
+                    created_at=str(created_at),
+                )
+            )
+    except (ValueError, TypeError, KeyError, ValidationError):
+        return None
+    return messages

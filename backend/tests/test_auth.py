@@ -3,10 +3,11 @@ Tests for US-03 (JWT auth) and US-04 (RBAC).
 """
 import uuid
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
+from unittest.mock import AsyncMock, patch
 
 from app.core.security import hash_password, verify_password, create_access_token
-from app.db.models.user import User, UserRole
+from app.db.models.conversation import Conversation
+from app.db.models.patient import Patient
 
 
 # ── Security unit tests ───────────────────────────────────
@@ -83,3 +84,46 @@ async def test_rbac_doctor_token_accepted(client):
     # 401 = token invalid (this would be a failure)
     assert response.status_code in (200, 404)
     assert response.status_code != 401
+
+
+@pytest.mark.asyncio
+async def test_logout_patient_clears_conversation_cache(client, test_db):
+    patient_id = str(uuid.uuid4())
+    patient = Patient(
+        patient_uuid=uuid.UUID(patient_id),
+        consent_iot=False,
+        consent_nlp=False,
+        consent_sharing=False,
+        birth_year=1988,
+        sex="M",
+        city_code="75000",
+    )
+    test_db.add(patient)
+    await test_db.flush()
+
+    conv = Conversation(patient_id=uuid.UUID(patient_id), language="fr")
+    test_db.add(conv)
+    await test_db.flush()
+
+    token = create_access_token(subject=patient_id, role="patient")
+    with patch("app.api.v1.endpoints.auth.clear_patient_conversations", new=AsyncMock()) as mock_clear:
+        response = await client.post(
+            "/api/v1/auth/logout",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    assert response.status_code == 204
+    mock_clear.assert_awaited_once_with(patient_id, [str(conv.id)])
+
+
+@pytest.mark.asyncio
+async def test_logout_non_patient_does_not_clear_conversation_cache(client):
+    token = create_access_token(subject=str(uuid.uuid4()), role="doctor")
+    with patch("app.api.v1.endpoints.auth.clear_patient_conversations", new=AsyncMock()) as mock_clear:
+        response = await client.post(
+            "/api/v1/auth/logout",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+    assert response.status_code == 204
+    mock_clear.assert_not_awaited()

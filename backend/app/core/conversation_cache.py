@@ -76,6 +76,8 @@ async def push_turn(
     content: str,        # plain-text (Redis stores clear-text; DB stores encrypted)
     context_chunks: list[dict[str, Any]] | None = None,
     confidence: float | None = None,
+    message_id: str | None = None,
+    created_at: str | None = None,
 ) -> None:
     """
     Append one conversation turn to Redis and reset the 24h TTL.
@@ -95,13 +97,17 @@ async def push_turn(
         content         : Plain-text message content.
         context_chunks  : RAG sources attached to this turn (assistant only).
         confidence      : Retrieval confidence score (assistant only).
+        message_id      : Optional DB message UUID, for cache-aside history reads.
+        created_at      : Optional ISO datetime, for cache-aside history reads.
     """
     key_turns = f"conversation:{conversation_id}:turns"
     turn = {
+        "message_id": message_id,
         "role": role,
         "content": content,
         "context_chunks": context_chunks or [],
         "confidence": confidence,
+        "created_at": created_at,
     }
     try:
         redis = await _get_client()

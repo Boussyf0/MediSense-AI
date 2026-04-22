@@ -7,7 +7,7 @@ Endpoints:
   POST /auth/logout   → blacklists the current access_token in Redis
   GET  /auth/me       → returns current user info
 """
-from datetime import datetime, timezone, timedelta
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -16,7 +16,9 @@ from sqlalchemy import select
 from jose import JWTError
 
 from app.db.session import get_db
+from app.db.models.conversation import Conversation
 from app.db.models.user import User
+from app.core.conversation_cache import clear_patient_conversations
 from app.core.security import (
     verify_password,
     create_access_token,
@@ -118,7 +120,10 @@ async def refresh_token(request: RefreshRequest):
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-async def logout(current_user: Annotated[TokenPayload, Depends(get_current_user)]):
+async def logout(
+    current_user: Annotated[TokenPayload, Depends(get_current_user)],
+    db: AsyncSession = Depends(get_db),
+):
     """
     Revoke the current access token by adding its JTI to the Redis blacklist.
 
@@ -128,6 +133,13 @@ async def logout(current_user: Annotated[TokenPayload, Depends(get_current_user)
     # Calculate remaining TTL for the access token
     remaining_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     await blacklist_token(current_user.jti, remaining_seconds)
+
+    if current_user.role == "patient":
+        patient_uuid = uuid.UUID(current_user.sub)
+        stmt = select(Conversation.id).where(Conversation.patient_id == patient_uuid)
+        result = await db.execute(stmt)
+        conversation_ids = [str(row.id) for row in result.all()]
+        await clear_patient_conversations(current_user.sub, conversation_ids)
 
 
 @router.get("/me", response_model=UserResponse)

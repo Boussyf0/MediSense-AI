@@ -7,9 +7,11 @@ US-08  DELETE /patients/{uuid}           — right to erasure
 """
 import uuid
 import pytest
+from unittest.mock import AsyncMock, patch
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import create_access_token
+from app.db.models.conversation import Conversation
 from app.db.models.patient import Patient, PatientIdentity
 from app.db.models.audit_log import AuditLog, ConsentLog
 
@@ -295,6 +297,23 @@ async def test_erasure_logs_delete_audit_entry(client, test_db):
     log = audit_result.scalar_one_or_none()
     assert log is not None
     assert log.actor_role == "admin"
+
+
+@pytest.mark.asyncio
+async def test_erasure_clears_conversation_cache(client, test_db):
+    patient = await seed_patient(test_db)
+    conv = Conversation(patient_id=patient.patient_uuid, language="fr")
+    test_db.add(conv)
+    await test_db.flush()
+
+    with patch("app.api.v1.endpoints.patients.clear_patient_conversations", new=AsyncMock()) as mock_clear:
+        response = await client.delete(
+            f"/api/v1/patients/{patient.patient_uuid}",
+            headers=auth(admin_token()),
+        )
+
+    assert response.status_code == 200
+    mock_clear.assert_awaited_once_with(str(patient.patient_uuid), [str(conv.id)])
 
 
 @pytest.mark.asyncio
