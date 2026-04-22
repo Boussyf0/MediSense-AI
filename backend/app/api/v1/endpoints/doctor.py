@@ -139,6 +139,7 @@ async def approve_dpa_summary(
     )
 
     summary = await _get_or_404(summary_id, db)
+    _assert_pending(summary)
 
     new_status = "MODIFIED" if body.edited_actions else "APPROVED"
     now = datetime.now(timezone.utc)
@@ -220,6 +221,7 @@ async def reject_dpa_summary(
     )
 
     summary = await _get_or_404(summary_id, db)
+    _assert_pending(summary)
 
     now = datetime.now(timezone.utc)
     doctor_uuid = uuid.UUID(current_user.sub)
@@ -338,6 +340,10 @@ async def _get_or_404(summary_id: uuid.UUID, db: AsyncSession) -> DPASummary:
     summary = result.scalar_one_or_none()
     if not summary:
         raise HTTPException(status_code=404, detail="Résumé DPA introuvable")
+    # Refresh to ensure we read the actual DB state regardless of identity map cache.
+    # SQLAlchemy's synchronize_session can leave stale values in the identity map
+    # across requests sharing the same session (common in tests).
+    await db.refresh(summary)
     return summary
 
 

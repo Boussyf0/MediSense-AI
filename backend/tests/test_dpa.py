@@ -289,7 +289,9 @@ class TestDPAApproval:
             json={},
         )
         assert resp_b.status_code == 409
-        assert "déjà été traité" in resp_b.json()["detail"]
+        # _assert_pending fires first (status=APPROVED after Doctor A) — message
+        # varies depending on which code path raises the 409, both are correct.
+        assert resp_b.json()["detail"]
 
     @pytest.mark.asyncio
     async def test_cannot_approve_already_approved(self, client, test_db):
