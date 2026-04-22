@@ -2,13 +2,14 @@
 RAG Pipeline Orchestrator — full execution path.
 
 Steps:
+  [0] IoT context fetch (US-13) — biometric anomalies from last 30 days
   [1] Language detection (langdetect + Darija stopwords)
   [2] Query normalization (Darija/AR → clinical French via Mistral)
   [3] Parallel retrieval:
       [3a] Qdrant dense + BM25 hybrid (RRF)
       [3b] MCP servers (ANSM + ICD-11) with circuit breaker
   [4] Medical entity extraction + ICD-10 payload boost
-  [5] Safety pre-check (confidence gate, urgency detection)
+  [5] Safety pre-check (confidence gate, urgency detection, IoT critical override)
   [6] LLM generation (Mistral 7B, streaming or blocking)
   [7] Safety post-check (dosage warnings, disclaimers)
 """
@@ -18,12 +19,15 @@ import time
 from dataclasses import dataclass
 from typing import AsyncGenerator, Any
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.rag.language import detect_language
 from app.rag.normalizer import normalize_to_french
 from app.rag.medical_entities import extract_entities
 from app.rag.vectorstore import hybrid_search
 from app.rag.safety import pre_generation_check, post_generation_check
 from app.rag.llm import generate, generate_stream
+from app.rag.iot_context import fetch_iot_context, IoTContext
 from app.mcp.client import fetch_mcp_context
 
 
@@ -39,26 +43,60 @@ class PipelineResult:
     confidence: float
     is_urgent: bool
     mcp_data: dict[str, Any]
-    query_fr: str  # normalized French query (for audit/debug)
+    query_fr: str           # normalized French query (for audit/debug)
+    iot_context: IoTContext | None = None
     timings_ms: dict[str, float] | None = None
 
 
 async def run(
     user_message: str,
     patient_allergies: list[str] | None = None,
+    patient_id: str | None = None,
+    db: AsyncSession | None = None,
 ) -> PipelineResult:
     """
     Execute the full RAG pipeline (non-streaming).
 
     Args:
-        user_message: Raw patient message in any supported language.
-        patient_allergies: Optional list of known patient allergies (from profile).
+        user_message      : Raw patient message in any supported language.
+        patient_allergies : Optional known patient allergies (from profile).
+        patient_id        : Patient UUID — enables IoT context injection (US-13).
+        db                : Async DB session — required for IoT context fetch.
 
     Returns:
-        PipelineResult with reply, sources, confidence, etc.
+        PipelineResult with reply, sources, confidence, iot_context, etc.
     """
     started = time.perf_counter()
     timings_ms: dict[str, float] = {}
+
+    # [0] IoT context fetch (US-13) — gracefully returns empty on failure
+    t0 = time.perf_counter()
+    iot_ctx = await fetch_iot_context(patient_id, db)
+    timings_ms["iot_context"] = (time.perf_counter() - t0) * 1000
+
+    # Critical IoT anomaly → escalate immediately, skip LLM
+    if iot_ctx.has_critical:
+        critical_names = [
+            f"{a['metric']}={a['value']}{a.get('unit','')}"
+            for a in iot_ctx.anomalies
+            if a["severity"] == "critical"
+        ]
+        iot_override = (
+            f"ALERTE IoT CRITIQUE: Anomalies biométriques détectées: "
+            f"{', '.join(critical_names)}. "
+            f"Consultez immédiatement un médecin ou appelez le 141 (SAMU Maroc)."
+        )
+        return PipelineResult(
+            reply=iot_override,
+            sources=[],
+            language="fr",
+            confidence=1.0,
+            is_urgent=True,
+            mcp_data={},
+            query_fr=user_message,
+            iot_context=iot_ctx,
+            timings_ms=timings_ms,
+        )
 
     # [1] Language detection
     t0 = time.perf_counter()
@@ -146,6 +184,7 @@ async def run(
         is_urgent=False,
         mcp_data=mcp_data,
         query_fr=query_fr,
+        iot_context=iot_ctx,
         timings_ms=timings_ms,
     )
 
@@ -153,18 +192,51 @@ async def run(
 async def run_stream(
     user_message: str,
     patient_allergies: list[str] | None = None,
+    patient_id: str | None = None,
+    db: AsyncSession | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """
     Execute the RAG pipeline with SSE streaming.
 
     Yields event dicts suitable for Server-Sent Events:
       {"type": "lang",    "value": "darija"}
+      {"type": "iot",     "value": [{anomaly}, ...]}
       {"type": "sources", "value": [{...}]}
       {"type": "token",   "value": "Selon"}
       {"type": "done",    "confidence": 0.82}
+
+    Args:
+        user_message      : Raw patient message.
+        patient_allergies : Known patient allergies.
+        patient_id        : Patient UUID — enables IoT context injection (US-13).
+        db                : Async DB session — required for IoT context fetch.
     """
     started = time.perf_counter()
     timings_ms: dict[str, float] = {}
+
+    # [0] IoT context fetch (US-13)
+    t0 = time.perf_counter()
+    iot_ctx = await fetch_iot_context(patient_id, db)
+    timings_ms["iot_context"] = (time.perf_counter() - t0) * 1000
+    if not iot_ctx.is_empty:
+        yield {"type": "iot", "value": iot_ctx.anomalies}
+
+    # Critical IoT anomaly → escalate immediately, skip LLM
+    if iot_ctx.has_critical:
+        critical_names = [
+            f"{a['metric']}={a['value']}{a.get('unit','')}"
+            for a in iot_ctx.anomalies
+            if a["severity"] == "critical"
+        ]
+        iot_override = (
+            f"ALERTE IoT CRITIQUE: Anomalies biométriques détectées: "
+            f"{', '.join(critical_names)}. "
+            f"Consultez immédiatement un médecin ou appelez le 141 (SAMU Maroc)."
+        )
+        yield {"type": "token", "value": iot_override}
+        timings_ms["total"] = (time.perf_counter() - started) * 1000
+        yield {"type": "done", "confidence": 1.0, "is_urgent": True, "timings_ms": timings_ms}
+        return
 
     # [1] Language detection
     t0 = time.perf_counter()
