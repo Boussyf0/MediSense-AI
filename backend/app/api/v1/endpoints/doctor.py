@@ -139,11 +139,11 @@ async def approve_dpa_summary(
     )
 
     summary = await _get_or_404(summary_id, db)
-    _assert_pending(summary)
 
     new_status = "MODIFIED" if body.edited_actions else "APPROVED"
     now = datetime.now(timezone.utc)
     doctor_uuid = uuid.UUID(current_user.sub)
+    current_version = int(summary.version)  # freeze expected version before session sync
 
     # Build payload_after
     payload_after = dict(summary.payload_before)
@@ -153,10 +153,14 @@ async def approve_dpa_summary(
     # Optimistic lock update
     stmt = (
         update(DPASummary)
-        .where(DPASummary.id == summary_id, DPASummary.version == summary.version)
+        .where(
+            DPASummary.id == summary_id,
+            DPASummary.status == "PENDING",
+            DPASummary.version == current_version,
+        )
         .values(
             status=new_status,
-            version=summary.version + 1,
+            version=current_version + 1,
             doctor_id=doctor_uuid,
             payload_after=payload_after,
             doctor_note=body.doctor_note,
@@ -182,7 +186,7 @@ async def approve_dpa_summary(
     return ApprovalResponse(
         summary_id=summary_id,
         status=new_status,
-        version=summary.version + 1,
+        version=current_version + 1,
         reviewed_at=now,
         message=f"Résumé {new_status.lower()} avec succès.",
     )
@@ -216,17 +220,21 @@ async def reject_dpa_summary(
     )
 
     summary = await _get_or_404(summary_id, db)
-    _assert_pending(summary)
 
     now = datetime.now(timezone.utc)
     doctor_uuid = uuid.UUID(current_user.sub)
+    current_version = int(summary.version)  # freeze expected version before session sync
 
     stmt = (
         update(DPASummary)
-        .where(DPASummary.id == summary_id, DPASummary.version == summary.version)
+        .where(
+            DPASummary.id == summary_id,
+            DPASummary.status == "PENDING",
+            DPASummary.version == current_version,
+        )
         .values(
             status="REJECTED",
-            version=summary.version + 1,
+            version=current_version + 1,
             doctor_id=doctor_uuid,
             doctor_note=body.doctor_note,
             reviewed_at=now,
@@ -250,7 +258,7 @@ async def reject_dpa_summary(
     return ApprovalResponse(
         summary_id=summary_id,
         status="REJECTED",
-        version=summary.version + 1,
+        version=current_version + 1,
         reviewed_at=now,
         message="Résumé rejeté. Raison enregistrée pour amélioration du modèle.",
     )
