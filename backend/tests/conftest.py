@@ -148,5 +148,8 @@ def mock_redis():
     with patch(
         "app.core.security.is_token_blacklisted",
         new=AsyncMock(return_value=False),
+    ), patch(
+        "app.core.dependencies.is_token_blacklisted",
+        new=AsyncMock(return_value=False),
     ):
         yield

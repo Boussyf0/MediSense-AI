@@ -31,6 +31,8 @@ from sqlalchemy import select, func, delete
 from app.db.session import get_db
 from app.db.models.patient import Patient, PatientIdentity
 from app.db.models.audit_log import AuditLog, ConsentLog
+from app.db.models.conversation import Conversation
+from app.core.conversation_cache import clear_patient_conversations
 from app.core.dependencies import require_doctor, require_admin, TokenPayload
 from app.core.audit import log_audit, log_consent
 from app.schemas.patient import (
@@ -274,6 +276,12 @@ async def erase_patient(
             status_code=status.HTTP_409_CONFLICT,
             detail="Patient has already been erased",
         )
+
+    conv_result = await db.execute(
+        select(Conversation.id).where(Conversation.patient_id == patient_uuid)
+    )
+    conversation_ids = [str(row.id) for row in conv_result.all()]
+    await clear_patient_conversations(str(patient_uuid), conversation_ids)
 
     # Step 1 — Delete civil identity from secure schema
     await db.execute(
