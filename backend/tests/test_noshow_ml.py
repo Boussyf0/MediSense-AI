@@ -234,6 +234,32 @@ async def test_agenda_batch_returns_color_coding(client, test_db):
 
 
 @pytest.mark.asyncio
+async def test_agenda_batch_returns_null_risk_when_not_scored(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment = Appointment(
+        appointment_uuid=uuid.uuid4(),
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 12, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=None,
+    )
+    test_db.add(appointment)
+    await test_db.flush()
+
+    response = await client.get(
+        f"/api/v1/predictions/no-show/batch?doctor_uuid={doctor_uuid}&date=2026-06-01",
+        headers=auth("secretary"),
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["noshow_probability"] is None
+    assert data[0]["risk_color"] is None
+
+
+@pytest.mark.asyncio
 async def test_feedback_requires_secretary_or_admin(client):
     body = {
         "appointment_uuid": str(uuid.uuid4()),

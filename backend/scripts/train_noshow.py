@@ -36,16 +36,38 @@ def configure_mlflow() -> None:
     mlflow.set_experiment(EXPERIMENT_NAME)
 
 
-def preprocess_data(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series, LabelEncoder, StandardScaler]:
+def extract_features_and_target(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     X = df.drop(columns=["appointment_uuid", "is_noshow"]).copy()
     y = df["is_noshow"].copy()
+    return X, y
 
+
+def fit_preprocessors(X_train_raw: pd.DataFrame) -> tuple[pd.DataFrame, LabelEncoder, StandardScaler]:
+    X_train = X_train_raw.copy()
     label_encoder = LabelEncoder()
-    X["sex"] = label_encoder.fit_transform(X["sex"])
+    X_train["sex"] = label_encoder.fit_transform(X_train["sex"])
 
     scaler = StandardScaler()
-    X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-    return X_scaled, y, label_encoder, scaler
+    X_scaled = pd.DataFrame(
+        scaler.fit_transform(X_train),
+        columns=X_train.columns,
+        index=X_train.index,
+    )
+    return X_scaled, label_encoder, scaler
+
+
+def transform_features(
+    X_raw: pd.DataFrame,
+    label_encoder: LabelEncoder,
+    scaler: StandardScaler,
+) -> pd.DataFrame:
+    X = X_raw.copy()
+    X["sex"] = label_encoder.transform(X["sex"])
+    return pd.DataFrame(
+        scaler.transform(X),
+        columns=X.columns,
+        index=X.index,
+    )
 
 
 def objective(trial: optuna.Trial, X: pd.DataFrame, y: pd.Series) -> float:
@@ -63,8 +85,11 @@ def objective(trial: optuna.Trial, X: pd.DataFrame, y: pd.Series) -> float:
     scores: list[float] = []
 
     for train_idx, val_idx in skf.split(X, y):
-        X_train_fold, X_val_fold = X.iloc[train_idx], X.iloc[val_idx]
+        X_train_fold_raw, X_val_fold_raw = X.iloc[train_idx], X.iloc[val_idx]
         y_train_fold, y_val_fold = y.iloc[train_idx], y.iloc[val_idx]
+
+        X_train_fold, fold_encoder, fold_scaler = fit_preprocessors(X_train_fold_raw)
+        X_val_fold = transform_features(X_val_fold_raw, fold_encoder, fold_scaler)
 
         smote = SMOTE(k_neighbors=5, random_state=RANDOM_STATE)
         X_resampled, y_resampled = smote.fit_resample(X_train_fold, y_train_fold)
@@ -108,8 +133,11 @@ def cross_validate_with_smote(model: Any, X: pd.DataFrame, y: pd.Series) -> tupl
     auc_scores: list[float] = []
 
     for train_idx, val_idx in skf.split(X, y):
-        X_train_fold, X_val_fold = X.iloc[train_idx], X.iloc[val_idx]
+        X_train_fold_raw, X_val_fold_raw = X.iloc[train_idx], X.iloc[val_idx]
         y_train_fold, y_val_fold = y.iloc[train_idx], y.iloc[val_idx]
+
+        X_train_fold, fold_encoder, fold_scaler = fit_preprocessors(X_train_fold_raw)
+        X_val_fold = transform_features(X_val_fold_raw, fold_encoder, fold_scaler)
 
         smote = SMOTE(k_neighbors=5, random_state=RANDOM_STATE)
         X_resampled, y_resampled = smote.fit_resample(X_train_fold, y_train_fold)
@@ -130,18 +158,20 @@ def run_training() -> None:
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(DATA_PATH)
-    X, y, label_encoder, scaler = preprocess_data(df)
+    X_raw, y = extract_features_and_target(df)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=RANDOM_STATE
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+        X_raw, y, test_size=0.2, stratify=y, random_state=RANDOM_STATE
     )
+    X_train, label_encoder, scaler = fit_preprocessors(X_train_raw)
+    X_test = transform_features(X_test_raw, label_encoder, scaler)
 
     configure_mlflow()
 
     with mlflow.start_run():
         print("Optimizing XGBoost with Optuna...")
         study = optuna.create_study(direction="maximize")
-        study.optimize(lambda trial: objective(trial, X_train, y_train), n_trials=20)
+        study.optimize(lambda trial: objective(trial, X_train_raw, y_train), n_trials=20)
         best_xgb_params = study.best_params
         mlflow.log_params(best_xgb_params)
 
@@ -150,7 +180,7 @@ def run_training() -> None:
 
         print("Running 5-fold benchmark with SMOTE...")
         for model_name, model in models.items():
-            cv_f1, cv_auc = cross_validate_with_smote(model, X_train, y_train)
+            cv_f1, cv_auc = cross_validate_with_smote(model, X_train_raw, y_train)
             benchmark[model_name] = {"cv_f1": cv_f1, "cv_auc": cv_auc}
             mlflow.log_metric(f"cv_f1_{model_name}", cv_f1)
             mlflow.log_metric(f"cv_auc_{model_name}", cv_auc)
@@ -182,7 +212,7 @@ def run_training() -> None:
         print("Generating SHAP explainer...")
         explainer = shap.TreeExplainer(winner_model)
 
-        model_output_path = MODEL_DIR / "noshow_xgb_model.joblib"
+        model_output_path = MODEL_DIR / "noshow_model.joblib"
         explainer_output_path = MODEL_DIR / "noshow_shap_explainer.joblib"
         scaler_output_path = MODEL_DIR / "noshow_scaler.joblib"
         encoder_output_path = MODEL_DIR / "noshow_label_encoder.joblib"

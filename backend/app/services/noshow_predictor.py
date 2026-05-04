@@ -65,7 +65,11 @@ class NoShowPredictor:
         self.model_version = "v5.0-xgb"
 
         try:
-            self.model = joblib.load(MODELS_DIR / "noshow_xgb_model.joblib")
+            model_path = MODELS_DIR / "noshow_model.joblib"
+            legacy_model_path = MODELS_DIR / "noshow_xgb_model.joblib"
+            selected_model_path = model_path if model_path.exists() else legacy_model_path
+
+            self.model = joblib.load(selected_model_path)
             self.explainer = joblib.load(MODELS_DIR / "noshow_shap_explainer.joblib")
             self.scaler = joblib.load(MODELS_DIR / "noshow_scaler.joblib")
             self.label_encoder = joblib.load(MODELS_DIR / "noshow_label_encoder.joblib")

@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
-from faker import Faker
 import uuid
 import os
 
-# Initialize Faker
-fake = Faker()
-Faker.seed(42)
 np.random.seed(42)
 
 # Configuration

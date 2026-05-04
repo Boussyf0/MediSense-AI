@@ -60,13 +60,13 @@ backend/
 │   ├── simulate_noshow_data.py # génération 12 500 lignes calibrées
 │   └── train_noshow.py         # benchmark XGB/LGBM/CAT + Optuna + SMOTE
 ├── models/
-│   ├── noshow_xgb_model.joblib
+│   ├── noshow_model.joblib
 │   ├── noshow_shap_explainer.joblib
 │   ├── noshow_scaler.joblib
 │   ├── noshow_label_encoder.joblib
 │   └── noshow_training_report.json
 └── tests/
-    └── test_noshow_ml.py       # 14 tests Sprint 5
+    └── test_noshow_ml.py       # 15 tests Sprint 5
 ```
 
 ### KPIs atteints
@@ -89,7 +89,7 @@ Les données cliniques réelles ne sont pas directement exploitables pour un PFE
 - **Taille**: 12 500 rendez-vous
 - **Cible**: `is_noshow` binaire
 - **Prévalence finale**: ~19.30%
-- **Reproductibilité**: `Faker.seed(42)` + `np.random.seed(42)`
+- **Reproductibilité**: `np.random.seed(42)`
 
 ### Features retenues (9)
 1. `age`
@@ -199,7 +199,7 @@ Source: `backend/models/noshow_training_report.json`
 Winner sélectionné: **xgboost** (règle de sélection par CV F1 prioritaire).
 
 ### Artefacts générés
-- `noshow_xgb_model.joblib`
+- `noshow_model.joblib`
 - `noshow_shap_explainer.joblib`
 - `noshow_scaler.joblib`
 - `noshow_label_encoder.joblib`
@@ -316,7 +316,7 @@ Chaque item retourne:
 - `patient_uuid`
 - `scheduled_at`
 - `noshow_probability`
-- `risk_color`
+- `risk_color` (`null` si `noshow_probability` est absent)
 - `status`
 - `sms_reminders_sent`
 
@@ -424,7 +424,7 @@ Source: `backend/models/noshow_training_report.json`
 - F1 (classe No-Show): **0.8815**
 
 ### Couverture tests Sprint 5
-`backend/tests/test_noshow_ml.py` contient **14 tests** couvrant:
+`backend/tests/test_noshow_ml.py` contient **15 tests** couvrant:
 1. helper `get_risk_color`
 2. structure de sortie predictor
 3. validation features manquantes
@@ -433,12 +433,13 @@ Source: `backend/models/noshow_training_report.json`
 6. RBAC `/predictions/no-show/batch`
 7. validation date invalide (`422`)
 8. color coding batch
-9. RBAC `/predict/feedback`
-10. feedback not found (`404`)
-11. feedback duplicate (`409`)
-12. dispatch SMS quand probabilité > 30%
-13. respect strict de `sms_opt_out`
-14. limite stricte max 2 rappels
+9. absence de score => `risk_color = null`
+10. RBAC `/predict/feedback`
+11. feedback not found (`404`)
+12. feedback duplicate (`409`)
+13. dispatch SMS quand probabilité > 30%
+14. respect strict de `sms_opt_out`
+15. limite stricte max 2 rappels
 
 ---
 

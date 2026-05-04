@@ -21,7 +21,7 @@ class AppointmentPrediction(BaseModel):
     patient_uuid: uuid.UUID
     scheduled_at: datetime
     noshow_probability: float | None
-    risk_color: str
+    risk_color: str | None
     status: str
     sms_reminders_sent: int
 
@@ -84,14 +84,15 @@ async def get_noshow_predictions_batch(
 
     predictions = []
     for appt in appointments:
-        prob = appt.noshow_probability or 0.0
+        risk_probability = appt.noshow_probability
+        risk_color = get_risk_color(risk_probability) if risk_probability is not None else None
         predictions.append(
             AppointmentPrediction(
                 appointment_uuid=appt.appointment_uuid,
                 patient_uuid=appt.patient_uuid,
                 scheduled_at=appt.scheduled_at,
-                noshow_probability=appt.noshow_probability,
-                risk_color=get_risk_color(prob),
+                noshow_probability=risk_probability,
+                risk_color=risk_color,
                 status=appt.status,
                 sms_reminders_sent=appt.sms_reminders_sent,
             )
