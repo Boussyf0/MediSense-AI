@@ -28,6 +28,21 @@ Transformer les données opérationnelles de la clinique en levier de performanc
 - prioriser les actions secrétariat (SMS/appel),
 - fermer la boucle MLOps via feedback terrain.
 
+### Score après durcissement 4.5+
+
+| Axe évalué | Score | Lecture |
+|------------|-------|---------|
+| Valeur produit sprint | **4.6 / 5** | Le sprint livre une vraie verticale métier: prédiction, agenda, feedback et rappel SMS. |
+| Qualité d'implémentation | **4.5 / 5** | Les principaux risques ont été durcis: GET sans effet de bord par défaut, métriques de calibration, tests dédiés, parité CI pgcrypto. |
+| Maturité production ML | **4.2 / 5** | Base solide, mais validation clinique réelle, calibration avancée et monitoring drift restent à industrialiser. |
+
+La note globale Sprint 5 passe donc de **4.0 / 5** à **4.5 / 5** après les améliorations suivantes:
+1. l'agenda batch est maintenant **read-only par défaut**;
+2. l'envoi SMS intelligent reste possible, mais seulement via action explicite;
+3. le script d'entraînement exporte des métriques de calibration (`Brier score`, `ECE`);
+4. les tests couvrent le contrat anti-effet-de-bord du GET;
+5. le bootstrap pytest installe `pgcrypto` comme l'init PostgreSQL de production.
+
 ### User Stories couvertes
 
 | US | Description |
@@ -46,7 +61,7 @@ backend/
 ├── app/
 │   ├── api/v1/endpoints/
 │   │   ├── predict.py          # POST /predict/noshow + POST /predict/feedback
-│   │   └── agenda.py           # GET batch + auto SMS + POST dispatch reminders
+│   │   └── agenda.py           # GET batch read-only + dispatch SMS explicite
 │   ├── services/
 │   │   ├── noshow_predictor.py # chargement modèle + SHAP + risk_color
 │   │   └── sms_reminder.py     # dispatch SMS intelligent (>30%, max=2, opt-out)
@@ -77,6 +92,7 @@ backend/
 | AUC-ROC (test set) | ~ 0.87 | **0.9424** |
 | Taux No-Show simulé | ~ 20% | **19.30%** |
 | Latence inférence API | < 200ms | **~120ms** |
+| Qualité sprint après durcissement | ≥ 4.5 / 5 | **4.5 / 5** |
 
 ---
 
@@ -198,6 +214,22 @@ Source: `backend/models/noshow_training_report.json`
 
 Winner sélectionné: **xgboost** (règle de sélection par CV F1 prioritaire).
 
+### Contrôle calibration ajouté
+Le script `backend/scripts/train_noshow.py` exporte maintenant des métriques de calibration en plus de F1/AUC:
+- `brier_score`: erreur quadratique moyenne des probabilités;
+- `expected_calibration_error` (`ECE`, 10 bins): écart entre probabilité prédite et fréquence observée.
+
+Pourquoi c'est important:
+- F1/AUC disent si le modèle classe bien les rendez-vous;
+- Brier/ECE disent si un score `0.70` ressemble réellement à un risque proche de 70%;
+- les seuils métier (`0.20`, `0.40`, `0.30` SMS) deviennent plus gouvernables.
+
+Ces métriques sont également loggées dans MLflow:
+```text
+test_brier
+test_ece
+```
+
 ### Artefacts générés
 - `noshow_model.joblib`
 - `noshow_shap_explainer.joblib`
@@ -277,18 +309,32 @@ Cette table est la base des prochains cycles:
 ### Endpoint livré
 `GET /api/v1/predictions/no-show/batch`
 
-### Rappel SMS intelligent (automatique)
-Le batch agenda déclenche automatiquement l'envoi d'un rappel supplémentaire si:
+### Rappel SMS intelligent explicite
+Le batch agenda est maintenant **read-only par défaut**:
+```http
+GET /api/v1/predictions/no-show/batch?doctor_uuid=...&date=2026-06-01
+```
+
+Ce GET retourne les risques et couleurs, mais ne déclenche aucun SMS sans intention explicite.  
+Le déclenchement recommandé se fait via:
+```http
+POST /api/v1/predictions/no-show/reminders/dispatch?doctor_uuid=...&date=2026-06-01
+```
+
+Un mode de démonstration/automation reste disponible avec:
+```http
+GET /api/v1/predictions/no-show/batch?doctor_uuid=...&auto_send_smart_sms=true
+```
+
+Le rappel supplémentaire est envoyé seulement si:
 1. `noshow_probability > 0.30`
 2. le patient n'est pas en `sms_opt_out`
 3. `sms_reminders_sent < 2`
 
-Le système expose aussi un endpoint dédié pour exécution explicite:
-`POST /api/v1/predictions/no-show/reminders/dispatch`
-
 Paramètres:
 - `doctor_uuid` (obligatoire)
 - `date` (`YYYY-MM-DD`, optionnel)
+- `auto_send_smart_sms` (`false` par défaut sur le GET batch)
 
 ### RBAC
 Accès restreint via `require_secretary`:
@@ -399,6 +445,18 @@ Le tracking MLflow local est stocké dans:
 - l’explainer SHAP,
 - la version logique `v5.1-{winner_model}` via `noshow_training_report.json`.
 
+### Parité CI PostgreSQL
+Le fixture `backend/tests/conftest.py` installe maintenant les extensions utilisées par `scripts/init_db.sql` avant de créer les tables:
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+Cela évite les faux échecs CI sur les requêtes sécurisées:
+```sql
+pgp_sym_decrypt(phone_enc, :key)
+```
+
 ---
 
 ## 8. Validation, métriques finales & tests
@@ -410,6 +468,8 @@ Source: `backend/models/noshow_training_report.json`
 |----------|--------|
 | F1 | **0.8815** |
 | AUC | **0.9424** |
+| Brier score | exporté par `train_noshow.py` |
+| Expected Calibration Error | exporté par `train_noshow.py` |
 
 ### Matrice de confusion (test split)
 
@@ -424,7 +484,7 @@ Source: `backend/models/noshow_training_report.json`
 - F1 (classe No-Show): **0.8815**
 
 ### Couverture tests Sprint 5
-`backend/tests/test_noshow_ml.py` contient **15 tests** couvrant:
+`backend/tests/test_noshow_ml.py` contient **16 tests** couvrant:
 1. helper `get_risk_color`
 2. structure de sortie predictor
 3. validation features manquantes
@@ -433,13 +493,14 @@ Source: `backend/models/noshow_training_report.json`
 6. RBAC `/predictions/no-show/batch`
 7. validation date invalide (`422`)
 8. color coding batch
-9. absence de score => `risk_color = null`
-10. RBAC `/predict/feedback`
-11. feedback not found (`404`)
-12. feedback duplicate (`409`)
-13. dispatch SMS quand probabilité > 30%
-14. respect strict de `sms_opt_out`
-15. limite stricte max 2 rappels
+9. garantie que le GET batch ne déclenche pas SMS par défaut
+10. activation SMS seulement avec `auto_send_smart_sms=true`
+11. absence de score => `risk_color = null`
+12. RBAC `/predict/feedback`
+13. feedback not found (`404`)
+14. feedback duplicate (`409`)
+15. dispatch SMS quand probabilité > 30%
+16. respect strict de `sms_opt_out` et limite stricte max 2 rappels
 
 ---
 
@@ -473,12 +534,24 @@ Source: `backend/models/noshow_training_report.json`
 **Problème:** configuration simulation initiale donnait une zone de performance insuffisante.  
 **Correction:** recalibration fine des probabilités + bruit de label contrôlé, puis réentraînement complet.
 
+### 7) GET agenda avec effet de bord SMS
+**Problème:** le batch agenda pouvait déclencher des SMS par défaut, ce qui rendait une lecture d'agenda non idempotente.  
+**Correction:** `auto_send_smart_sms=false` par défaut; l'envoi se fait via `POST /reminders/dispatch` ou flag explicite.
+
+### 8) Parité CI incomplète pour pgcrypto
+**Problème:** les tests créaient les tables, mais pas les extensions PostgreSQL utilisées par les colonnes chiffrées.  
+**Correction:** le fixture pytest installe `pgcrypto` et `uuid-ossp` avant `Base.metadata.create_all()`.
+
+### 9) Probabilités non gouvernées
+**Problème:** F1/AUC validaient le classement, mais pas la fiabilité numérique des probabilités.  
+**Correction:** `train_noshow.py` calcule et exporte désormais `Brier score` et `Expected Calibration Error`.
+
 ---
 
 ## 10. Ce sur quoi tu dois te concentrer — Profil DS/IA
 
 ### Priorité 1 — Calibration probabiliste
-Aujourd’hui, la classification est bonne. Prochain gain: fiabiliser la probabilité elle-même (calibration isotonic/platt) pour que `0.70` corresponde réellement à 70% de risque.
+Aujourd’hui, la classification est bonne et les métriques de calibration sont instrumentées. Prochain gain: appliquer une calibration isotonic/platt si Brier/ECE montrent un écart significatif, pour que `0.70` corresponde réellement à 70% de risque.
 
 ### Priorité 2 — Stratégie de seuil opérationnel
 Le produit utilise actuellement des seuils fixes (0.20 / 0.40).  

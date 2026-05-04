@@ -13,7 +13,7 @@ import shap
 import xgboost as xgb
 from imblearn.over_sampling import SMOTE
 from sklearn.base import clone
-from sklearn.metrics import classification_report, f1_score, roc_auc_score
+from sklearn.metrics import brier_score_loss, classification_report, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
@@ -154,6 +154,32 @@ def cross_validate_with_smote(model: Any, X: pd.DataFrame, y: pd.Series) -> tupl
     return float(np.mean(f1_scores)), float(np.mean(auc_scores))
 
 
+def expected_calibration_error(
+    y_true: pd.Series,
+    probabilities: np.ndarray,
+    n_bins: int = 10,
+) -> float:
+    """Estimate how closely predicted probabilities match observed rates."""
+    y_values = y_true.to_numpy(dtype=float)
+    bin_edges = np.linspace(0.0, 1.0, n_bins + 1)
+    ece = 0.0
+
+    for lower, upper in zip(bin_edges[:-1], bin_edges[1:]):
+        if upper == 1.0:
+            in_bin = (probabilities >= lower) & (probabilities <= upper)
+        else:
+            in_bin = (probabilities >= lower) & (probabilities < upper)
+        if not np.any(in_bin):
+            continue
+
+        bin_weight = float(np.mean(in_bin))
+        bin_accuracy = float(np.mean(y_values[in_bin]))
+        bin_confidence = float(np.mean(probabilities[in_bin]))
+        ece += bin_weight * abs(bin_accuracy - bin_confidence)
+
+    return float(ece)
+
+
 def run_training() -> None:
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -203,11 +229,16 @@ def run_training() -> None:
         test_probabilities = winner_model.predict_proba(X_test)[:, 1]
         test_f1 = f1_score(y_test, test_predictions)
         test_auc = roc_auc_score(y_test, test_probabilities)
+        test_brier = brier_score_loss(y_test, test_probabilities)
+        test_ece = expected_calibration_error(y_test, test_probabilities)
 
         mlflow.log_metric("test_f1", float(test_f1))
         mlflow.log_metric("test_auc", float(test_auc))
+        mlflow.log_metric("test_brier", float(test_brier))
+        mlflow.log_metric("test_ece", float(test_ece))
         print("\nTest Set Report:")
         print(classification_report(y_test, test_predictions))
+        print(f"Calibration: Brier={test_brier:.4f}, ECE={test_ece:.4f}")
 
         print("Generating SHAP explainer...")
         explainer = shap.TreeExplainer(winner_model)
@@ -227,6 +258,11 @@ def run_training() -> None:
             "winner_model": winner_model_name,
             "benchmark": benchmark,
             "test_metrics": {"f1": float(test_f1), "auc": float(test_auc)},
+            "calibration": {
+                "brier_score": float(test_brier),
+                "expected_calibration_error": float(test_ece),
+                "n_bins": 10,
+            },
         }
         with open(report_output_path, "w", encoding="utf-8") as fp:
             json.dump(training_report, fp, indent=2)

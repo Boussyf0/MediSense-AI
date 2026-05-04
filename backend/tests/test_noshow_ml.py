@@ -222,15 +222,53 @@ async def test_agenda_batch_returns_color_coding(client, test_db):
     test_db.add(appointment)
     await test_db.flush()
 
-    response = await client.get(
-        f"/api/v1/predictions/no-show/batch?doctor_uuid={doctor_uuid}&date=2026-06-01",
-        headers=auth("secretary"),
-    )
+    with patch(
+        "app.api.v1.endpoints.agenda.dispatch_smart_sms_reminders",
+        new=AsyncMock(return_value=[]),
+    ) as mock_dispatch:
+        response = await client.get(
+            f"/api/v1/predictions/no-show/batch?doctor_uuid={doctor_uuid}&date=2026-06-01",
+            headers=auth("secretary"),
+        )
+
+    mock_dispatch.assert_not_awaited()
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
     assert data[0]["risk_color"] == "red"
     assert data[0]["sms_reminders_sent"] == 0
+
+
+@pytest.mark.asyncio
+async def test_agenda_batch_auto_sms_requires_explicit_flag(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment = Appointment(
+        appointment_uuid=uuid.uuid4(),
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 10, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.45,
+        sms_reminders_sent=0,
+    )
+    test_db.add(appointment)
+    await test_db.flush()
+
+    with patch(
+        "app.api.v1.endpoints.agenda.dispatch_smart_sms_reminders",
+        new=AsyncMock(return_value=[]),
+    ) as mock_dispatch:
+        response = await client.get(
+            (
+                f"/api/v1/predictions/no-show/batch?doctor_uuid={doctor_uuid}"
+                "&date=2026-06-01&auto_send_smart_sms=true"
+            ),
+            headers=auth("secretary"),
+        )
+
+    assert response.status_code == 200
+    mock_dispatch.assert_awaited_once()
 
 
 @pytest.mark.asyncio
