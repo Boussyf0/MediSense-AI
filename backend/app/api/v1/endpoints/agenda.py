@@ -55,9 +55,9 @@ async def get_noshow_predictions_batch(
     doctor_uuid: uuid.UUID = Query(...),
     date: DateType | None = Query(default=None),  # YYYY-MM-DD
     auto_send_smart_sms: bool = Query(
-        default=True,
+        default=False,
         description=(
-            "If true, automatically dispatch one additional reminder SMS for "
+            "If explicitly true, dispatch one additional reminder SMS for "
             "appointments with predicted no-show probability > 30%, while "
             "respecting opt-out and max-2 reminders."
         ),
