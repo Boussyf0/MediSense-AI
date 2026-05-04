@@ -6,6 +6,7 @@ Why pydantic-settings?
   - Automatic .env loading: no manual os.getenv() calls scattered everywhere
   - Single source of truth: every setting lives here, imported where needed
 """
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
@@ -56,6 +57,14 @@ class Settings(BaseSettings):
     # Set LLM_PROVIDER=groq and GROQ_API_KEY=gsk_... in .env
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.1-8b-instant"
+
+    # SMS reminders (Sprint 5)
+    # If SMS_WEBHOOK_URL is empty, reminders are sent in mock mode (dev/demo).
+    SMS_WEBHOOK_URL: str = ""
+    SMS_WEBHOOK_TOKEN: str = ""
+    SMS_PROVIDER_TIMEOUT_SECONDS: float = Field(default=3.0, gt=0)
+    SMS_REMINDER_THRESHOLD: float = Field(default=0.30, ge=0.0, le=1.0)
+    SMS_REMINDER_MAX_COUNT: int = Field(default=2, ge=1, le=2)
 
     @property
     def DATABASE_URL(self) -> str:

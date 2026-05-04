@@ -56,7 +56,8 @@ router = APIRouter(prefix="/patients", tags=["Patients"])
     summary="US-06 — Update patient consent flags",
     description=(
         "Update one or more RGPD consent flags for a patient. "
-        "Each change is logged to the immutable consent_logs table. "
+        "Core consent changes (iot/nlp/sharing) are logged to immutable consent_logs; "
+        "sms_opt_out preference remains audit-tracked via audit_logs. "
         "RGPD Art. 7 — consent must be specific, informed, and revocable."
     ),
 )
@@ -91,6 +92,8 @@ async def update_consent(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
     # Map of consent field name → (old value, new value)
+    # Note: sms_opt_out is stored in patients but not in consent_logs because
+    # the consent_logs DB constraint currently tracks only iot/nlp/sharing.
     consent_fields = {
         "iot": (patient.consent_iot, body.consent_iot),
         "nlp": (patient.consent_nlp, body.consent_nlp),
@@ -118,6 +121,12 @@ async def update_consent(
 
         # Apply change to ORM object
         setattr(patient, f"consent_{consent_type}", new_val)
+        changed = True
+
+    # SMS preference is still audited through audit_logs (action=CONSENT),
+    # but not inserted into consent_logs to preserve its strict enum contract.
+    if body.sms_opt_out is not None and body.sms_opt_out != patient.sms_opt_out:
+        patient.sms_opt_out = body.sms_opt_out
         changed = True
 
     if not changed:
@@ -297,6 +306,7 @@ async def erase_patient(
     patient.consent_iot = False
     patient.consent_nlp = False
     patient.consent_sharing = False
+    patient.sms_opt_out = True
 
     # Step 3 — Log the erasure
     await log_audit(

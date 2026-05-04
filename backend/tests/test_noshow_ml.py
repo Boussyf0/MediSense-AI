@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import numpy as np
 import pytest
@@ -31,6 +31,7 @@ async def seed_patient_and_doctor(test_db):
         consent_iot=False,
         consent_nlp=False,
         consent_sharing=False,
+        sms_opt_out=False,
         birth_year=1990,
         sex="M",
         city_code="40000",
@@ -229,6 +230,7 @@ async def test_agenda_batch_returns_color_coding(client, test_db):
     data = response.json()
     assert len(data) == 1
     assert data[0]["risk_color"] == "red"
+    assert data[0]["sms_reminders_sent"] == 0
 
 
 @pytest.mark.asyncio
@@ -301,3 +303,114 @@ async def test_feedback_duplicate_returns_409(client, test_db):
         headers=auth("secretary"),
     )
     assert second.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_sends_when_probability_above_threshold(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment = Appointment(
+        appointment_uuid=uuid.uuid4(),
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 10, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.65,
+        sms_reminders_sent=0,
+    )
+    test_db.add(appointment)
+    await test_db.flush()
+
+    with patch(
+        "app.services.sms_reminder._get_patient_phone_number",
+        new=AsyncMock(return_value="+212600000001"),
+    ), patch(
+        "app.services.sms_reminder._send_sms",
+        new=AsyncMock(return_value="mock-message-id"),
+    ):
+        response = await client.post(
+            f"/api/v1/predictions/no-show/reminders/dispatch?doctor_uuid={doctor_uuid}&date=2026-06-01",
+            headers=auth("secretary"),
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["sent"] == 1
+    assert payload["items"][0]["sent"] is True
+    assert payload["items"][0]["reason"] == "sent"
+    assert payload["items"][0]["sms_reminders_sent"] == 1
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_respects_patient_opt_out(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    patient = await test_db.get(Patient, patient_uuid)
+    patient.sms_opt_out = True
+    appointment = Appointment(
+        appointment_uuid=uuid.uuid4(),
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 10, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.62,
+        sms_reminders_sent=0,
+    )
+    test_db.add(appointment)
+    await test_db.flush()
+
+    with patch(
+        "app.services.sms_reminder._get_patient_phone_number",
+        new=AsyncMock(return_value="+212600000001"),
+    ), patch(
+        "app.services.sms_reminder._send_sms",
+        new=AsyncMock(return_value="mock-message-id"),
+    ) as mock_send_sms:
+        response = await client.post(
+            f"/api/v1/predictions/no-show/reminders/dispatch?doctor_uuid={doctor_uuid}&date=2026-06-01",
+            headers=auth("secretary"),
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["sent"] == 0
+    assert payload["items"][0]["sent"] is False
+    assert payload["items"][0]["reason"] == "opt_out"
+    mock_send_sms.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_never_exceeds_two_reminders(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment_uuid = uuid.uuid4()
+    appointment = Appointment(
+        appointment_uuid=appointment_uuid,
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 10, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.70,
+        sms_reminders_sent=0,
+    )
+    test_db.add(appointment)
+    await test_db.flush()
+
+    with patch(
+        "app.services.sms_reminder._get_patient_phone_number",
+        new=AsyncMock(return_value="+212600000001"),
+    ), patch(
+        "app.services.sms_reminder._send_sms",
+        new=AsyncMock(return_value="mock-message-id"),
+    ) as mock_send_sms:
+        for _ in range(3):
+            response = await client.post(
+                f"/api/v1/predictions/no-show/reminders/dispatch?doctor_uuid={doctor_uuid}&date=2026-06-01",
+                headers=auth("secretary"),
+            )
+            assert response.status_code == 200
+
+    final_payload = response.json()
+    assert final_payload["items"][0]["reason"] == "max_reminders_reached"
+    assert final_payload["items"][0]["sms_reminders_sent"] == 2
+    assert mock_send_sms.await_count == 2

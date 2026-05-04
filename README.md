@@ -178,7 +178,7 @@ User Stories: US-13 (IoT context in chat), US-14 (orchestrator agent), US-15 (Re
 ### Sprint 5 — No-Show ML Model (upcoming)
 **Branch:** `sprint/5-noshow-ml`
 
-User Stories: US-17 (feature engineering), US-18 (XGBoost vs LightGBM vs CatBoost), US-19 (color-coded agenda), US-20 (predict endpoint < 200ms), US-22 (SMOTE class balancing)
+User Stories: US-17 (feature engineering), US-18 (XGBoost vs LightGBM vs CatBoost), US-19 (color-coded agenda), US-20 (predict endpoint < 200ms), US-22 (SMOTE class balancing), US-SMS (smart reminders: no-show > 30%, max 2, opt-out respected)
 
 ---
 

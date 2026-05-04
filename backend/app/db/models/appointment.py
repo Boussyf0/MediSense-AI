@@ -42,6 +42,8 @@ class Appointment(Base):
     # No-show prediction (populated by XGBoost model)
     noshow_probability: Mapped[float | None] = mapped_column(Float)
     noshow_model_ver: Mapped[str | None] = mapped_column(String(20))
+    sms_reminders_sent: Mapped[int] = mapped_column(SmallInteger, default=0, nullable=False)
+    last_sms_reminder_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Triage context (from RAG agent)
     urgency_flag: Mapped[str | None] = mapped_column(String(50))

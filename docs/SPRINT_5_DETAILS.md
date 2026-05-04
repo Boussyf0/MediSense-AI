@@ -46,14 +46,16 @@ backend/
 ├── app/
 │   ├── api/v1/endpoints/
 │   │   ├── predict.py          # POST /predict/noshow + POST /predict/feedback
-│   │   └── agenda.py           # GET  /predictions/no-show/batch
+│   │   └── agenda.py           # GET batch + auto SMS + POST dispatch reminders
 │   ├── services/
-│   │   └── noshow_predictor.py # chargement modèle + SHAP + risk_color
+│   │   ├── noshow_predictor.py # chargement modèle + SHAP + risk_color
+│   │   └── sms_reminder.py     # dispatch SMS intelligent (>30%, max=2, opt-out)
 │   └── db/models/
 │       ├── appointment.py      # champs No-Show + statuts uppercase
 │       └── ml_feedback.py      # boucle MLOps (ground truth)
 ├── alembic/versions/
-│   └── 20260525_000000_sprint5_ml_noshow.py
+│   ├── 20260525_000000_sprint5_ml_noshow.py
+│   └── 20260602_000000_sprint5_sms_reminders.py
 ├── scripts/
 │   ├── simulate_noshow_data.py # génération 12 500 lignes calibrées
 │   └── train_noshow.py         # benchmark XGB/LGBM/CAT + Optuna + SMOTE
@@ -64,7 +66,7 @@ backend/
 │   ├── noshow_label_encoder.joblib
 │   └── noshow_training_report.json
 └── tests/
-    └── test_noshow_ml.py       # 11 tests Sprint 5
+    └── test_noshow_ml.py       # 14 tests Sprint 5
 ```
 
 ### KPIs atteints
@@ -275,6 +277,15 @@ Cette table est la base des prochains cycles:
 ### Endpoint livré
 `GET /api/v1/predictions/no-show/batch`
 
+### Rappel SMS intelligent (automatique)
+Le batch agenda déclenche automatiquement l'envoi d'un rappel supplémentaire si:
+1. `noshow_probability > 0.30`
+2. le patient n'est pas en `sms_opt_out`
+3. `sms_reminders_sent < 2`
+
+Le système expose aussi un endpoint dédié pour exécution explicite:
+`POST /api/v1/predictions/no-show/reminders/dispatch`
+
 Paramètres:
 - `doctor_uuid` (obligatoire)
 - `date` (`YYYY-MM-DD`, optionnel)
@@ -307,6 +318,7 @@ Chaque item retourne:
 - `noshow_probability`
 - `risk_color`
 - `status`
+- `sms_reminders_sent`
 
 ---
 
@@ -412,7 +424,7 @@ Source: `backend/models/noshow_training_report.json`
 - F1 (classe No-Show): **0.8815**
 
 ### Couverture tests Sprint 5
-`backend/tests/test_noshow_ml.py` contient **11 tests** couvrant:
+`backend/tests/test_noshow_ml.py` contient **14 tests** couvrant:
 1. helper `get_risk_color`
 2. structure de sortie predictor
 3. validation features manquantes
@@ -424,6 +436,9 @@ Source: `backend/models/noshow_training_report.json`
 9. RBAC `/predict/feedback`
 10. feedback not found (`404`)
 11. feedback duplicate (`409`)
+12. dispatch SMS quand probabilité > 30%
+13. respect strict de `sms_opt_out`
+14. limite stricte max 2 rappels
 
 ---
 
