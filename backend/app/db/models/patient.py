@@ -28,6 +28,7 @@ class Patient(Base):
     consent_iot: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     consent_nlp: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     consent_sharing: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    sms_opt_out: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Demographics for ML — never enough to re-identify alone
     birth_year: Mapped[int | None] = mapped_column(SmallInteger)

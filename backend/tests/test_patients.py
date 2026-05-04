@@ -34,6 +34,7 @@ async def seed_patient(db: AsyncSession, **kwargs) -> Patient:
         consent_iot=kwargs.get("consent_iot", False),
         consent_nlp=kwargs.get("consent_nlp", False),
         consent_sharing=kwargs.get("consent_sharing", False),
+        sms_opt_out=kwargs.get("sms_opt_out", False),
         birth_year=kwargs.get("birth_year", 1985),
         sex=kwargs.get("sex", "M"),
         city_code=kwargs.get("city_code", "75000"),
@@ -76,6 +77,21 @@ async def test_consent_update_revokes_flag(client, test_db):
 
     assert response.status_code == 200
     assert response.json()["consent_nlp"] is False
+
+
+@pytest.mark.asyncio
+async def test_consent_update_sms_opt_out(client, test_db):
+    """Updating sms_opt_out must persist preference and return it in response."""
+    patient = await seed_patient(test_db, sms_opt_out=False)
+
+    response = await client.patch(
+        f"/api/v1/patients/{patient.patient_uuid}/consent",
+        json={"sms_opt_out": True, "channel": "app"},
+        headers=auth(doctor_token()),
+    )
+
+    assert response.status_code == 200
+    assert response.json()["sms_opt_out"] is True
 
 
 @pytest.mark.asyncio
@@ -273,6 +289,7 @@ async def test_erasure_anonymizes_patient_fields(client, test_db):
     assert erased.consent_iot is False
     assert erased.consent_nlp is False
     assert erased.consent_sharing is False
+    assert erased.sms_opt_out is True
 
 
 @pytest.mark.asyncio

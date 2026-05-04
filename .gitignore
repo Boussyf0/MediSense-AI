@@ -222,3 +222,6 @@ nginx/certs/*.pem
 *.onnx
 data/raw/
 mlruns/
+mlflow.db
+backend/.local/
+.DS_Store

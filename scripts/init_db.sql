@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS public.patients (
     consent_iot         BOOLEAN NOT NULL DEFAULT FALSE,
     consent_nlp         BOOLEAN NOT NULL DEFAULT FALSE,
     consent_sharing     BOOLEAN NOT NULL DEFAULT FALSE,
+    sms_opt_out         BOOLEAN NOT NULL DEFAULT FALSE,  -- patient preference for reminder SMS
     -- Demographics needed for ML (no identity link)
     birth_year          SMALLINT,           -- NOT full birthdate (reduces re-identification risk)
     sex                 CHAR(1) CHECK (sex IN ('M', 'F', 'O')),
@@ -129,6 +130,9 @@ CREATE TABLE IF NOT EXISTS public.appointments (
     rag_summary         TEXT,
     -- CRM sync
     salesforce_task_id  VARCHAR(100),
+    -- Smart SMS reminders (Sprint 5)
+    sms_reminders_sent  SMALLINT NOT NULL DEFAULT 0 CHECK (sms_reminders_sent BETWEEN 0 AND 2),
+    last_sms_reminder_at TIMESTAMPTZ,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

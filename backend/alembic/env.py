@@ -27,9 +27,11 @@ from app.db.session import Base
 
 # Import ALL models here so Base.metadata knows about them
 # If you forget to import a model, Alembic won't track it
-from app.db.models.user import User
-from app.db.models.patient import Patient, PatientIdentity
-from app.db.models.audit_log import AuditLog, ConsentLog   # Sprint 2
+from app.db.models import (
+    User, Patient, PatientIdentity, AuditLog, 
+    BiometricAnomaly, Conversation, DPASummary,
+    Appointment, MLFeedback
+)
 
 settings = get_settings()
 
