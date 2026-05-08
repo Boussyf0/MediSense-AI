@@ -589,7 +589,7 @@ Le frontend affiche les sources pendant que le modèle génère. L'UX perçue es
 
 ---
 
-## 11. Corpus médical marocain — 30 184 points
+## 11. Corpus médical marocain — 84k points (30 184 Sprint 3 → 84k après addendum BDPM)
 
 ### Évolution du corpus tout au long du sprint
 

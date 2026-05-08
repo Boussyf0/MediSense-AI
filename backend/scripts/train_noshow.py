@@ -5,6 +5,8 @@ from typing import Any
 import catboost as cb
 import joblib
 import lightgbm as lgb
+import matplotlib
+import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
 import optuna
@@ -13,9 +15,12 @@ import shap
 import xgboost as xgb
 from imblearn.over_sampling import SMOTE
 from sklearn.base import clone
+from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss, classification_report, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+matplotlib.use("Agg")
 
 # Configuration
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -268,6 +273,21 @@ def run_training() -> None:
             json.dump(training_report, fp, indent=2)
 
         mlflow.log_artifact(str(report_output_path), artifact_path="reports")
+
+        fraction_pos, mean_pred = calibration_curve(y_test, test_probabilities, n_bins=10, strategy="uniform")
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.plot([0, 1], [0, 1], "k--", label="Perfect calibration")
+        ax.plot(mean_pred, fraction_pos, "s-", label=f"{winner_model_name} (Brier={test_brier:.3f}, ECE={test_ece:.3f})")
+        ax.set_xlabel("Mean predicted probability")
+        ax.set_ylabel("Fraction of positives")
+        ax.set_title("Calibration Curve — No-Show Model")
+        ax.legend()
+        ax.grid(alpha=0.3)
+        calibration_plot_path = MODEL_DIR / "calibration_curve.png"
+        fig.savefig(calibration_plot_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        mlflow.log_artifact(str(calibration_plot_path), artifact_path="plots")
+
         mlflow.sklearn.log_model(winner_model, artifact_path="model")
         print(f"Model and artifacts saved to {MODEL_DIR}")
 

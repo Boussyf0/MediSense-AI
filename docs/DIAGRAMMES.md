@@ -78,7 +78,7 @@ flowchart TB
     subgraph P2["Pipeline 2 — RAG / LLM"]
         direction LR
         NLP["Prétraitement NLP<br/>Détection langue + Entités"]
-        QDRANT["Qdrant<br/>30 184 points médicaux"]
+        QDRANT["Qdrant<br/>84k points médicaux"]
         SAFETY["Couche Sécurité<br/>141 SAMU / Disclaimer"]
         LLAMA["LLM médical<br/>Ollama local ou Groq API"]
     end
@@ -331,7 +331,7 @@ flowchart LR
 
     subgraph UC["Sprint 3 — US-09 à US-12"]
         UC9["US-09: Interroger le provider LLM<br/>Latence P95 < 150ms<br/>Ollama local / Groq démo"]
-        UC10["US-10: Indexer la base médicale<br/>30 184 points dans Qdrant<br/>(ICD-10 + DMP Maroc + Protocoles MA)"]
+        UC10["US-10: Indexer la base médicale<br/>84k points dans Qdrant<br/>(ICD-10 + DMP Maroc + BDPM France + Protocoles MA)"]
         UC11["US-11: Chatter en FR/AR/Darija<br/>Détection langue → normalisation → RAG"]
         UC12["US-12: Recherche hybride<br/>Dense + BM25 + RRF fusion"]
         SAFE["Couche sécurité<br/>141 SAMU / confidence gate / disclaimer"]
@@ -828,7 +828,7 @@ sequenceDiagram
     participant REDIS as Redis<br/>(Historique conv.)
     participant LANG as Détection Langue<br/>+ Normalisation
     participant NLP as Extracteur Entités<br/>(drug_names, icd10, urgent)
-    participant QDR as Qdrant<br/>(30 184 points — Dense+BM25+RRF)
+    participant QDR as Qdrant<br/>(84k points — Dense+BM25+RRF)
     participant MCP as MCP Server<br/>(medicament.ma DMP Maroc)
     participant SAFE as Couche Sécurité<br/>(pre/post-check)
     participant LLM as Provider LLM<br/>(Ollama local ou Groq API — SSE)
@@ -1026,7 +1026,7 @@ flowchart TD
     G["📱 Push notification<br/>'Votre bilan mérite attention'"]
     H["Patient ouvre l'app<br/>→ Chatbot RAG démarre"]
     I["Triage cognitif NLP<br/>Questions: durée, intensité, contexte"]
-    J["RAG: Qdrant hybrid (30 184 pts) → provider LLM (Ollama/Groq)<br/>Réponse contextualisée FR/AR/Darija + 141 SAMU si urgent"]
+    J["RAG: Qdrant hybrid (84k pts) → provider LLM (Ollama/Groq)<br/>Réponse contextualisée FR/AR/Darija + 141 SAMU si urgent"]
     K["Score urgence calculé<br/>urgency_flag: ANOMALIE_IOT_ESSOUFFLEMENT<br/>urgency_score: 0.82"]
     L["XGBoost: Prédiction No-Show<br/>Prob: 0.73 → RISQUE ÉLEVÉ"]
     M["📅 RDV créé automatiquement<br/>10h30 — Dr. Benali<br/>Durée: 20min"]
