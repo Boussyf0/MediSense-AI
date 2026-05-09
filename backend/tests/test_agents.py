@@ -732,3 +732,59 @@ class TestBookingAgent:
 
         assert result.success is True
         assert result.doctor_id == doctor_uuid
+
+
+class TestOrchestratorHelpers:
+    """Direct unit tests for orchestrator helper functions."""
+
+    @pytest.mark.asyncio
+    async def test_run_with_timeout_general_exception_returns_fallback(self):
+        """Non-TimeoutError exception in coroutine → logged and fallback returned."""
+        from app.agents.orchestrator import _run_with_timeout
+
+        async def crashing():
+            raise ValueError("unexpected DB error")
+
+        errors: list = []
+        result = await _run_with_timeout(crashing(), "booking", errors, "fallback_value")
+
+        assert result == "fallback_value"
+        assert len(errors) == 1
+        assert "booking_agent_error" in errors[0]
+
+    @pytest.mark.asyncio
+    async def test_routine_failed_booking_composes_fallback_message(self):
+        """ROUTINE triage with failed booking → chat_message uses booking.message."""
+        from app.agents.orchestrator import run_agent_flow, AgentRoute
+        from app.agents.triage_agent import TriageResult, Severity
+        from app.agents.booking_agent import BookingResult
+        from app.agents.crm_agent import CRMResult
+
+        routine_triage = TriageResult(
+            severity=Severity.ROUTINE,
+            reason="Suivi gastro",
+            specialist="gastroentérologie",
+            confidence=0.85,
+        )
+        booking_failed = BookingResult(
+            success=False,
+            specialist_type="gastroentérologie",
+            message="Aucun créneau. Contactez le secrétariat.",
+        )
+
+        with patch("app.agents.orchestrator._triage_run", AsyncMock(return_value=routine_triage)), \
+             patch("app.agents.orchestrator._booking_run", AsyncMock(return_value=booking_failed)), \
+             patch("app.agents.orchestrator._crm_run", AsyncMock(return_value=CRMResult(sent=False))):
+            result = await run_agent_flow(
+                query_fr="douleurs abdominales",
+                patient_id="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                conversation_id=None,
+                iot_anomalies=[],
+                is_urgent_from_rag=False,
+                db=AsyncMock(),
+            )
+
+        assert result.route == AgentRoute.BOOK
+        assert result.booking is not None
+        assert result.booking.success is False
+        assert "gastroentérologie" in result.chat_message

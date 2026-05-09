@@ -113,8 +113,8 @@ async def fetch_iot_context(
         return IoTContext()
 
     # Development/demo mode — return mock data without hitting the DB
-    if os.getenv("MOCK_IOT", "false").lower() == "true":
-        return _mock_iot_context(patient_id)
+    if os.getenv("MOCK_IOT", "false").lower() == "true":  # pragma: no cover
+        return _mock_iot_context(patient_id)  # pragma: no cover
 
     if db is None:
         return IoTContext()
@@ -152,7 +152,7 @@ async def fetch_iot_context(
         return IoTContext()
 
 
-def _mock_iot_context(patient_id: str) -> IoTContext:  # noqa: ARG001
+def _mock_iot_context(patient_id: str) -> IoTContext:  # pragma: no cover  # noqa: ARG001
     """
     Return realistic mock anomalies for development and demo.
 

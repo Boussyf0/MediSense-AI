@@ -605,9 +605,9 @@ async def test_sms_dispatch_send_failure_releases_slot():
 
 
 def test_mask_phone_short_number():
-    """Phone with ≤2 digits → fully masked as '***'."""
+    """Phone with ≤2 digits → fully masked; >2 digits shows last two."""
     from app.services.sms_reminder import _mask_phone
 
-    assert _mask_phone("1") == "***"
-    assert _mask_phone("12") == "***"
-    assert _mask_phone("+33") == "***33"
+    assert _mask_phone("1") == "***"      # 1 digit ≤ 2 → all masked
+    assert _mask_phone("12") == "***"     # 2 digits ≤ 2 → all masked
+    assert _mask_phone("+212600") == "***00"  # 9 digits → last 2
