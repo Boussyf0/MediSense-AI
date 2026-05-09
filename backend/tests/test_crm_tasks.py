@@ -268,6 +268,26 @@ class TestSalesforceClient:
         assert result.sent is False
         assert sf._cb_failures >= 1
 
+    async def test_send_4xx_marks_failed_no_circuit_breaker(self):
+        """401 response → sent=False, FAILED persisted, circuit breaker NOT opened."""
+        import app.services.salesforce_client as sf
+        from app.services.salesforce_client import send_crm_event
+
+        response = self._mock_http_response(401)
+        mock_client = self._mock_http_client(response)
+        settings = self._make_settings()
+
+        with patch("app.services.salesforce_client.get_settings", return_value=settings), \
+             patch("app.services.salesforce_client.httpx.AsyncClient", return_value=mock_client):
+            result = await send_crm_event(
+                patient_id="aaa", severity="urgent",
+                appointment_id=None, specialist_type=None, query_fr="test",
+            )
+
+        assert result.sent is False
+        assert result.status_code == 401
+        assert sf._cb_failures == 0  # 4xx must NOT increment circuit breaker
+
     async def test_send_info_severity_skips(self):
         """INFO severity → skipped immediately, no HTTP call."""
         from app.services.salesforce_client import send_crm_event
@@ -381,7 +401,9 @@ class TestCRMEndpoints:
         """POST /retry dispatches asyncio.create_task and returns PENDING."""
         appt_uuid = await seed_appointment(test_db, crm_sync_status="FAILED")
 
-        with patch("app.api.v1.endpoints.crm.asyncio.create_task") as mock_create_task, \
+        # side_effect closes the coroutine so pytest doesn't warn "never awaited"
+        with patch("app.api.v1.endpoints.crm.asyncio.create_task",
+                   side_effect=lambda coro: coro.close() or MagicMock()) as mock_create_task, \
              patch("app.api.v1.endpoints.crm.send_crm_event", new=AsyncMock()):
             response = await client.post(
                 f"/api/v1/crm/tasks/{appt_uuid}/retry",
@@ -411,7 +433,8 @@ class TestCRMEndpoints:
         """Retrying a SENT task WITH force=True → 200, dispatch proceeds."""
         appt_uuid = await seed_appointment(test_db, crm_sync_status="SENT")
 
-        with patch("app.api.v1.endpoints.crm.asyncio.create_task"), \
+        with patch("app.api.v1.endpoints.crm.asyncio.create_task",
+                   side_effect=lambda coro: coro.close() or MagicMock()), \
              patch("app.api.v1.endpoints.crm.send_crm_event", new=AsyncMock()):
             response = await client.post(
                 f"/api/v1/crm/tasks/{appt_uuid}/retry",

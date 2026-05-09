@@ -594,3 +594,110 @@ class TestIoTContext:
         assert ctx.has_critical is True
         assert len(ctx.anomalies) == 1
         assert ctx.anomalies[0]["metric"] == "SpO2"
+
+
+# ── Booking Agent ─────────────────────────────────────────────────────────────
+
+class TestBookingAgent:
+    """
+    Unit tests for app.agents.booking_agent.
+
+    booking_agent is always mocked out in orchestrator tests (via _booking_run
+    patch), so these unit tests provide the only direct coverage of its logic.
+    All tests use a mock AsyncSession — no real DB required.
+    """
+
+    def _empty_db(self):
+        """Mock DB that returns empty results for all queries."""
+        mock_db = AsyncMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_result.fetchone.return_value = None
+        mock_db.execute.return_value = mock_result
+        return mock_db
+
+    def _doctor_db(self, doctor_uuid: str):
+        """Mock DB that returns one doctor row."""
+        mock_db = AsyncMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = [(doctor_uuid,)]
+        mock_result.fetchone.return_value = (doctor_uuid,)
+        mock_db.execute.return_value = mock_result
+        return mock_db
+
+    @pytest.mark.asyncio
+    async def test_no_doctors_returns_failure(self):
+        """No doctors in DB → success=False with secrétariat message."""
+        from app.agents.booking_agent import run
+
+        result = await run("patient-id", "cardiologie", self._empty_db())
+
+        assert result.success is False
+        assert "secrétariat" in result.message.lower() or "médecin" in result.message.lower()
+
+    @pytest.mark.asyncio
+    async def test_specialist_type_none_defaults_to_medecine_generale(self):
+        """specialist_type=None → specialty becomes 'médecine générale'."""
+        from app.agents.booking_agent import run
+
+        result = await run("patient-id", None, self._empty_db())
+
+        assert result.success is False
+        assert result.specialist_type == "médecine générale"
+
+    @pytest.mark.asyncio
+    async def test_no_slot_returns_failure(self):
+        """No free slot found → success=False with créneau message."""
+        import uuid as _uuid
+        from app.agents.booking_agent import run
+
+        doctor_uuid = str(_uuid.uuid4())
+        mock_db = self._doctor_db(doctor_uuid)
+
+        with patch("app.agents.booking_agent._find_free_slot", AsyncMock(return_value=None)):
+            result = await run("patient-id", "cardiologie", mock_db)
+
+        assert result.success is False
+        assert "créneau" in result.message.lower() or "secrétariat" in result.message.lower()
+
+    @pytest.mark.asyncio
+    async def test_successful_booking(self):
+        """Happy path: doctor found, slot found → success=True."""
+        import uuid as _uuid
+        from app.agents.booking_agent import run
+
+        doctor_uuid = str(_uuid.uuid4())
+        mock_db = self._doctor_db(doctor_uuid)
+        future_slot = "2027-01-15T10:00:00+00:00"
+
+        with patch("app.agents.booking_agent._find_free_slot", AsyncMock(return_value=future_slot)):
+            result = await run("patient-id", "cardiologie", mock_db)
+
+        assert result.success is True
+        assert result.appointment_id is not None
+        assert result.doctor_id == doctor_uuid
+
+    @pytest.mark.asyncio
+    async def test_db_exception_returns_graceful_failure(self):
+        """DB exception during doctor query → success=False, no raise."""
+        from app.agents.booking_agent import run
+
+        mock_db = AsyncMock()
+        mock_db.execute.side_effect = RuntimeError("connection lost")
+
+        result = await run("patient-id", "cardiologie", mock_db)
+
+        assert result.success is False
+
+    @pytest.mark.asyncio
+    async def test_find_free_slot_returns_next_available(self):
+        """_find_free_slot returns a slot when no existing appointments."""
+        from app.agents.booking_agent import _find_free_slot
+
+        mock_db = AsyncMock()
+        mock_result = MagicMock()
+        mock_result.fetchall.return_value = []
+        mock_db.execute.return_value = mock_result
+
+        slot = await _find_free_slot(str(MagicMock()), mock_db)
+        assert slot is not None  # always finds a slot when calendar is empty

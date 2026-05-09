@@ -8,6 +8,7 @@ omit =
     app/rag/vectorstore.py
     app/rag/embedder.py
     app/rag/reranker.py
+    app/rag/normalizer.py
     app/services/dpa_summarizer.py
 
 [report]

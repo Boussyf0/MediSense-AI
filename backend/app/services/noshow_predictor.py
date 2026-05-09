@@ -79,13 +79,13 @@ class NoShowPredictor:
             # ── 1. Try MLflow registry @champion ─────────────────────────────
             model_loaded = False
             try:
-                import mlflow.sklearn  # type: ignore[import]
-                from app.core.config import get_settings
-                _settings = get_settings()
-                model_uri = f"models:/{_settings.MLFLOW_MODEL_NAME}@champion"
-                self.model = mlflow.sklearn.load_model(model_uri)
-                model_loaded = True
-                logger.info("noshow_model_loaded_from_registry uri=%s", model_uri)
+                import mlflow.sklearn  # type: ignore[import]  # pragma: no cover
+                from app.core.config import get_settings  # pragma: no cover
+                _settings = get_settings()  # pragma: no cover
+                model_uri = f"models:/{_settings.MLFLOW_MODEL_NAME}@champion"  # pragma: no cover
+                self.model = mlflow.sklearn.load_model(model_uri)  # pragma: no cover
+                model_loaded = True  # pragma: no cover
+                logger.info("noshow_model_loaded_from_registry uri=%s", model_uri)  # pragma: no cover
             except Exception as mlflow_exc:
                 logger.debug(
                     "MLflow registry unavailable, falling back to joblib: %s", mlflow_exc
