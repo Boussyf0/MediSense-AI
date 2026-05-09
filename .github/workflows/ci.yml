@@ -11,6 +11,9 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     services:
       postgres:
         image: postgres:16
@@ -144,7 +147,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/medisense-backend
+          images: ghcr.io/${{ github.repository_owner }}/medisense-backend
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
