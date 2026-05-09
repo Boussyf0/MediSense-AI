@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
 import numpy as np
 import pytest
 
@@ -478,3 +479,135 @@ async def test_sms_dispatch_never_exceeds_two_reminders(client, test_db):
     assert final_payload["items"][0]["reason"] == "max_reminders_reached"
     assert final_payload["items"][0]["sms_reminders_sent"] == 2
     assert mock_send_sms.await_count == 2
+
+
+# ── Unit tests: dispatch_smart_sms_reminders skip paths ──────────────────────
+
+def _make_appt(probability: float, reminders_sent: int = 0) -> MagicMock:
+    appt = MagicMock(spec=Appointment)
+    appt.noshow_probability = probability
+    appt.sms_reminders_sent = reminders_sent
+    appt.appointment_uuid = uuid.uuid4()
+    appt.patient_uuid = uuid.uuid4()
+    appt.scheduled_at = datetime(2027, 6, 1, 9, 0, tzinfo=timezone.utc)
+    return appt
+
+
+def _make_patient(sms_opt_out: bool = False, is_active: bool = True) -> MagicMock:
+    p = MagicMock(spec=Patient)
+    p.sms_opt_out = sms_opt_out
+    p.is_active = is_active
+    return p
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_below_threshold_skips():
+    """Appointment with low risk probability → reason='below_threshold', not sent."""
+    from app.services.sms_reminder import dispatch_smart_sms_reminders
+    from app.core.config import get_settings
+
+    threshold = get_settings().SMS_REMINDER_THRESHOLD
+    appt = _make_appt(probability=threshold - 0.01)
+    mock_db = AsyncMock()
+
+    results = await dispatch_smart_sms_reminders(mock_db, [appt])
+
+    assert len(results) == 1
+    assert results[0].sent is False
+    assert results[0].reason == "below_threshold"
+    mock_db.execute.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_inactive_patient_skips():
+    """Patient not found in DB → reason='patient_inactive_or_missing', not sent."""
+    from app.services.sms_reminder import dispatch_smart_sms_reminders
+
+    appt = _make_appt(probability=0.85)
+    patient_result = MagicMock()
+    patient_result.scalar_one_or_none.return_value = None  # patient absent
+
+    mock_db = AsyncMock()
+    mock_db.execute.return_value = patient_result
+
+    results = await dispatch_smart_sms_reminders(mock_db, [appt])
+
+    assert results[0].sent is False
+    assert results[0].reason == "patient_inactive_or_missing"
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_missing_phone_skips():
+    """Patient exists but has no phone → reason='missing_phone', not sent."""
+    from app.services.sms_reminder import dispatch_smart_sms_reminders
+
+    appt = _make_appt(probability=0.85)
+    patient_result = MagicMock()
+    patient_result.scalar_one_or_none.return_value = _make_patient()
+
+    mock_db = AsyncMock()
+    mock_db.execute.return_value = patient_result
+
+    with patch("app.services.sms_reminder._get_patient_phone_number",
+               AsyncMock(return_value=None)):
+        results = await dispatch_smart_sms_reminders(mock_db, [appt])
+
+    assert results[0].sent is False
+    assert results[0].reason == "missing_phone"
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_reserve_slot_race_returns_max_reached():
+    """_reserve_sms_slot returns None (concurrent update) → reason='max_reminders_reached'."""
+    from app.services.sms_reminder import dispatch_smart_sms_reminders
+
+    appt = _make_appt(probability=0.85)
+    patient_result = MagicMock()
+    patient_result.scalar_one_or_none.return_value = _make_patient()
+
+    reserve_result = MagicMock()
+    reserve_result.scalar_one_or_none.return_value = None  # concurrent update lost
+
+    mock_db = AsyncMock()
+    mock_db.execute.side_effect = [patient_result, reserve_result]
+
+    with patch("app.services.sms_reminder._get_patient_phone_number",
+               AsyncMock(return_value="+212600000001")):
+        results = await dispatch_smart_sms_reminders(mock_db, [appt])
+
+    assert results[0].sent is False
+    assert results[0].reason == "max_reminders_reached"
+
+
+@pytest.mark.asyncio
+async def test_sms_dispatch_send_failure_releases_slot():
+    """SMS provider raises → slot released, reason='send_failed'."""
+    from app.services.sms_reminder import dispatch_smart_sms_reminders
+
+    appt = _make_appt(probability=0.85)
+    patient_result = MagicMock()
+    patient_result.scalar_one_or_none.return_value = _make_patient()
+
+    reserve_result = MagicMock()
+    reserve_result.scalar_one_or_none.return_value = 1  # slot reserved
+
+    mock_db = AsyncMock()
+    mock_db.execute.side_effect = [patient_result, reserve_result, MagicMock()]
+
+    with patch("app.services.sms_reminder._get_patient_phone_number",
+               AsyncMock(return_value="+212600000001")), \
+         patch("app.services.sms_reminder._send_sms",
+               AsyncMock(side_effect=httpx.ConnectError("timeout"))):
+        results = await dispatch_smart_sms_reminders(mock_db, [appt])
+
+    assert results[0].sent is False
+    assert results[0].reason == "send_failed"
+
+
+def test_mask_phone_short_number():
+    """Phone with ≤2 digits → fully masked as '***'."""
+    from app.services.sms_reminder import _mask_phone
+
+    assert _mask_phone("1") == "***"
+    assert _mask_phone("12") == "***"
+    assert _mask_phone("+33") == "***33"
