@@ -13,10 +13,11 @@
 4. [US-33 — MLflow Model Registry](#4-us-33--mlflow-model-registry)
 5. [US-37 — CI/CD GitHub Actions renforcé](#5-us-37--cicd-github-actions-renforcé)
 6. [US-38 — OWASP ZAP scan automatisé](#6-us-38--owasp-zap-scan-automatisé)
-7. [Infrastructure technique & artefacts livrés](#7-infrastructure-technique--artefacts-livrés)
-8. [Validation, métriques finales & tests](#8-validation-métriques-finales--tests)
-9. [Bugs résolus & leçons apprises](#9-bugs-résolus--leçons-apprises)
-10. [Ce sur quoi te concentrer — Profil DS/IA](#10-ce-sur-quoi-te-concentrer--profil-dsia)
+7. [Outillage qualité local](#7-outillage-qualité-local)
+8. [Infrastructure technique & artefacts livrés](#8-infrastructure-technique--artefacts-livrés)
+9. [Validation, métriques finales & tests](#9-validation-métriques-finales--tests)
+10. [Bugs résolus & leçons apprises](#10-bugs-résolus--leçons-apprises)
+11. [Ce sur quoi te concentrer — Profil DS/IA](#11-ce-sur-quoi-te-concentrer--profil-dsia)
 
 ---
 
@@ -27,7 +28,8 @@ Industrialiser le passage du prototype IA vers un cycle exploitable en productio
 - synchronisation CRM fiable, traçable et auditable (Salesforce),
 - gouvernance du modèle no-show via MLflow Model Registry,
 - pipeline CI/CD orienté qualité avec gates automatisées,
-- scan sécurité OWASP ZAP hebdomadaire.
+- scan sécurité OWASP ZAP hebdomadaire,
+- outillage qualité local pour prévenir la régression de process.
 
 ### Résultat final
 
@@ -36,6 +38,7 @@ Industrialiser le passage du prototype IA vers un cycle exploitable en productio
 | Valeur produit sprint | **4.7 / 5** | La boucle prédiction → CRM → action secrétaire est fermée end-to-end. |
 | Qualité d'implémentation | **4.6 / 5** | Séparation nette des responsabilités, correlation IDs, RGPD Art.30 respecté. |
 | Maturité production ML | **4.5 / 5** | Registry + quality gate + serving via alias — vrai MLOps opérationnel. |
+| Discipline de livraison | **4.0 / 5** | Coverage battle (8 CI runs) résolu, outillage ajouté pour éviter la récidive. |
 
 ### User Stories couvertes
 
@@ -46,45 +49,56 @@ Industrialiser le passage du prototype IA vers un cycle exploitable en productio
 | US-33 | MLflow Model Registry : versioning, quality gate, promotion alias | 5 | ✅ |
 | US-37 | CI/CD : pip cache, coverage gate 80%, ML gate, build-and-push GHCR | 8 | ✅ |
 | US-38 | OWASP ZAP scan baseline hebdomadaire, gate 0 High | 5 | ✅ |
-| **Total** | | **29 pts** | ✅ |
+| **QA** | Outillage qualité local (Makefile, hook, CLAUDE.md, CONTRIBUTING.md) | 2 | ✅ |
+| **Total** | | **31 pts** | ✅ |
 
 ### Ce qui a été livré
 
 ```text
 backend/
+├── Makefile                                    # make test / cov / cov-html / install-hooks
+├── pytest.ini                                  # addopts = --tb=short
 ├── app/
 │   ├── api/v1/endpoints/
-│   │   └── crm.py                          # US-43 GET/PATCH/POST /crm/tasks
+│   │   └── crm.py                             # US-43 GET/PATCH/POST /crm/tasks
 │   ├── schemas/
-│   │   └── crm.py                          # CRMTaskOut, CRMTaskPatch, CRMRetryResponse
+│   │   └── crm.py                             # CRMTaskOut, CRMTaskPatch, CRMRetryResponse
 │   ├── services/
-│   │   ├── salesforce_client.py            # US-24 HTTP + circuit breaker + persistence
-│   │   └── noshow_predictor.py             # US-33 registry-first model loading
+│   │   ├── salesforce_client.py               # US-24 HTTP + circuit breaker + persistence
+│   │   └── noshow_predictor.py                # US-33 registry-first model loading
 │   ├── agents/
-│   │   └── crm_agent.py                    # refactorisé : thin wrapper salesforce_client
+│   │   └── crm_agent.py                       # refactorisé : thin wrapper salesforce_client
 │   ├── core/
-│   │   └── config.py                       # 8 nouveaux settings Salesforce + MLflow
+│   │   ├── config.py                          # 8 nouveaux settings Salesforce + MLflow
+│   │   └── conversation_cache.py              # except handlers marqués pragma no cover
 │   └── db/models/
-│       └── appointment.py                  # 5 colonnes crm_* ajoutées
+│       └── appointment.py                     # 5 colonnes crm_* ajoutées
 ├── alembic/versions/
 │   └── 20260608_000000_sprint6_salesforce_mlops.py
 ├── scripts/
-│   ├── __init__.py                         # rend scripts/ importable comme package
-│   ├── train_noshow.py                     # quality gate avant mlflow.register_model
-│   └── register_noshow_model.py            # CLI promotion champion/challenger
+│   ├── __init__.py                            # rend scripts/ importable comme package
+│   ├── train_noshow.py                        # quality gate avant mlflow.register_model
+│   └── register_noshow_model.py              # CLI promotion champion/challenger
 └── tests/
-    ├── test_crm_tasks.py                   # 5 unit + 13 integration tests
-    └── test_mlflow_registry.py             # 18 unit tests
+    ├── test_crm_tasks.py                      # 12 unit + 13 integration tests
+    ├── test_mlflow_registry.py               # 18 unit tests
+    ├── test_dpa.py                            # +2 tests decide_action (endpoint 0% → couvert)
+    └── test_noshow_ml.py                      # +8 tests (dispatch SMS + predict endpoint)
 
-.github/workflows/
-├── ci.yml                                  # renforcé (4 additions)
-└── security-zap.yml                        # nouveau workflow ZAP
+.github/
+├── workflows/
+│   ├── ci.yml                                 # renforcé : pip cache, coverage, ML gate, GHCR
+│   └── security-zap.yml                       # nouveau workflow ZAP
+└── PULL_REQUEST_TEMPLATE.md                   # checklist DoD par PR
 
 .zap/
-└── rules.tsv                               # whitelist faux positifs
+└── rules.tsv                                  # whitelist faux positifs ZAP
 
-backend/
-└── pyrightconfig.json                      # résolution scripts.* dans l'IDE
+scripts/hooks/
+└── pre-push                                   # bloque git push si coverage < 80%
+
+CLAUDE.md                                      # règles projet pour Claude Code
+CONTRIBUTING.md                               # Definition of Done, politique pragma, style commit
 ```
 
 ---
@@ -114,7 +128,7 @@ salesforce_client.send_crm_event()
 | Responsabilité | Détail |
 |----------------|--------|
 | Correlation ID | `uuid.uuid4()` généré par appel — tracé dans payload et DB |
-| Circuit breaker | Module-level, 3 failures → OPEN 60s → HALF-OPEN trial |
+| Circuit breaker | Module-level, 3 × 5xx → OPEN 60s → HALF-OPEN trial (4xx ne compte pas) |
 | Payload enrichi | `event_type`, `correlation_id`, `query_summary[:200]`, `iot_triggered` |
 | Persistence | `UPDATE appointments SET crm_sync_status=..., crm_correlation_id=..., crm_retry_count+=delta` |
 | Non-raising | Toutes exceptions catchées — `SalesforceResult` toujours retourné |
@@ -124,10 +138,12 @@ salesforce_client.send_crm_event()
 ```
 PENDING
   ├─→ SENT       (HTTP 2xx)
-  ├─→ FAILED     (HTTP 5xx ou exception réseau)
+  ├─→ FAILED     (HTTP 4xx/5xx ou exception réseau)
   ├─→ SKIPPED    (URL vide ou severity=info)
   └─→ CB_OPEN    (circuit breaker ouvert)
 ```
+
+**Distinction 4xx vs 5xx** : seules les erreurs 5xx incrémentent le compteur circuit breaker. Une erreur 4xx (mauvais token, payload invalide) indique un problème de configuration côté appelant — ouvrir le circuit serait contre-productif.
 
 ### Payload Salesforce
 
@@ -297,10 +313,9 @@ Ignoré si le fichier est absent (pas de modèle entraîné en CI).
 
 #### d) Build-and-push GHCR
 ```yaml
-# Tags générés automatiquement :
-#   sha-<commit>    (toujours)
-#   <branch-name>   (toujours)
-#   latest          (main uniquement)
+# Image : ghcr.io/<repository_owner>/medisense-backend
+# (repository_owner, PAS repository — évite le chemin org imbriqué)
+# Permissions requises : packages: write sur le job
 push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
 ```
 
@@ -345,7 +360,66 @@ Push / PR
 
 ---
 
-## 7. Infrastructure technique & artefacts livrés
+## 7. Outillage qualité local
+
+Sprint 6 a nécessité 8 runs CI pour atteindre la gate 80% de coverage. L'outillage suivant est livré pour que cette situation ne se reproduise plus.
+
+### `backend/Makefile`
+
+```bash
+make test          # gate 80% identique à CI (rapport XML)
+make cov           # idem + affiche chaque ligne non couverte (term-missing)
+make cov-html      # rapport HTML interactif — ouvre htmlcov/index.html
+make lint          # ruff check app/ tests/
+make install-hooks # installe le hook pre-push (une fois par clone)
+```
+
+**Usage type avant une PR** :
+```bash
+cd backend
+make cov           # toutes les lignes rouges = ce que CI va rejeter
+# corriger → relancer → vert → git push
+```
+
+### `scripts/hooks/pre-push`
+
+Bloque `git push` si `pytest --cov-fail-under=80` échoue. Installation :
+
+```bash
+cd backend && make install-hooks
+```
+
+Pour contourner ponctuellement (branche WIP) : `git push --no-verify`.
+
+### `CLAUDE.md` (racine du dépôt)
+
+Règles projet encodées pour Claude Code :
+- politique `# pragma: no cover` (quand l'utiliser, quand ne pas)
+- contrat de test par endpoint (happy path + 403 + erreur principale)
+- règle UUID dans les tests (`str(uuid.uuid4())` jamais `"patient-id"`)
+- convention nom image GHCR (`repository_owner` pas `repository`)
+
+### `CONTRIBUTING.md` (racine du dépôt)
+
+Definition of Done, politique pragma détaillée, style de commit, tableau des gates CI.
+
+### `.github/PULL_REQUEST_TEMPLATE.md`
+
+Checklist pré-remplie à chaque nouvelle PR :
+- `make test` vert localement
+- `make cov` — pas de lignes rouges dans les fichiers modifiés
+- endpoints : happy path + 403 + erreur couverts
+- aucun `# pragma: no cover` sur une ligne déjà couverte
+
+### `backend/pytest.ini` — addition
+
+```ini
+addopts = --tb=short   # tracebacks courts = sortie locale identique à CI
+```
+
+---
+
+## 8. Infrastructure technique & artefacts livrés
 
 ### Variables d'environnement nouvelles (`.env.example` mis à jour)
 
@@ -372,20 +446,26 @@ MLFLOW_PROMOTION_AUC_THRESHOLD=0.87
 | Import top-level de `send_crm_event` dans `crm.py` | Import lazy dans la fonction | Détection erreur au démarrage, pas à l'exécution |
 | `scripts/__init__.py` | `sys.path.insert` dans conftest | Solution propre, résout aussi l'IDE (pyrightconfig.json) |
 | Quality gate dans `train_noshow.py` | Gate uniquement dans le CLI | Prévient la pollution du registry dès l'entraînement |
+| `github.repository_owner` pour image GHCR | `github.repository` | Le chemin imbriqué `owner/repo/image` nécessite des droits org |
 
 ---
 
-## 8. Validation, métriques finales & tests
+## 9. Validation, métriques finales & tests
 
-### Résultats tests
+### Résultats tests — 234 tests au total
 
 | Suite | Tests | Résultat |
 |-------|------:|---------|
-| `test_crm_tasks.py` — Unit (SalesforceClient) | 5 | ✅ 5/5 |
-| `test_crm_tasks.py` — Integration (CRMEndpoints) | 13 | ✅ 13/13 (avec Docker) |
+| `test_crm_tasks.py` — Unit (SalesforceClient) | 12 | ✅ 12/12 |
+| `test_crm_tasks.py` — Integration (CRMEndpoints) | 13 | ✅ 13/13 |
 | `test_mlflow_registry.py` — Unit | 18 | ✅ 18/18 |
 | `test_agents.py::TestCRMCircuitBreaker` | 3 | ✅ 3/3 |
-| **Total nouveaux tests Sprint 6** | **39** | **✅** |
+| `test_agents.py::TestOrchestratorHelpers` | 2 | ✅ 2/2 |
+| `test_agents.py::TestBookingAgent` | 7 | ✅ 7/7 |
+| `test_dpa.py::TestDPADecideAction` | 2 | ✅ 2/2 |
+| `test_noshow_ml.py` — SMS dispatch unit | 6 | ✅ 6/6 |
+| `test_noshow_ml.py` — predict endpoint | 2 | ✅ 2/2 |
+| **Total nouveaux tests Sprint 6** | **65** | **✅** |
 
 ### Couverture des scénarios clés
 
@@ -393,31 +473,39 @@ MLFLOW_PROMOTION_AUC_THRESHOLD=0.87
 |----------|------|
 | Webhook 200 → `sent=True`, correlation_id UUID4 valide | `test_send_success` |
 | Webhook 500 → `sent=False`, `_cb_failures` incrémenté | `test_send_5xx_marks_failed` |
+| Webhook 401 → `sent=False`, circuit breaker NON incrémenté | `test_send_4xx_marks_failed_no_circuit_breaker` |
 | URL vide → skip silencieux, pas d'appel HTTP | `test_skipped_when_no_url` |
+| severity=info → skip silencieux, pas d'appel HTTP | `test_send_info_severity_skips` |
+| Exception réseau → `sent=False`, `_cb_failures` incrémenté | `test_send_network_error_marks_failed` |
 | 3× 500 → circuit ouvert → 4e appel `cb_open=True` | `test_circuit_breaker_opens_after_threshold` |
+| CB ouvert depuis > 60s → half-open → requête passe | `test_circuit_breaker_resets_after_timeout` |
 | `db=None` → pas d'exception | `test_persist_skips_when_db_is_none` |
-| GET /crm/tasks sans token → 401 | `test_list_requires_auth` |
+| GET /crm/tasks sans token → **403** (HTTPBearer) | `test_list_requires_auth` |
 | GET /crm/tasks rôle doctor → 403 | `test_list_doctor_forbidden` |
 | PATCH statut invalide → 422 | `test_patch_invalid_status_returns_422` |
 | POST retry tâche SENT sans force → 409 | `test_retry_sent_without_force_returns_409` |
 | POST retry max retries atteint → 429 | `test_retry_max_retries_exceeded_returns_429` |
+| PATCH /dpa-summary/{id}/action/{id} → 200 | `test_decide_action_approves_and_returns_summary` |
+| PATCH /dpa-summary/{id}/action/{id} mauvais summary → 404 | `test_decide_action_wrong_summary_id_returns_404` |
+| POST /predict/noshow → 200 (happy path) | `test_predict_endpoint_success_200` |
+| POST /predict/noshow feature invalide → 422 | `test_predict_endpoint_feature_validation_error_422` |
 | Quality gate F1 < 0.80 → sys.exit(1) | `test_exits_1_on_gate_failure` |
 | `--dry-run` → sys.exit(0), register_model non appelé | `test_dry_run_exits_0_without_registering` |
 | `--force` → promotion malgré métriques basses | `test_force_skips_gate_and_promotes` |
-| version string avec `mlflow_run_id` | `test_version_includes_run_id_prefix` |
 
 ### KPIs Sprint 6
 
 | KPI | Cible | Résultat |
 |-----|-------|----------|
 | Vulnérabilités ZAP High | 0 | ✅ Gate configurée |
-| Coverage backend | ≥ 80% | ✅ `--cov-fail-under=80` en CI |
+| Coverage backend | ≥ 80% | ✅ 80%+ — `--cov-fail-under=80` en CI |
 | Traçabilité modèle | 100% runs promus ont run_id | ✅ quality gate training + CLI |
 | Serving via registry alias | champion → inférence | ✅ fallback transparent |
+| Image Docker publiée sur GHCR | sha- + branch + latest | ✅ push main uniquement |
 
 ---
 
-## 9. Bugs résolus & leçons apprises
+## 10. Bugs résolus & leçons apprises
 
 ### Problèmes rencontrés
 
@@ -425,24 +513,39 @@ MLFLOW_PROMOTION_AUC_THRESHOLD=0.87
 |----------|-------|-----|
 | Import lazy `send_crm_event` dans `crm.py` | Copié depuis un prototype | Déplacé en import top-level |
 | `scripts.*` non résolu par Pyright | Pas d'`__init__.py` ni de `pyrightconfig.json` | Ajout `scripts/__init__.py` + `pyrightconfig.json` |
-| `@pytest.mark.asyncio` redondants | `asyncio_mode = auto` dans `pytest.ini` couvre déjà | Supprimés (18 → 0 décorateurs) |
+| `test_successful_booking` échoue (AssertionError) | `"patient-id"` passé à `uuid.UUID()` → ValueError silencieux | Remplacé par `str(uuid.uuid4())` dans le test |
+| `test_mask_phone_short_number` échoue | `_mask_phone("+33")` retourne `"***"` (2 chiffres ≤ 2) pas `"***33"` | Corrigé : test utilise `"+212600"` → `"***00"` |
+| Coroutine `_do_retry` jamais attendue → warning pytest | `asyncio.create_task` crée une coroutine qui n'est jamais awaited dans les tests | `side_effect=lambda coro: coro.close() or MagicMock()` |
+| `# pragma: no cover` sur lignes couvertes (iot_context.py 116-117) | Ajouté par erreur — `test_mock_mode_returns_critical_data` couvrait déjà ces lignes | Pragma supprimé — couverte compte dans le total |
+| `decide_action` endpoint 0% coverage | Endpoint livré en Sprint 4 sans suite de tests | `TestDPADecideAction` ajouté (success + 404) |
+| `predict_noshow` happy path 0% coverage | Seuls les cas d'erreur étaient mockés | `test_predict_endpoint_success_200` ajouté |
+| Image GHCR refusée — `denied: Create organization package` | `github.repository` → `boussyf0/MediSense-AI/medisense-backend` (chemin imbriqué) | `github.repository_owner` → `boussyf0/medisense-backend` + `packages: write` |
+| `@pytest.mark.asyncio` redondants | `asyncio_mode = auto` dans `pytest.ini` couvre déjà | Supprimés |
 | `mlflow` absent du venv dev | ML packages non installés globalement | Stub `sys.modules` dans `test_mlflow_registry.py` |
-| `register_model` appelé même si métriques insuffisantes | Pas de gate dans `train_noshow.py` | Ajout du check avant l'appel |
-| Circuit breaker non distribué | State module-level | Documenté comme limitation Sprint 7 (Redis) |
 
 ### Leçons apprises
 
-1. **Séparation HTTP / métier** — Extraire `salesforce_client.py` de `crm_agent.py` a immédiatement révélé que les tests mockaient `os.environ` au lieu de `get_settings`. L'abstraction correcte force des tests corrects.
+**1. La coverage gate sans outil local = 8 CI runs perdus**
+Aucun `make cov` ou hook pre-push n'existait. Chaque tentative de correction voyait son effet uniquement après un push. La solution : `make cov` + hook pre-push installé dès le démarrage du sprint.
 
-2. **La quality gate doit vivre au plus tôt** — Une gate uniquement dans le CLI de promotion ne protège pas si quelqu'un appelle `mlflow.register_model()` directement. La gate dans `train_noshow.py` ferme ce vecteur.
+**2. `# pragma: no cover` est un outil chirurgical, pas un pansement**
+Il doit couvrir du code structurellement inatteignable en test unitaire (adapters réseau, coroutines fire-and-forget). L'ajouter à une ligne déjà couverte *réduit* la couverture en retirant un statement couvert du numérateur ET du dénominateur. Règle : toujours vérifier avec `make cov` avant d'ajouter un pragma.
 
-3. **Registry-first avec fallback** — Charger depuis `models:/noshow-risk-model@champion` en priorité garantit que la promotion CLI a un effet réel sur l'inférence. Sans cette connexion, le registry est décoratif.
+**3. Chaque endpoint livré doit avoir son test dans le même commit**
+`decide_action` existait depuis le Sprint 4 avec 0% de coverage. Cela aurait dû être bloqué au moment de sa création. La règle : pas de merge d'un endpoint sans happy path + auth rejection + erreur principale.
 
-4. **La limitation multi-worker doit être documentée explicitement** — Un commentaire `# WARNING` dans le code est plus utile qu'un ticket JIRA oublié.
+**4. `github.repository` vs `github.repository_owner` en CI**
+`github.repository` retourne `owner/repo`. Utilisé comme préfixe d'image GHCR, il crée un chemin imbriqué (`ghcr.io/owner/repo/image`) qui nécessite des droits organisation. Toujours utiliser `github.repository_owner` pour les images Docker.
+
+**5. La séparation HTTP / métier force des meilleurs tests**
+Extraire `salesforce_client.py` de `crm_agent.py` a révélé que les tests précédents mockaient `os.environ` au lieu de `get_settings`. La bonne abstraction produit naturellement de meilleurs tests.
+
+**6. La quality gate doit vivre au plus tôt dans la pipeline**
+Une gate uniquement dans le CLI de promotion ne protège pas si `mlflow.register_model()` est appelé directement. La gate dans `train_noshow.py` ferme ce vecteur dès l'entraînement.
 
 ---
 
-## 10. Ce sur quoi te concentrer — Profil DS/IA
+## 11. Ce sur quoi te concentrer — Profil DS/IA
 
 ### Priorité 1 — Comprendre la boucle MLOps end-to-end
 
@@ -454,7 +557,17 @@ Tout modèle promu est traçable : `run_id`, métriques, artefacts SHAP, rapport
 
 **Action** : lancer `train_noshow.py` → noter le `run_id` → exécuter `register_noshow_model.py --alias challenger --dry-run` → vérifier que le service retourne la bonne `model_version`.
 
-### Priorité 2 — Calibration comme critère de promotion (Sprint 7)
+### Priorité 2 — Adopter le workflow local
+
+```bash
+cd backend
+make install-hooks   # une fois par clone
+make cov             # avant chaque push — toutes les lignes rouges = échec CI garanti
+```
+
+Le hook bloque automatiquement les pushs qui casseraient CI. Cela évite le cycle "push → CI fail → fix → push → CI fail".
+
+### Priorité 3 — Calibration comme critère de promotion (Sprint 7)
 
 Sprint 6 gate uniquement sur F1 et AUC. Or Brier score et ECE mesurent la fiabilité des probabilités — décisif pour le seuil SMS (30%). Le prochain sprint doit ajouter :
 ```python
@@ -462,14 +575,14 @@ if test_brier > BRIER_THRESHOLD or test_ece > ECE_THRESHOLD:
     # ne pas promouvoir
 ```
 
-### Priorité 3 — Observer les transitions CRM en production
+### Priorité 4 — Observer les transitions CRM en production
 
 La machine d'états (`PENDING → SENT | FAILED | CB_OPEN`) est maintenant persistée. En situation réelle :
 - monitorer le taux `FAILED / total` par fenêtre glissante,
 - alerter si le circuit breaker s'ouvre (`crm_open_since IS NOT NULL AND age > 5 min`),
 - analyser `crm_last_error` pour distinguer timeouts réseau d'erreurs Salesforce.
 
-### Priorité 4 — Préparer le circuit breaker distribué
+### Priorité 5 — Préparer le circuit breaker distribué
 
 Quand le nombre de workers uvicorn passera à > 1 (Sprint 8 — production), le circuit breaker local ne suffira plus. La migration vers Redis est planifiée :
 
@@ -482,7 +595,7 @@ if cb_failures >= FAILURE_THRESHOLD:
 
 L'interface publique `send_crm_event()` ne change pas — seul l'état migre.
 
-### Priorité 5 — ZAP en développement local
+### Priorité 6 — ZAP en développement local
 
 Le scan ZAP tourne en CI chaque lundi. Pour tester localement :
 ```bash
@@ -498,7 +611,8 @@ cd backend && uvicorn app.main:app --port 8000 &
 ### Résultat final Sprint 6
 
 Sprint 6 transforme MediSense AI d'un prototype performant localement en un pipeline exploitable :
-- **CRM fiable** : corrélation ID, machine d'états, retry contrôlé, API secrétaire.
+- **CRM fiable** : correlation ID, machine d'états, distinction 4xx/5xx, retry contrôlé, API secrétaire.
 - **MLOps gouverné** : quality gate dès l'entraînement, promotion alias, serving registry-first.
-- **CI/CD traçable** : coverage gate, ML gate, image taggée et publiée sur GHCR.
+- **CI/CD traçable** : coverage gate 80%, ML gate, image GHCR taggée et publiée.
 - **Sécurité automatisée** : ZAP scan hebdomadaire bloquant sur alertes High.
+- **Qualité process** : Makefile, hook pre-push, CLAUDE.md, CONTRIBUTING.md, PR template — les outils qui rendent les bonnes pratiques plus faciles que les mauvaises.
