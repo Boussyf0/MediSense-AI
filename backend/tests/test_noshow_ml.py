@@ -611,3 +611,65 @@ def test_mask_phone_short_number():
     assert _mask_phone("1") == "***"      # 1 digit ≤ 2 → all masked
     assert _mask_phone("12") == "***"     # 2 digits ≤ 2 → all masked
     assert _mask_phone("+212600") == "***00"  # 9 digits → last 2
+
+
+@pytest.mark.asyncio
+async def test_predict_endpoint_success_200(client):
+    """Happy path: mocked predictor returns result → 200 with NoShowResponse."""
+    payload = {
+        "age": 45,
+        "sex": "M",
+        "distance_to_clinic": 10.5,
+        "weather_score": 0.2,
+        "previous_noshows": 0,
+        "days_since_booking": 5,
+        "day_of_week": 2,
+        "appointment_hour": 14,
+        "chronic_conditions_count": 1,
+    }
+    mock_result = {
+        "noshow_probability": 0.35,
+        "risk_color": "orange",
+        "shap_contributions": {k: 0.01 for k in payload},
+        "model_version": "v-test",
+    }
+    with patch(
+        "app.api.v1.endpoints.predict.noshow_predictor.predict",
+        return_value=mock_result,
+    ):
+        response = await client.post(
+            "/api/v1/predict/noshow",
+            json=payload,
+            headers=auth("doctor"),
+        )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["noshow_probability"] == pytest.approx(0.35)
+    assert data["risk_color"] == "orange"
+
+
+@pytest.mark.asyncio
+async def test_predict_endpoint_feature_validation_error_422(client):
+    """FeatureValidationError from predictor → 422 Unprocessable Entity."""
+    payload = {
+        "age": 45,
+        "sex": "M",
+        "distance_to_clinic": 10.5,
+        "weather_score": 0.2,
+        "previous_noshows": 0,
+        "days_since_booking": 5,
+        "day_of_week": 2,
+        "appointment_hour": 14,
+        "chronic_conditions_count": 1,
+    }
+    with patch(
+        "app.api.v1.endpoints.predict.noshow_predictor.predict",
+        side_effect=FeatureValidationError("champ manquant"),
+    ):
+        response = await client.post(
+            "/api/v1/predict/noshow",
+            json=payload,
+            headers=auth("secretary"),
+        )
+    assert response.status_code == 422
+    assert "champ manquant" in response.json()["detail"]

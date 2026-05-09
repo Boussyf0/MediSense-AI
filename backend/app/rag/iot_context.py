@@ -113,8 +113,8 @@ async def fetch_iot_context(
         return IoTContext()
 
     # Development/demo mode — return mock data without hitting the DB
-    if os.getenv("MOCK_IOT", "false").lower() == "true":  # pragma: no cover
-        return _mock_iot_context(patient_id)  # pragma: no cover
+    if os.getenv("MOCK_IOT", "false").lower() == "true":
+        return _mock_iot_context(patient_id)
 
     if db is None:
         return IoTContext()
