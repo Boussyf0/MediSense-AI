@@ -145,7 +145,7 @@ async def run_agent_flow(
     if triage.severity == Severity.URGENT:
         crm = await _run_crm(
             patient_id, "urgent", None, None, query_fr,
-            triage.iot_triggered, errors, timings
+            triage.iot_triggered, errors, timings, db
         )
         msg = _compose_urgent_message(triage)
         return AgentResult(
@@ -178,7 +178,7 @@ async def run_agent_flow(
         crm = await _run_crm(
             patient_id, "routine",
             booking.appointment_id, triage.specialist,
-            query_fr, triage.iot_triggered, errors, timings
+            query_fr, triage.iot_triggered, errors, timings, db
         )
         msg = _compose_routine_message(triage, booking)
         return AgentResult(
@@ -194,7 +194,7 @@ async def run_agent_flow(
     # INFO (or no DB session for booking)
     crm = await _run_crm(
         patient_id, "info", None, None, query_fr,
-        False, errors, timings
+        False, errors, timings, db
     )
     return AgentResult(
         route=AgentRoute.INFO,
@@ -238,6 +238,7 @@ async def _run_crm(
     iot_triggered: bool,
     errors: list[str],
     timings: dict[str, float],
+    db: AsyncSession | None = None,
 ) -> CRMResult | None:
     """Run the CRM agent with timeout. Non-blocking."""
     if not patient_id:
@@ -252,6 +253,7 @@ async def _run_crm(
             specialist_type=specialist_type,
             query_fr=query_fr,
             iot_triggered=iot_triggered,
+            db=db,
         ),
         name="crm",
         errors=errors,

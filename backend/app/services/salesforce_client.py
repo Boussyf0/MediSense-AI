@@ -132,11 +132,20 @@ async def send_crm_event(
                 },
             )
 
-        if response.status_code >= 500:
-            _cb_failures += 1
-            if _cb_failures >= FAILURE_THRESHOLD:
-                _cb_open_since = time.monotonic()
-                logger.warning("salesforce_circuit_open after %d failures", _cb_failures)
+        if not (200 <= response.status_code < 300):
+            # 5xx → server-side failure: count toward circuit breaker.
+            # 4xx → client-side error (bad token, wrong payload): don't open CB,
+            #        but still mark FAILED so the secretary can investigate.
+            if response.status_code >= 500:
+                _cb_failures += 1
+                if _cb_failures >= FAILURE_THRESHOLD:
+                    _cb_open_since = time.monotonic()
+                    logger.warning("salesforce_circuit_open after %d failures", _cb_failures)
+            else:
+                logger.warning(
+                    "salesforce_client_error status=%d patient=%s correlation=%s",
+                    response.status_code, patient_id, correlation_id,
+                )
             error_msg = f"Salesforce erreur HTTP {response.status_code}"
             await _persist_sync_result(db, appointment_id, "FAILED", correlation_id, 1, error_msg)
             return SalesforceResult(

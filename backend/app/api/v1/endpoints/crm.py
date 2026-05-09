@@ -21,7 +21,7 @@ from app.core.audit import log_audit
 from app.core.config import get_settings
 from app.core.dependencies import TokenPayload, require_secretary
 from app.db.models.appointment import Appointment
-from app.db.session import get_db
+from app.db.session import AsyncSessionLocal, get_db
 from app.services.salesforce_client import send_crm_event
 from app.schemas.crm import (
     CRMRetryRequest,
@@ -116,18 +116,29 @@ async def retry_crm_task(
             detail=f"Max retries ({settings.SALESFORCE_MAX_RETRIES}) reached for this task.",
         )
 
-    # Fire-and-forget: response returns immediately, Salesforce call happens in background
-    asyncio.create_task(
-        send_crm_event(
-            patient_id=str(appt.patient_uuid),
-            severity="routine",
-            appointment_id=str(appt.appointment_uuid),
-            specialist_type=appt.urgency_flag,
-            query_fr="[secretary-initiated retry]",
-            iot_triggered=False,
-            db=None,
-        )
-    )
+    # Fire-and-forget with a dedicated session so DB persist works after the
+    # request session closes.  The background coroutine owns its own transaction.
+    _appt_id = str(appt.appointment_uuid)
+    _patient_id = str(appt.patient_uuid)
+    _urgency = appt.urgency_flag
+
+    async def _do_retry() -> None:
+        async with AsyncSessionLocal() as bg_db:
+            try:
+                await send_crm_event(
+                    patient_id=_patient_id,
+                    severity="routine",
+                    appointment_id=_appt_id,
+                    specialist_type=_urgency,
+                    query_fr="[secretary-initiated retry]",
+                    iot_triggered=False,
+                    db=bg_db,
+                )
+                await bg_db.commit()
+            except Exception:
+                await bg_db.rollback()
+
+    asyncio.create_task(_do_retry())
 
     appt.crm_sync_status = "PENDING"
     await db.flush()

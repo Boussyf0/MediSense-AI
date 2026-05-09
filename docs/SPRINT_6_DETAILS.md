@@ -425,7 +425,7 @@ MLFLOW_PROMOTION_AUC_THRESHOLD=0.87
 |----------|-------|-----|
 | Import lazy `send_crm_event` dans `crm.py` | Copié depuis un prototype | Déplacé en import top-level |
 | `scripts.*` non résolu par Pyright | Pas d'`__init__.py` ni de `pyrightconfig.json` | Ajout `scripts/__init__.py` + `pyrightconfig.json` |
-| `@pytest.mark.asyncio` redondants | `asyncio_mode = auto` dans `pytest.ini` couvre déjà | Supprimés (18 → 0 décorateurss) |
+| `@pytest.mark.asyncio` redondants | `asyncio_mode = auto` dans `pytest.ini` couvre déjà | Supprimés (18 → 0 décorateurs) |
 | `mlflow` absent du venv dev | ML packages non installés globalement | Stub `sys.modules` dans `test_mlflow_registry.py` |
 | `register_model` appelé même si métriques insuffisantes | Pas de gate dans `train_noshow.py` | Ajout du check avant l'appel |
 | Circuit breaker non distribué | State module-level | Documenté comme limitation Sprint 7 (Redis) |

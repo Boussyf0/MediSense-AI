@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -6,6 +7,7 @@ import catboost as cb
 import joblib
 import lightgbm as lgb
 import matplotlib
+matplotlib.use("Agg")  # must precede pyplot import to guarantee headless backend
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
@@ -19,8 +21,6 @@ from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss, classification_report, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-
-matplotlib.use("Agg")
 
 # Configuration
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -293,17 +293,17 @@ def run_training() -> None:
         mlflow.sklearn.log_model(winner_model, artifact_path="model")
 
         # Only register to the MLflow registry when quality thresholds are met.
-        # Matches the defaults enforced by register_noshow_model.py.
-        PROMOTION_F1_THRESHOLD = 0.80
-        PROMOTION_AUC_THRESHOLD = 0.87
-        if test_f1 >= PROMOTION_F1_THRESHOLD and test_auc >= PROMOTION_AUC_THRESHOLD:
+        # Read from env so they stay in sync with Settings and register_noshow_model.py.
+        f1_thresh = float(os.getenv("MLFLOW_PROMOTION_F1_THRESHOLD", "0.80"))
+        auc_thresh = float(os.getenv("MLFLOW_PROMOTION_AUC_THRESHOLD", "0.87"))
+        if test_f1 >= f1_thresh and test_auc >= auc_thresh:
             mlflow.register_model(f"runs:/{run_id}/model", "noshow-risk-model")
             print(f"Model registered to MLflow registry (F1={test_f1:.4f}, AUC={test_auc:.4f})")
         else:
             print(
                 f"QUALITY GATE: model NOT registered "
-                f"(F1={test_f1:.4f} < {PROMOTION_F1_THRESHOLD} "
-                f"or AUC={test_auc:.4f} < {PROMOTION_AUC_THRESHOLD})"
+                f"(F1={test_f1:.4f} < {f1_thresh} "
+                f"or AUC={test_auc:.4f} < {auc_thresh})"
             )
         print(f"Model and artifacts saved to {MODEL_DIR}")
 

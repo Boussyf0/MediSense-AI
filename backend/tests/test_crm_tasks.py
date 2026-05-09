@@ -9,6 +9,8 @@ import uuid
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
+
 from app.core.security import create_access_token
 from app.db.models.appointment import Appointment
 from app.db.models.patient import Patient
@@ -210,6 +212,78 @@ class TestSalesforceClient:
         await _persist_sync_result(None, None, "SENT", str(uuid.uuid4()), 0, None)
         await _persist_sync_result(None, str(uuid.uuid4()), "FAILED", str(uuid.uuid4()), 1, "err")
 
+    async def test_persist_with_mock_db_sent(self):
+        """_persist_sync_result with a real-ish mock db executes UPDATE and flush."""
+        from app.services.salesforce_client import _persist_sync_result
+
+        mock_db = AsyncMock()
+        appt_id = str(uuid.uuid4())
+
+        await _persist_sync_result(mock_db, appt_id, "SENT", str(uuid.uuid4()), 0, None)
+
+        mock_db.execute.assert_awaited_once()
+        mock_db.flush.assert_awaited_once()
+
+    async def test_persist_with_mock_db_failed(self):
+        """_persist_sync_result sets crm_synced_at=None for FAILED status."""
+        from app.services.salesforce_client import _persist_sync_result
+
+        mock_db = AsyncMock()
+        appt_id = str(uuid.uuid4())
+
+        await _persist_sync_result(mock_db, appt_id, "FAILED", str(uuid.uuid4()), 1, "HTTP 500")
+
+        mock_db.execute.assert_awaited_once()
+        mock_db.flush.assert_awaited_once()
+
+    async def test_persist_swallows_db_exception(self):
+        """_persist_sync_result must not propagate DB errors."""
+        from app.services.salesforce_client import _persist_sync_result
+
+        mock_db = AsyncMock()
+        mock_db.execute.side_effect = RuntimeError("connection lost")
+        appt_id = str(uuid.uuid4())
+
+        # Should not raise
+        await _persist_sync_result(mock_db, appt_id, "SENT", str(uuid.uuid4()), 0, None)
+
+    async def test_send_network_error_marks_failed(self):
+        """Network exception during POST → sent=False, failure counted."""
+        import app.services.salesforce_client as sf
+        from app.services.salesforce_client import send_crm_event
+
+        mock_client = AsyncMock()
+        mock_client.post = AsyncMock(side_effect=httpx.ConnectError("timeout"))
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=None)
+        settings = self._make_settings()
+
+        with patch("app.services.salesforce_client.get_settings", return_value=settings), \
+             patch("app.services.salesforce_client.httpx.AsyncClient", return_value=mock_client):
+            result = await send_crm_event(
+                patient_id="aaa", severity="urgent",
+                appointment_id=None, specialist_type=None, query_fr="test",
+            )
+
+        assert result.sent is False
+        assert sf._cb_failures >= 1
+
+    async def test_send_info_severity_skips(self):
+        """INFO severity → skipped immediately, no HTTP call."""
+        from app.services.salesforce_client import send_crm_event
+
+        settings = self._make_settings()
+
+        with patch("app.services.salesforce_client.get_settings", return_value=settings), \
+             patch("app.services.salesforce_client.httpx.AsyncClient") as mock_cls:
+            result = await send_crm_event(
+                patient_id="aaa", severity="info",
+                appointment_id=None, specialist_type=None, query_fr="test",
+            )
+
+        assert result.skipped is True
+        mock_cls.assert_not_called()
+
 
 # ── Integration tests: CRM API endpoints ─────────────────────────────────────
 
@@ -222,9 +296,9 @@ class TestCRMEndpoints:
     """
 
     async def test_list_requires_auth(self, client):
-        """No bearer token → 401."""
+        """No bearer token → 403 (HTTPBearer raises 403 when header is absent)."""
         response = await client.get("/api/v1/crm/tasks")
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     async def test_list_doctor_forbidden(self, client):
         """Doctor role is not authorized to access secretary-only CRM tasks."""
