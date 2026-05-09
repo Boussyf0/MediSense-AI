@@ -413,22 +413,24 @@ flowchart LR
     subgraph A["Acteurs"]
         SECRETARY(["Secrétaire"])
         ADMIN(["Admin / DevOps"])
-        SF_ACT(["Salesforce CRM<br/>(Acteur Système)"])
+        SF_ACT(["Salesforce CRM<br/>(Système externe)"])
         GH(["GitHub Actions<br/>(CI/CD)"])
     end
 
     subgraph UC["Sprint 6 — US-24, US-33, US-37, US-38, US-43"]
-        UC24["US-24: Synchroniser avec Salesforce<br/>Webhook Apex → tâche secrétaire<br/>automatiquement créée"]
-        UC33["US-33: Versionner les modèles ML<br/>MLflow Model Registry<br/>métriques + artefacts SHAP"]
-        UC37["US-37: CI/CD automatique<br/>GitHub Actions<br/>build → test → deploy"]
-        UC38["US-38: Scanner les vulnérabilités<br/>OWASP ZAP scan<br/>(rapport sécurité)"]
-        UC43["US-43: Gérer les tâches Salesforce<br/>Secrétaire: confirmer RDV,<br/>marquer suivi complété"]
+        UC24["US-24: Envoyer webhook Salesforce<br/>correlation_id • circuit breaker<br/>état persisté (PENDING→SENT/FAILED)"]
+        UC43["US-43: Gérer les tâches CRM<br/>GET /crm/tasks • PATCH statut<br/>POST /retry (fire-and-forget)"]
+        UC33["US-33: Gouverner le modèle ML<br/>MLflow registry • quality gate F1≥0.80<br/>alias champion/challenger • serving registry-first"]
+        UC37["US-37: CI/CD renforcé<br/>pip cache • coverage ≥80%<br/>ML gate • build-and-push GHCR"]
+        UC38["US-38: Scan sécurité hebdomadaire<br/>OWASP ZAP baseline (lundi 03:00 UTC)<br/>gate 0 alertes High"]
     end
 
     SECRETARY --> UC43
     ADMIN --> UC33 & UC37 & UC38
-    SF_ACT --> UC24 --> UC43
+    UC24 --> UC43
+    SF_ACT -.->|"webhook POST"| UC24
     GH --> UC37 & UC38
+    UC33 -->|"champion alias → inférence"| UC24
 ```
 
 ---
@@ -1249,26 +1251,49 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-    participant API as FastAPI
-    participant SF as Salesforce CRM<br/>(Apex REST)
-    participant SEC as Secrétaire
+    participant ORCH as Orchestrator<br/>(chat pipeline)
+    participant CRM as crm_agent.run()
+    participant SF_C as salesforce_client<br/>send_crm_event()
+    participant CB as Circuit Breaker<br/>(process-local)
+    participant HTTP as httpx.AsyncClient
+    participant DB as PostgreSQL<br/>appointments.*
+    participant SF as Salesforce CRM<br/>(webhook URL)
+    participant SEC as Secrétaire<br/>(API /crm/tasks)
 
-    Note over API,SF: Déclenchée par: RDV à risque élevé OU consultation terminée
+    ORCH->>CRM: run(patient_id, severity, appointment_id, ...)
+    CRM->>SF_C: send_crm_event(...)
 
-    API->>SF: POST /services/apexrest/medisense/tasks<br/>Authorization: Bearer {sf_oauth_token}<br/>{subject, assignee_email, due_date,<br/>patient_ref, priority:"High",<br/>description:"No-show prob: 73%"}
+    SF_C->>SF_C: correlation_id = uuid4()
+    SF_C->>CB: check state (_cb_failures, _cb_open_since)
 
-    SF-->>API: 201 Created {salesforce_task_id: "00T5e..."}
+    alt Circuit OPEN (< 60s depuis ouverture)
+        CB-->>SF_C: cb_open=True
+        SF_C->>DB: _persist_sync_result(CB_OPEN)
+        SF_C-->>CRM: SalesforceResult(cb_open=True)
+    else Circuit CLOSED ou HALF-OPEN
+        SF_C->>HTTP: POST SALESFORCE_WEBHOOK_URL<br/>{ event_type, correlation_id, severity, ... }
+        alt HTTP 2xx
+            HTTP-->>SF_C: 200 OK
+            SF_C->>CB: _cb_failures = 0
+            SF_C->>DB: _persist_sync_result(SENT, crm_synced_at=now)
+            SF_C-->>CRM: SalesforceResult(sent=True)
+            SF-->>SF: Crée tâche secrétaire
+        else HTTP 5xx ou timeout
+            HTTP-->>SF_C: 5xx / TimeoutException
+            SF_C->>CB: _cb_failures += 1
+            Note over CB: si _cb_failures ≥ 3 → OPEN
+            SF_C->>DB: _persist_sync_result(FAILED, crm_retry_count+=1)
+            SF_C-->>CRM: SalesforceResult(sent=False)
+        end
+    end
 
-    API->>API: UPDATE appointments SET salesforce_task_id
+    CRM-->>ORCH: CRMResult(sent, skipped, correlation_id)
 
-    SF->>SEC: Notification Salesforce<br/>"Nouvelle tâche: Confirmer RDV — Risque No-Show"
-
-    SEC->>SF: Marque tâche "Complétée"<br/>(après appel de confirmation)
-
-    SF->>API: Webhook POST /webhooks/salesforce<br/>{task_id, status:"Completed", confirmed:true}
-
-    API->>API: UPDATE appointments SET status="confirmed"
-    API->>API: INSERT audit_logs (APPOINTMENT_CONFIRMED)
+    Note over SEC,DB: Accès secrétaire via /api/v1/crm/tasks
+    SEC->>DB: GET /crm/tasks?crm_sync_status=FAILED
+    SEC->>DB: PATCH /crm/tasks/{uuid} {crm_sync_status: "PENDING"}
+    SEC->>SF_C: POST /crm/tasks/{uuid}/retry<br/>asyncio.create_task(send_crm_event(..., db=None))
+    Note over SF_C: fire-and-forget — réponse HTTP immédiate
 ```
 
 ---

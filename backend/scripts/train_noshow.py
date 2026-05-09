@@ -199,7 +199,8 @@ def run_training() -> None:
 
     configure_mlflow()
 
-    with mlflow.start_run():
+    with mlflow.start_run() as active_run:
+        run_id = active_run.info.run_id
         print("Optimizing XGBoost with Optuna...")
         study = optuna.create_study(direction="maximize")
         study.optimize(lambda trial: objective(trial, X_train_raw, y_train), n_trials=20)
@@ -261,6 +262,7 @@ def run_training() -> None:
 
         training_report = {
             "winner_model": winner_model_name,
+            "mlflow_run_id": run_id,
             "benchmark": benchmark,
             "test_metrics": {"f1": float(test_f1), "auc": float(test_auc)},
             "calibration": {
@@ -289,6 +291,20 @@ def run_training() -> None:
         mlflow.log_artifact(str(calibration_plot_path), artifact_path="plots")
 
         mlflow.sklearn.log_model(winner_model, artifact_path="model")
+
+        # Only register to the MLflow registry when quality thresholds are met.
+        # Matches the defaults enforced by register_noshow_model.py.
+        PROMOTION_F1_THRESHOLD = 0.80
+        PROMOTION_AUC_THRESHOLD = 0.87
+        if test_f1 >= PROMOTION_F1_THRESHOLD and test_auc >= PROMOTION_AUC_THRESHOLD:
+            mlflow.register_model(f"runs:/{run_id}/model", "noshow-risk-model")
+            print(f"Model registered to MLflow registry (F1={test_f1:.4f}, AUC={test_auc:.4f})")
+        else:
+            print(
+                f"QUALITY GATE: model NOT registered "
+                f"(F1={test_f1:.4f} < {PROMOTION_F1_THRESHOLD} "
+                f"or AUC={test_auc:.4f} < {PROMOTION_AUC_THRESHOLD})"
+            )
         print(f"Model and artifacts saved to {MODEL_DIR}")
 
 

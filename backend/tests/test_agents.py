@@ -326,15 +326,18 @@ class TestCRMCircuitBreaker:
 
     def setup_method(self):
         """Reset circuit breaker state before each test."""
-        import app.agents.crm_agent as crm
-        crm._cb_failures = 0
-        crm._cb_open_since = None
+        import app.services.salesforce_client as sf
+        sf._cb_failures = 0
+        sf._cb_open_since = None
 
     @pytest.mark.asyncio
     async def test_skipped_when_no_webhook_url(self):
         """No SALESFORCE_WEBHOOK_URL configured → silently skip."""
         from app.agents.crm_agent import run
-        with patch.dict("os.environ", {"SALESFORCE_WEBHOOK_URL": ""}):
+        from unittest.mock import MagicMock
+        mock_settings = MagicMock()
+        mock_settings.SALESFORCE_WEBHOOK_URL = ""
+        with patch("app.services.salesforce_client.get_settings", return_value=mock_settings):
             result = await run(
                 patient_id="aaa", severity="routine",
                 appointment_id=None, specialist_type=None,
@@ -347,7 +350,10 @@ class TestCRMCircuitBreaker:
     async def test_info_severity_skipped(self):
         """INFO severity never triggers CRM action."""
         from app.agents.crm_agent import run
-        with patch.dict("os.environ", {"SALESFORCE_WEBHOOK_URL": "https://sf.example.com"}):
+        from unittest.mock import MagicMock
+        mock_settings = MagicMock()
+        mock_settings.SALESFORCE_WEBHOOK_URL = "https://sf.example.com"
+        with patch("app.services.salesforce_client.get_settings", return_value=mock_settings):
             result = await run(
                 patient_id="aaa", severity="info",
                 appointment_id=None, specialist_type=None,
@@ -358,14 +364,19 @@ class TestCRMCircuitBreaker:
     @pytest.mark.asyncio
     async def test_circuit_opens_after_failures(self):
         """After 3 consecutive 500 errors, circuit breaker opens."""
-        import app.agents.crm_agent as crm
-        import httpx
+        import app.services.salesforce_client as sf
+        from unittest.mock import MagicMock
 
         mock_response = MagicMock()
         mock_response.status_code = 500
 
-        with patch.dict("os.environ", {"SALESFORCE_WEBHOOK_URL": "https://sf.example.com"}):
-            with patch("httpx.AsyncClient") as mock_client_cls:
+        mock_settings = MagicMock()
+        mock_settings.SALESFORCE_WEBHOOK_URL = "https://sf.example.com"
+        mock_settings.SALESFORCE_TOKEN = ""
+        mock_settings.SALESFORCE_TIMEOUT_SECONDS = 3.0
+
+        with patch("app.services.salesforce_client.get_settings", return_value=mock_settings):
+            with patch("app.services.salesforce_client.httpx.AsyncClient") as mock_client_cls:
                 mock_client = AsyncMock()
                 mock_client.post = AsyncMock(return_value=mock_response)
                 mock_client.__aenter__ = AsyncMock(return_value=mock_client)
@@ -374,16 +385,16 @@ class TestCRMCircuitBreaker:
 
                 # 3 failures → circuit opens
                 for _ in range(3):
-                    await crm.run(
+                    await sf.send_crm_event(
                         patient_id="aaa", severity="urgent",
                         appointment_id=None, specialist_type=None,
                         query_fr="test", iot_triggered=False,
                     )
 
-                assert crm._cb_open_since is not None
+                assert sf._cb_open_since is not None
 
                 # 4th request → rejected immediately (cb_open=True)
-                result = await crm.run(
+                result = await sf.send_crm_event(
                     patient_id="aaa", severity="urgent",
                     appointment_id=None, specialist_type=None,
                     query_fr="test", iot_triggered=False,

@@ -53,6 +53,13 @@ class Appointment(Base):
     # CRM sync
     salesforce_task_id: Mapped[str | None] = mapped_column(String(100))
 
+    # CRM sync tracking (Sprint 6, US-24)
+    crm_sync_status: Mapped[str] = mapped_column(String(20), default="PENDING", nullable=False)
+    crm_correlation_id: Mapped[str | None] = mapped_column(String(64))
+    crm_retry_count: Mapped[int] = mapped_column(SmallInteger, default=0, nullable=False)
+    crm_last_error: Mapped[str | None] = mapped_column(Text)
+    crm_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
     # Relationship for MLOps loop (1:0..1)
     ml_feedback: Mapped["MLFeedback"] = relationship(
         "MLFeedback", back_populates="appointment", uselist=False, cascade="all, delete-orphan"

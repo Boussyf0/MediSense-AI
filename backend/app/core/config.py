@@ -66,6 +66,19 @@ class Settings(BaseSettings):
     SMS_REMINDER_THRESHOLD: float = Field(default=0.30, ge=0.0, le=1.0)
     SMS_REMINDER_MAX_COUNT: int = Field(default=2, ge=1, le=2)
 
+    # Salesforce CRM (Sprint 6 — US-24)
+    # If SALESFORCE_WEBHOOK_URL is empty, CRM sync is skipped (dev/demo mode).
+    SALESFORCE_WEBHOOK_URL: str = ""
+    SALESFORCE_TOKEN: str = ""
+    SALESFORCE_TIMEOUT_SECONDS: float = Field(default=3.0, gt=0)
+    SALESFORCE_MAX_RETRIES: int = Field(default=3, ge=1, le=5)
+    SALESFORCE_RETRY_DELAY_SECONDS: float = Field(default=2.0, gt=0)
+
+    # MLflow Model Registry (Sprint 6 — US-33)
+    MLFLOW_MODEL_NAME: str = "noshow-risk-model"
+    MLFLOW_PROMOTION_F1_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
+    MLFLOW_PROMOTION_AUC_THRESHOLD: float = Field(default=0.87, ge=0.0, le=1.0)
+
     @property
     def DATABASE_URL(self) -> str:
         """Async URL for SQLAlchemy (asyncpg driver)."""

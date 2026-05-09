@@ -57,7 +57,18 @@ class NoShowPredictor:
         return cls._instance
 
     def _load_models(self) -> None:
-        """Load trained model artifacts from backend/models."""
+        """Load trained model artifacts.
+
+        Loading order for the sklearn model:
+          1. MLflow registry alias ``@champion`` — consumed when MLflow tracking
+             server is reachable and a champion version has been promoted via
+             ``register_noshow_model.py``.
+          2. Local joblib file ``backend/models/noshow_model.joblib`` — fallback
+             for local development or when MLflow is unavailable.
+
+        The SHAP explainer, scaler, and label encoder are always loaded from
+        their joblib files; they are not stored in the MLflow model registry.
+        """
         self.model = None
         self.explainer = None
         self.scaler = None
@@ -65,20 +76,44 @@ class NoShowPredictor:
         self.model_version = "v5.0-xgb"
 
         try:
-            model_path = MODELS_DIR / "noshow_model.joblib"
-            legacy_model_path = MODELS_DIR / "noshow_xgb_model.joblib"
-            selected_model_path = model_path if model_path.exists() else legacy_model_path
+            # ── 1. Try MLflow registry @champion ─────────────────────────────
+            model_loaded = False
+            try:
+                import mlflow.sklearn  # type: ignore[import]
+                from app.core.config import get_settings
+                _settings = get_settings()
+                model_uri = f"models:/{_settings.MLFLOW_MODEL_NAME}@champion"
+                self.model = mlflow.sklearn.load_model(model_uri)
+                model_loaded = True
+                logger.info("noshow_model_loaded_from_registry uri=%s", model_uri)
+            except Exception as mlflow_exc:
+                logger.debug(
+                    "MLflow registry unavailable, falling back to joblib: %s", mlflow_exc
+                )
 
-            self.model = joblib.load(selected_model_path)
+            # ── 2. Fallback: local joblib file ────────────────────────────────
+            if not model_loaded:
+                model_path = MODELS_DIR / "noshow_model.joblib"
+                legacy_model_path = MODELS_DIR / "noshow_xgb_model.joblib"
+                selected_model_path = model_path if model_path.exists() else legacy_model_path
+                self.model = joblib.load(selected_model_path)
+                logger.info("noshow_model_loaded_from_joblib path=%s", selected_model_path)
+
+            # ── 3. Always load auxiliary artifacts from joblib ────────────────
             self.explainer = joblib.load(MODELS_DIR / "noshow_shap_explainer.joblib")
             self.scaler = joblib.load(MODELS_DIR / "noshow_scaler.joblib")
             self.label_encoder = joblib.load(MODELS_DIR / "noshow_label_encoder.joblib")
+
             if METADATA_PATH.exists():
                 with METADATA_PATH.open("r", encoding="utf-8") as fp:
                     metadata = json.load(fp)
                 winner = metadata.get("winner_model")
+                mlflow_run_id = metadata.get("mlflow_run_id", "")
                 if isinstance(winner, str) and winner:
-                    self.model_version = f"v5.1-{winner}"
+                    if mlflow_run_id:
+                        self.model_version = f"v6.0-{winner}-run{mlflow_run_id[:8]}"
+                    else:
+                        self.model_version = f"v5.1-{winner}"
         except Exception as exc:
             logger.exception("Unable to load no-show model artifacts: %s", exc)
 
