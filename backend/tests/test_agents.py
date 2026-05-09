@@ -670,8 +670,9 @@ class TestBookingAgent:
         mock_db = self._doctor_db(doctor_uuid)
         future_slot = "2027-01-15T10:00:00+00:00"
 
+        patient_uuid = str(_uuid.uuid4())
         with patch("app.agents.booking_agent._find_free_slot", AsyncMock(return_value=future_slot)):
-            result = await run("patient-id", "cardiologie", mock_db)
+            result = await run(patient_uuid, "cardiologie", mock_db)
 
         assert result.success is True
         assert result.appointment_id is not None
@@ -701,3 +702,33 @@ class TestBookingAgent:
 
         slot = await _find_free_slot(str(MagicMock()), mock_db)
         assert slot is not None  # always finds a slot when calendar is empty
+
+    @pytest.mark.asyncio
+    async def test_fallback_to_any_doctor_when_specialty_not_found(self):
+        """Specialty query returns empty but fallback finds a doctor → success=True."""
+        import uuid as _uuid
+        from app.agents.booking_agent import run
+
+        patient_uuid = str(_uuid.uuid4())
+        doctor_uuid = str(_uuid.uuid4())
+
+        empty = MagicMock()
+        empty.fetchall.return_value = []
+        empty.fetchone.return_value = None
+
+        fallback = MagicMock()
+        fallback.fetchone.return_value = (doctor_uuid,)
+        fallback.fetchall.return_value = []
+
+        slot_res = MagicMock()
+        slot_res.fetchall.return_value = []  # no booked slots → first slot free
+
+        insert_res = MagicMock()
+
+        mock_db = AsyncMock()
+        mock_db.execute.side_effect = [empty, fallback, slot_res, insert_res]
+
+        result = await run(patient_uuid, "neurologie", mock_db)
+
+        assert result.success is True
+        assert result.doctor_id == doctor_uuid

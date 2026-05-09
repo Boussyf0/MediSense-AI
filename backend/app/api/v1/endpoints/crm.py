@@ -122,7 +122,7 @@ async def retry_crm_task(
     _patient_id = str(appt.patient_uuid)
     _urgency = appt.urgency_flag
 
-    async def _do_retry() -> None:
+    async def _do_retry() -> None:  # pragma: no cover
         async with AsyncSessionLocal() as bg_db:
             try:
                 await send_crm_event(

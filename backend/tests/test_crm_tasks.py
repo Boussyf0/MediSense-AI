@@ -304,6 +304,31 @@ class TestSalesforceClient:
         assert result.skipped is True
         mock_cls.assert_not_called()
 
+    async def test_circuit_breaker_resets_after_timeout(self):
+        """CB half-open: after RESET_TIMEOUT_S elapsed, counters reset and request goes through."""
+        import app.services.salesforce_client as sf
+        from app.services.salesforce_client import send_crm_event, RESET_TIMEOUT_S
+
+        sf._cb_open_since = 0.0
+        sf._cb_failures = 3
+
+        response = self._mock_http_response(200)
+        mock_client = self._mock_http_client(response)
+        settings = self._make_settings()
+
+        with patch("app.services.salesforce_client.time.monotonic",
+                   return_value=RESET_TIMEOUT_S + 1.0), \
+             patch("app.services.salesforce_client.get_settings", return_value=settings), \
+             patch("app.services.salesforce_client.httpx.AsyncClient", return_value=mock_client):
+            result = await send_crm_event(
+                patient_id="aaa", severity="urgent",
+                appointment_id=None, specialist_type=None, query_fr="test",
+            )
+
+        assert result.sent is True
+        assert sf._cb_open_since is None
+        assert sf._cb_failures == 0
+
 
 # ── Integration tests: CRM API endpoints ─────────────────────────────────────
 

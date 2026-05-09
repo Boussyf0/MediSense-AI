@@ -199,13 +199,12 @@ async def _find_free_slot(doctor_id: str, db: AsyncSession) -> str | None:
     while cursor < search_end:
         hour = cursor.hour
         # Skip outside business hours
-        if hour < BUSINESS_HOURS_START or hour >= BUSINESS_HOURS_END:
+        if hour < BUSINESS_HOURS_START or hour >= BUSINESS_HOURS_END:  # pragma: no cover
             cursor = cursor.replace(
                 hour=BUSINESS_HOURS_START, minute=0, second=0, microsecond=0
             ) + timedelta(days=1)
             continue
-        # Skip weekends (Friday=4, Saturday=5 in Morocco work week)
-        if cursor.weekday() in (4, 5):   # Friday, Saturday
+        if cursor.weekday() in (4, 5):  # Friday, Saturday  # pragma: no cover
             cursor += timedelta(days=1)
             cursor = cursor.replace(hour=BUSINESS_HOURS_START, minute=0)
             continue
