@@ -380,3 +380,62 @@ class TestDPASummarizer:
         iot_data = {"latest_anomalies": [{"metric": "SpO2"}], "trend": "declining"}
         conf = _compute_confidence(symptoms, iot_data)
         assert conf >= 0.9   # max capped at 0.95
+
+
+# ── US-42: Per-action decision ────────────────────────────────────────────────
+
+class TestDPADecideAction:
+    """Tests for PATCH /doctor/dpa-summary/{summary_id}/action/{action_id}."""
+
+    async def _insert_action(
+        self, db: AsyncSession, summary_id: uuid.UUID
+    ) -> uuid.UUID:
+        from app.db.models.dpa_summary import AgentAction
+        action_id = uuid.uuid4()
+        action = AgentAction(
+            id=action_id,
+            summary_id=summary_id,
+            action_type="refer",
+            payload={"action": "refer", "specialist": "cardiologie", "urgency": "routine"},
+            status="pending",
+        )
+        db.add(action)
+        await db.flush()
+        return action_id
+
+    @pytest.mark.asyncio
+    async def test_decide_action_approves_and_returns_summary(self, client, test_db):
+        """Doctor approves a single action → 200 with summary state."""
+        patient_id = str(uuid.uuid4())
+        summary_id = await _insert_dpa_summary(test_db, patient_id)
+        action_id = await self._insert_action(test_db, summary_id)
+        token = _make_doctor_token()
+
+        resp = await client.patch(
+            f"/api/v1/doctor/dpa-summary/{summary_id}/action/{action_id}",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"status": "approved"},
+        )
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["summary_id"] == str(summary_id)
+        assert "Action approved." in data["message"]
+
+    @pytest.mark.asyncio
+    async def test_decide_action_wrong_summary_id_returns_404(self, client, test_db):
+        """Action id that belongs to a different summary → 404."""
+        patient_id = str(uuid.uuid4())
+        summary_id = await _insert_dpa_summary(test_db, patient_id)
+        action_id = await self._insert_action(test_db, summary_id)
+        token = _make_doctor_token()
+
+        wrong_summary_id = uuid.uuid4()
+        resp = await client.patch(
+            f"/api/v1/doctor/dpa-summary/{wrong_summary_id}/action/{action_id}",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"status": "rejected"},
+        )
+
+        assert resp.status_code == 404
+        assert resp.json()["detail"] == "Action introuvable"

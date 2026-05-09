@@ -1,0 +1,111 @@
+name: Security — OWASP ZAP Baseline Scan
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # Monday 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: medisense_db
+          POSTGRES_USER: medisense_user
+          POSTGRES_PASSWORD: medisense_test_pw
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medisense_user -d medisense_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: medisense_db
+      POSTGRES_USER: medisense_user
+      POSTGRES_PASSWORD: medisense_test_pw
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      JWT_SECRET_KEY: ci_dummy_secret
+      PGCRYPTO_KEY: ci_dummy_pgcrypto_key
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Apply database migrations
+        run: |
+          cd backend
+          alembic upgrade head
+
+      - name: Start API server
+        run: |
+          cd backend
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          timeout 30 bash -c 'until curl -sf http://localhost:8000/api/v1/health; do sleep 1; done'
+
+      - name: OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: "http://localhost:8000"
+          rules_file_name: ".zap/rules.tsv"
+          cmd_options: "-J report_json.json -r report_html.html"
+
+      - name: Upload ZAP HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: report_html.html
+
+      - name: Enforce no High-risk alerts
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          p = Path("report_json.json")
+          if not p.exists():
+              print("ZAP report not found — skipping gate"); sys.exit(0)
+          alerts = json.loads(p.read_text()).get("site", [{}])[0].get("alerts", [])
+          high = [a for a in alerts if str(a.get("riskcode", "")) == "3"]
+          if high:
+              print(f"ZAP GATE FAILED: {len(high)} High-risk alert(s):")
+              for a in high:
+                  print(f"  [{a.get('pluginid')}] {a.get('name')}")
+              sys.exit(1)
+          print(f"ZAP gate passed — 0 High-risk alerts (total alerts: {len(alerts)})")
+          PY

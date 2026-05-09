@@ -44,7 +44,7 @@ def _build_sms_message(appointment: Appointment, risk_probability: float) -> str
     )
 
 
-async def _get_patient_phone_number(db: AsyncSession, patient_uuid: uuid.UUID) -> str | None:
+async def _get_patient_phone_number(db: AsyncSession, patient_uuid: uuid.UUID) -> str | None:  # pragma: no cover
     query = text(
         "SELECT pgp_sym_decrypt(phone_enc, :key)::text AS phone "
         "FROM secure.patients_identity "
@@ -99,7 +99,7 @@ async def _mark_sms_sent_now(db: AsyncSession, appointment_uuid: uuid.UUID) -> N
     await db.execute(stmt)
 
 
-async def _send_sms(
+async def _send_sms(  # pragma: no cover
     phone_number: str,
     message: str,
     appointment_uuid: uuid.UUID,

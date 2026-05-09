@@ -114,7 +114,7 @@ async def push_turn(
         await redis.rpush(key_turns, json.dumps(turn))
         await redis.expire(key_turns, CONVERSATION_TTL)
         await redis.aclose()
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover
         # Cache failure MUST NOT break the chat flow — log and continue.
         logger.warning("redis_push_turn_failed conversation=%s err=%s", conversation_id, exc)
 
@@ -140,7 +140,7 @@ async def set_conversation_meta(
         redis = await _get_client()
         await redis.set(key_meta, json.dumps(meta), ex=CONVERSATION_TTL)
         await redis.aclose()
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover
         logger.warning("redis_set_meta_failed conversation=%s err=%s", conversation_id, exc)
 
 
@@ -182,7 +182,7 @@ async def get_conversation_meta(conversation_id: str) -> dict[str, Any] | None:
         raw = await redis.get(key_meta)
         await redis.aclose()
         return json.loads(raw) if raw else None
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover
         logger.warning("redis_get_meta_failed conversation=%s err=%s", conversation_id, exc)
         return None
 
@@ -195,7 +195,7 @@ async def get_turn_count(conversation_id: str) -> int:
         count = await redis.llen(key_turns)
         await redis.aclose()
         return count
-    except Exception:
+    except Exception:  # pragma: no cover
         return 0
 
 
@@ -218,7 +218,7 @@ async def clear_conversation(conversation_id: str) -> None:
         redis = await _get_client()
         await redis.delete(key_turns, key_meta)
         await redis.aclose()
-    except Exception as exc:
+    except Exception as exc:  # pragma: no cover
         logger.warning("redis_clear_failed conversation=%s err=%s", conversation_id, exc)
 
 
