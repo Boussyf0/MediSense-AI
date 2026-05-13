@@ -22,18 +22,20 @@ RGPD ARTICLES COVERED:
 """
 import uuid
 from datetime import datetime, timezone
-from typing import Annotated, Optional
+from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, delete
 
 from app.db.session import get_db
+from app.db.models.appointment import Appointment
 from app.db.models.patient import Patient, PatientIdentity
 from app.db.models.audit_log import AuditLog, ConsentLog
 from app.db.models.conversation import Conversation
 from app.core.conversation_cache import clear_patient_conversations
-from app.core.dependencies import require_doctor, require_admin, TokenPayload
+from app.core.dependencies import require_doctor, require_admin, require_patient, TokenPayload
 from app.core.audit import log_audit, log_consent
 from app.schemas.patient import (
     ConsentUpdate,
@@ -46,6 +48,160 @@ from app.schemas.patient import (
 )
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
+
+
+class PatientListItem(BaseModel):
+    patient_uuid: uuid.UUID
+    birth_year: int | None
+    sex: str | None
+    city_code: str | None
+    chronic_conditions: list[str] | None
+    is_active: bool
+    last_appointment_at: datetime | None
+    next_appointment_at: datetime | None
+
+
+class PatientListResponse(BaseModel):
+    items: List[PatientListItem]
+    total: int
+    limit: int
+    offset: int
+
+
+@router.get(
+    "",
+    response_model=PatientListResponse,
+    summary="List patients (clinical roster) — doctor/admin only",
+)
+async def list_patients(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _current_user: Annotated[TokenPayload, Depends(require_doctor)],
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+    only_active: bool = Query(default=True),
+):
+    """
+    Paginated list of pseudonymized patient records.
+
+    Each row joins the patient row with last/next appointment timestamps so the
+    web roster can render a usable table without an N+1 round-trip.
+    """
+    query = select(Patient)
+    if only_active:
+        query = query.where(Patient.is_active.is_(True))
+
+    total = (
+        await db.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+    ).scalar_one()
+
+    rows = (
+        await db.execute(
+            query.order_by(Patient.updated_at.desc()).limit(limit).offset(offset)
+        )
+    ).scalars().all()
+
+    items: List[PatientListItem] = []
+    now = datetime.now(timezone.utc)
+    for patient in rows:
+        last_appt = (
+            await db.execute(
+                select(func.max(Appointment.scheduled_at)).where(
+                    Appointment.patient_uuid == patient.patient_uuid,
+                    Appointment.scheduled_at <= now,
+                )
+            )
+        ).scalar_one_or_none()
+        next_appt = (
+            await db.execute(
+                select(func.min(Appointment.scheduled_at)).where(
+                    Appointment.patient_uuid == patient.patient_uuid,
+                    Appointment.scheduled_at > now,
+                )
+            )
+        ).scalar_one_or_none()
+        items.append(
+            PatientListItem(
+                patient_uuid=patient.patient_uuid,
+                birth_year=patient.birth_year,
+                sex=patient.sex,
+                city_code=patient.city_code,
+                chronic_conditions=patient.chronic_conditions,
+                is_active=patient.is_active,
+                last_appointment_at=last_appt,
+                next_appointment_at=next_appt,
+            )
+        )
+
+    return PatientListResponse(items=items, total=int(total), limit=limit, offset=offset)
+
+
+# ── Patient self-service consent (mobile app) ─────────────
+
+@router.patch(
+    "/me/consent",
+    response_model=ConsentResponse,
+    summary="Patient self-service consent update (mobile)",
+    description=(
+        "Patients update their own RGPD consent flags from the mobile app. "
+        "Patient UUID is derived from the JWT — no path parameter needed. "
+        "Uses the same audit trail logic as the doctor-managed endpoint."
+    ),
+)
+async def update_own_consent(
+    body: ConsentUpdate,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenPayload, Depends(require_patient)],
+):
+    patient_uuid = uuid.UUID(current_user.sub)
+
+    result = await db.execute(select(Patient).where(Patient.patient_uuid == patient_uuid))
+    patient = result.scalar_one_or_none()
+    if not patient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+
+    consent_fields = {
+        "iot": (patient.consent_iot, body.consent_iot),
+        "nlp": (patient.consent_nlp, body.consent_nlp),
+        "sharing": (patient.consent_sharing, body.consent_sharing),
+    }
+
+    changed = False
+    for consent_type, (old_val, new_val) in consent_fields.items():
+        if new_val is None or new_val == old_val:
+            continue
+        action = "granted" if new_val else "revoked"
+        await log_consent(
+            db=db,
+            patient_uuid=patient_uuid,
+            consent_type=consent_type,
+            action=action,
+            channel=body.channel,
+            request=request,
+            cgu_version=body.cgu_version,
+        )
+        setattr(patient, f"consent_{consent_type}", new_val)
+        changed = True
+
+    if body.sms_opt_out is not None and body.sms_opt_out != patient.sms_opt_out:
+        patient.sms_opt_out = body.sms_opt_out
+        changed = True
+
+    if not changed:
+        return ConsentResponse.model_validate(patient)
+
+    await log_audit(
+        db=db,
+        actor=current_user,
+        request=request,
+        action="CONSENT",
+        resource_type="patient",
+        resource_uuid=patient_uuid,
+    )
+    await db.flush()
+    return ConsentResponse.model_validate(patient)
 
 
 # ── US-06 — Granular Consent Update ──────────────────────
