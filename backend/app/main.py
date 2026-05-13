@@ -90,6 +90,22 @@ app.add_middleware(
 )
 
 
+# ── Global exception handler — ensures CORS headers on 500 ───────────────────
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=exc)
+    origin = request.headers.get("origin", "")
+    headers: dict[str, str] = {}
+    if origin in settings.CORS_ORIGINS:
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+        headers=headers,
+    )
+
+
 # ── Security Headers ──────────────────────────────────────
 _DOCS_PREFIX = settings.API_V1_PREFIX + "/docs"
 
@@ -144,15 +160,3 @@ async def swagger_oauth2_redirect() -> HTMLResponse:
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
 
-# ── Global Exception Handler ──────────────────────────────
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    if settings.APP_ENV == "development":
-        return JSONResponse(
-            status_code=500,
-            content={"detail": str(exc), "type": type(exc).__name__}
-        )
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "An internal error occurred"}
-    )

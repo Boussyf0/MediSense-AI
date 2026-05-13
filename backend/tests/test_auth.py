@@ -5,9 +5,12 @@ import uuid
 import pytest
 from unittest.mock import AsyncMock, patch
 
-from app.core.security import hash_password, verify_password, create_access_token
+from app.core.security import (
+    hash_password, verify_password, create_access_token, create_refresh_token,
+)
 from app.db.models.conversation import Conversation
 from app.db.models.patient import Patient
+from app.db.models.user import User, UserRole
 
 
 # ── Security unit tests ───────────────────────────────────
@@ -84,6 +87,74 @@ async def test_rbac_doctor_token_accepted(client):
     # 401 = token invalid (this would be a failure)
     assert response.status_code in (200, 404)
     assert response.status_code != 401
+
+
+@pytest.mark.asyncio
+async def test_login_success_returns_access_token(client, test_db):
+    """Happy-path login must return an access_token."""
+    plain = "ValidPass123!"
+    user = User(
+        user_uuid=uuid.uuid4(),
+        email=f"doctor-{uuid.uuid4().hex[:8]}@test.com",
+        hashed_password=hash_password(plain),
+        role=UserRole.DOCTOR,
+        is_active=True,
+    )
+    test_db.add(user)
+    await test_db.flush()
+
+    response = await client.post("/api/v1/auth/login", json={
+        "email": user.email,
+        "password": plain,
+    })
+    assert response.status_code == 200
+    body = response.json()
+    assert "access_token" in body
+    assert body["token_type"] == "bearer"
+
+
+@pytest.mark.asyncio
+async def test_login_inactive_account_returns_403(client, test_db):
+    """Deactivated account must return 403, not 401."""
+    plain = "ValidPass123!"
+    user = User(
+        user_uuid=uuid.uuid4(),
+        email=f"inactive-{uuid.uuid4().hex[:8]}@test.com",
+        hashed_password=hash_password(plain),
+        role=UserRole.DOCTOR,
+        is_active=False,
+    )
+    test_db.add(user)
+    await test_db.flush()
+
+    response = await client.post("/api/v1/auth/login", json={
+        "email": user.email,
+        "password": plain,
+    })
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_refresh_token_returns_new_access_token(client):
+    """A valid refresh token must yield a new access token."""
+    refresh_token, _ = create_refresh_token(
+        subject=str(uuid.uuid4()), role="doctor"
+    )
+    response = await client.post("/api/v1/auth/refresh", json={
+        "refresh_token": refresh_token,
+    })
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+
+
+@pytest.mark.asyncio
+async def test_refresh_with_access_token_rejected(client):
+    """Passing an access token to /refresh must return 401."""
+    access_token = create_access_token(subject=str(uuid.uuid4()), role="doctor")
+    response = await client.post("/api/v1/auth/refresh", json={
+        "refresh_token": access_token,
+    })
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio

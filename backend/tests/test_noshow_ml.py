@@ -191,12 +191,21 @@ async def test_predict_endpoint_patient_forbidden(client):
 
 
 @pytest.mark.asyncio
-async def test_agenda_batch_requires_secretary_or_admin(client):
+async def test_agenda_batch_patient_forbidden(client):
+    response = await client.get(
+        f"/api/v1/predictions/no-show/batch?doctor_uuid={uuid.uuid4()}",
+        headers=auth("patient"),
+    )
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_agenda_batch_doctor_allowed(client):
     response = await client.get(
         f"/api/v1/predictions/no-show/batch?doctor_uuid={uuid.uuid4()}",
         headers=auth("doctor"),
     )
-    assert response.status_code == 403
+    assert response.status_code == 200
 
 
 @pytest.mark.asyncio
@@ -646,6 +655,65 @@ async def test_predict_endpoint_success_200(client):
     data = response.json()
     assert data["noshow_probability"] == pytest.approx(0.35)
     assert data["risk_color"] == "orange"
+
+
+# ── D2: POST /predictions/no-show/{appointment_uuid}/feedback ─────────────────
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_happy(client, test_db):
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment_uuid = uuid.uuid4()
+    test_db.add(Appointment(
+        appointment_uuid=appointment_uuid,
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="COMPLETED",
+    ))
+    await test_db.flush()
+
+    token = create_access_token(subject=str(doctor_uuid), role="doctor")
+    response = await client.post(
+        f"/api/v1/predictions/no-show/{appointment_uuid}/feedback",
+        json={"outcome": "presented"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["appointment_uuid"] == str(appointment_uuid)
+    assert data["outcome"] == "presented"
+    assert "id" in data
+    assert "created_at" in data
+
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_no_auth_403(client):
+    response = await client.post(
+        f"/api/v1/predictions/no-show/{uuid.uuid4()}/feedback",
+        json={"outcome": "no_show"},
+    )
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_unknown_appointment_404(client):
+    response = await client.post(
+        f"/api/v1/predictions/no-show/{uuid.uuid4()}/feedback",
+        json={"outcome": "presented"},
+        headers=auth("secretary"),
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_invalid_outcome_422(client):
+    response = await client.post(
+        f"/api/v1/predictions/no-show/{uuid.uuid4()}/feedback",
+        json={"outcome": "absent"},
+        headers=auth("doctor"),
+    )
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio

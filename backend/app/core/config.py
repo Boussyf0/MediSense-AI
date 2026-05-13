@@ -102,7 +102,7 @@ class Settings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=["../.env", ".env"],  # ../.env for local runs from backend/, .env inside Docker
         env_file_encoding="utf-8",
         case_sensitive=True,
     )

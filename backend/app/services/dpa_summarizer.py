@@ -111,10 +111,13 @@ async def build(
     )
     db.add(summary)
 
-    # Persist individual actions for per-action approval (US-42)
+    # Persist individual actions for per-action approval (US-42).
+    # Attaching through the relationship lets SQLAlchemy's unit-of-work
+    # populate summary_id after the summary's PK default fires on flush —
+    # setting summary_id=summary.id manually here would write NULL because
+    # the Column(default=uuid.uuid4) only runs at INSERT time.
     for action in recommendations:
-        db.add(AgentAction(
-            summary_id=summary.id,
+        summary.actions.append(AgentAction(
             action_type=action.get("action", "unknown"),
             payload=action,
             status="pending",

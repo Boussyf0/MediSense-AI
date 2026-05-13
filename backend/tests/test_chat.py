@@ -59,6 +59,27 @@ class TestChatEndpoint:
         assert response.status_code in (401, 422)
 
     @pytest.mark.asyncio
+    async def test_chat_rejects_non_patient_role(self, client):
+        token = create_access_token(subject=str(uuid.uuid4()), role="doctor")
+        response = await client.post(
+            "/api/v1/chat",
+            json={"message": "test"},
+            headers=_auth(token),
+        )
+        assert response.status_code == 403
+
+    @pytest.mark.asyncio
+    async def test_chat_stream_missing_patient_profile_returns_404(self, client):
+        token = _token_for_patient(str(uuid.uuid4()))
+        response = await client.post(
+            "/api/v1/chat/stream",
+            json={"message": "bonjour"},
+            headers=_auth(token),
+        )
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Patient profile not found"
+
+    @pytest.mark.asyncio
     async def test_chat_passes_patient_context_and_merges_orchestrator_reply(self, client, test_db):
         from app.rag.pipeline import PipelineResult
         from app.agents.orchestrator import AgentResult, AgentRoute
