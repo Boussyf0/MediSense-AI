@@ -10,13 +10,13 @@ help:
 	@echo "make install-hooks Install pre-push git hook (run once per clone)"
 
 test:
-	pytest -q --cov=app --cov-report=xml --cov-fail-under=80
+	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=xml --cov-fail-under=80
 
 cov:
-	pytest -q --cov=app --cov-report=term-missing --cov-fail-under=80
+	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=term-missing --cov-fail-under=80
 
 cov-html:
-	pytest -q --cov=app --cov-report=html --cov-fail-under=80
+	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=html --cov-fail-under=80
 	@open htmlcov/index.html 2>/dev/null || echo "Open htmlcov/index.html in your browser"
 
 lint:

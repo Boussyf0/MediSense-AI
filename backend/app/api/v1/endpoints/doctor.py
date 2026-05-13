@@ -40,6 +40,7 @@ from app.schemas.doctor import (
     IoTSummaryOut,
     IoTAnomalyOut,
     RecommendedAction,
+    AgentActionOut,
     ApprovalRequest,
     RejectionRequest,
     DPAActionDecision,
@@ -100,6 +101,7 @@ async def get_dpa_summary(
         symptoms=payload.get("symptoms", []),
         iot_summary=_parse_iot_summary(payload.get("iot_summary", {})),
         recommended_actions=_parse_actions(payload.get("recommended_actions", [])),
+        agent_actions=_parse_agent_actions(getattr(summary, "actions", [])),
         confidence=payload.get("confidence", 0.0),
         data_freshness_minutes=freshness_minutes,
         status=summary.status,
@@ -378,3 +380,24 @@ def _parse_actions(raw: list) -> list[RecommendedAction]:
             except Exception:
                 pass
     return actions
+
+
+def _parse_agent_actions(raw: list) -> list[AgentActionOut]:
+    """Convert ORM AgentAction rows to API-safe models."""
+    out: list[AgentActionOut] = []
+    if not isinstance(raw, list):
+        return out
+    for action in raw:
+        try:
+            out.append(
+                AgentActionOut(
+                    id=action.id,
+                    action_type=action.action_type,
+                    payload=action.payload or {},
+                    modified_payload=action.modified_payload,
+                    status=action.status,
+                )
+            )
+        except Exception:
+            continue
+    return out

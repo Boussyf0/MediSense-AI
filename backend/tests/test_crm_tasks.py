@@ -493,3 +493,45 @@ class TestCRMEndpoints:
             headers=auth("secretary"),
         )
         assert response.status_code == 404
+
+
+# ── D1: POST /crm/sms/send/{appointment_uuid} ────────────────────────────────
+
+
+class TestCrmSmsSend:
+    async def test_sms_send_happy(self, client, test_db):
+        appt_uuid = await seed_appointment(test_db)
+        response = await client.post(
+            f"/api/v1/crm/sms/send/{appt_uuid}",
+            headers=auth("secretary"),
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["appointment_uuid"] == str(appt_uuid)
+        assert data["task_type"] == "sms_reminder"
+        assert data["status"] == "pending"
+
+    async def test_sms_send_idempotent_same_day(self, client, test_db):
+        appt_uuid = await seed_appointment(test_db)
+        r1 = await client.post(
+            f"/api/v1/crm/sms/send/{appt_uuid}",
+            headers=auth("secretary"),
+        )
+        assert r1.status_code == 200
+        r2 = await client.post(
+            f"/api/v1/crm/sms/send/{appt_uuid}",
+            headers=auth("secretary"),
+        )
+        assert r2.status_code == 200
+        assert r1.json()["id"] == r2.json()["id"]
+
+    async def test_sms_send_no_auth_403(self, client):
+        response = await client.post(f"/api/v1/crm/sms/send/{uuid.uuid4()}")
+        assert response.status_code == 403
+
+    async def test_sms_send_unknown_appointment_404(self, client):
+        response = await client.post(
+            f"/api/v1/crm/sms/send/{uuid.uuid4()}",
+            headers=auth("secretary"),
+        )
+        assert response.status_code == 404

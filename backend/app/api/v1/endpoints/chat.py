@@ -30,8 +30,9 @@ from app.core.conversation_cache import (
     push_turn,
     set_conversation_meta,
 )
-from app.core.dependencies import TokenPayload, get_current_user
+from app.core.dependencies import TokenPayload, require_patient
 from app.db.models.conversation import Conversation, Message
+from app.db.models.patient import Patient
 from app.schemas.chat import (
     ChatRequest,
     ChatResponse,
@@ -49,7 +50,7 @@ settings = get_settings()
 async def send_message(
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayload = Depends(get_current_user),
+    current_user: TokenPayload = Depends(require_patient),
 ):
     """
     Send a message to the MediSense chatbot. Returns a complete JSON response.
@@ -59,6 +60,7 @@ async def send_message(
     - For token-by-token streaming use `POST /chat/stream` instead.
     """
     patient_id = uuid.UUID(current_user.sub)
+    await _ensure_patient_profile_exists(db, patient_id)
 
     # Resolve or create conversation
     if body.conversation_id:
@@ -160,7 +162,7 @@ async def send_message(
 async def send_message_stream(
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayload = Depends(get_current_user),
+    current_user: TokenPayload = Depends(require_patient),
 ):
     """
     Send a message and receive the response as Server-Sent Events (SSE).
@@ -176,6 +178,7 @@ async def send_message_stream(
     - `done`    — final event with confidence score and conversation_id
     """
     patient_id = uuid.UUID(current_user.sub)
+    await _ensure_patient_profile_exists(db, patient_id)
 
     if body.conversation_id:
         conv = await _get_conversation(db, body.conversation_id, patient_id)
@@ -198,7 +201,7 @@ async def send_message_stream(
 @router.get("", response_model=list[ConversationOut])
 async def list_conversations(
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayload = Depends(get_current_user),
+    current_user: TokenPayload = Depends(require_patient),
     limit: int = Query(default=20, le=100),
     offset: int = Query(default=0, ge=0),
 ):
@@ -240,7 +243,7 @@ async def list_conversations(
 async def get_conversation_history(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayload = Depends(get_current_user),
+    current_user: TokenPayload = Depends(require_patient),
 ):
     """Get all messages in a conversation (decrypted)."""
     patient_id = uuid.UUID(current_user.sub)
@@ -294,7 +297,7 @@ async def get_conversation_history(
 async def delete_conversation(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: TokenPayload = Depends(get_current_user),
+    current_user: TokenPayload = Depends(require_patient),
 ):
     """
     Delete a conversation and all its messages.
@@ -327,6 +330,15 @@ async def _get_conversation(
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return conv
+
+
+async def _ensure_patient_profile_exists(db: AsyncSession, patient_id: uuid.UUID) -> None:
+    """Fail fast with a clear error when JWT subject has no patient profile."""
+    result = await db.execute(
+        select(Patient.patient_uuid).where(Patient.patient_uuid == patient_id)
+    )
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail="Patient profile not found")
 
 
 async def _save_message(

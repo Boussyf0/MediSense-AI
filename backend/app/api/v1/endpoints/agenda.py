@@ -1,14 +1,15 @@
 import uuid
 from datetime import date as DateType, datetime, time, timezone
-from typing import List
+from typing import List, Literal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.dependencies import TokenPayload, require_secretary
+from app.core.dependencies import TokenPayload, require_any_staff, require_role, require_secretary
 from app.db.models.appointment import Appointment
+from app.db.models.noshow_feedback import NoShowFeedback
 from app.db.session import get_db
 from app.services.noshow_predictor import get_risk_color
 from app.services.sms_reminder import dispatch_smart_sms_reminders
@@ -63,7 +64,7 @@ async def get_noshow_predictions_batch(
         ),
     ),
     db: AsyncSession = Depends(get_db),
-    _current_user: TokenPayload = Depends(require_secretary),
+    _current_user: TokenPayload = Depends(require_any_staff),
 ):
     """
     GET /api/v1/predictions/no-show/batch
@@ -139,3 +140,43 @@ async def dispatch_noshow_sms_reminders(
         skipped=len(items) - sent_count,
         items=items,
     )
+
+
+class NoShowFeedbackRequest(BaseModel):
+    outcome: Literal["presented", "no_show"]
+
+
+class NoShowFeedbackResponse(BaseModel):
+    id: uuid.UUID
+    appointment_uuid: uuid.UUID
+    outcome: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+@router.post(
+    "/no-show/{appointment_uuid}/feedback",
+    response_model=NoShowFeedbackResponse,
+)
+async def submit_noshow_feedback(
+    appointment_uuid: uuid.UUID,
+    body: NoShowFeedbackRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_role("doctor", "secretary", "admin")),
+):
+    result = await db.execute(
+        select(Appointment).where(Appointment.appointment_uuid == appointment_uuid)
+    )
+    appt = result.scalar_one_or_none()
+    if appt is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    feedback = NoShowFeedback(
+        appointment_uuid=appointment_uuid,
+        outcome=body.outcome,
+        recorded_by=uuid.UUID(current_user.sub),
+    )
+    db.add(feedback)
+    await db.flush()
+    return NoShowFeedbackResponse.model_validate(feedback)

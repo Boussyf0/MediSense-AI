@@ -12,15 +12,19 @@ Design constraints:
 """
 import asyncio
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.audit import log_audit
 from app.core.config import get_settings
-from app.core.dependencies import TokenPayload, require_secretary
+from app.core.dependencies import TokenPayload, require_role, require_secretary
 from app.db.models.appointment import Appointment
+from app.db.models.sms_reminder_log import SmsReminderLog
 from app.db.session import AsyncSessionLocal, get_db
 from app.services.salesforce_client import send_crm_event
 from app.schemas.crm import (
@@ -44,17 +48,23 @@ async def list_crm_tasks(
     current_user: TokenPayload = Depends(require_secretary),
 ) -> CRMTaskListResponse:
     """List appointments with CRM sync status. Secretary/admin only."""
-    base_q = select(Appointment)
-    if crm_sync_status is not None:
-        base_q = base_q.where(Appointment.crm_sync_status == crm_sync_status)
+    try:
+        base_q = select(Appointment)
+        if crm_sync_status is not None:
+            base_q = base_q.where(Appointment.crm_sync_status == crm_sync_status)
 
-    count_result = await db.execute(select(func.count()).select_from(base_q.subquery()))
-    total = count_result.scalar_one()
+        count_result = await db.execute(select(func.count()).select_from(base_q.subquery()))
+        total = count_result.scalar_one()
 
-    rows_result = await db.execute(
-        base_q.order_by(Appointment.scheduled_at.desc()).limit(limit).offset(offset)
-    )
-    rows = rows_result.scalars().all()
+        rows_result = await db.execute(
+            base_q.order_by(Appointment.scheduled_at.desc()).limit(limit).offset(offset)
+        )
+        rows = rows_result.scalars().all()
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="CRM database unavailable — run: alembic upgrade head",
+        ) from exc
 
     await log_audit(db, current_user, request, action="READ", resource_type="crm_task")
     return CRMTaskListResponse(total=total, items=[CRMTaskOut.model_validate(r) for r in rows])
@@ -152,3 +162,53 @@ async def retry_crm_task(
         crm_sync_status="PENDING",
         message="Retry dispatched asynchronously.",
     )
+
+
+class SmsSendResponse(BaseModel):
+    id: uuid.UUID
+    appointment_uuid: uuid.UUID
+    task_type: str
+    status: str
+    scheduled_for: datetime
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+@router.post("/sms/send/{appointment_uuid}", response_model=SmsSendResponse)
+async def send_sms_reminder(
+    appointment_uuid: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_role("doctor", "secretary", "admin")),
+) -> SmsSendResponse:
+    appt_result = await db.execute(
+        select(Appointment).where(Appointment.appointment_uuid == appointment_uuid)
+    )
+    appt = appt_result.scalar_one_or_none()
+    if appt is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    now = datetime.now(timezone.utc)
+    today = now.date()
+
+    existing = await db.execute(
+        select(SmsReminderLog).where(
+            SmsReminderLog.appointment_uuid == appointment_uuid,
+            SmsReminderLog.task_type == "sms_reminder",
+            SmsReminderLog.scheduled_date == today,
+        )
+    )
+    task = existing.scalar_one_or_none()
+    if task is not None:
+        return SmsSendResponse.model_validate(task)
+
+    task = SmsReminderLog(
+        appointment_uuid=appointment_uuid,
+        task_type="sms_reminder",
+        status="pending",
+        scheduled_for=now,
+        scheduled_date=today,
+    )
+    db.add(task)
+    await db.flush()
+    return SmsSendResponse.model_validate(task)
