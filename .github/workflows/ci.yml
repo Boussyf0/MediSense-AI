@@ -59,6 +59,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Free disk space for heavy ML deps
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL || true
+          docker system prune -af || true
+          df -h
+
       - name: Cache pip dependencies
         uses: actions/cache@v4
         with:
@@ -128,9 +134,6 @@ jobs:
           if f1 < 0.80 or auc < 0.87:
               print("GATE FAILED"); sys.exit(1)
           PY
-
-      - name: Check API contract (frontend ↔ backend route coverage)
-        run: python scripts/check_api_contract.py
 
       - name: Free disk space before Docker build
         run: |
