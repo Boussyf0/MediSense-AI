@@ -6,6 +6,7 @@ Why pydantic-settings?
   - Automatic .env loading: no manual os.getenv() calls scattered everywhere
   - Single source of truth: every setting lives here, imported where needed
 """
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
@@ -57,6 +58,41 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.1-8b-instant"
 
+    # SMS reminders (Sprint 5)
+    # If SMS_WEBHOOK_URL is empty, reminders are sent in mock mode (dev/demo).
+    SMS_WEBHOOK_URL: str = ""
+    SMS_WEBHOOK_TOKEN: str = ""
+    SMS_PROVIDER_TIMEOUT_SECONDS: float = Field(default=3.0, gt=0)
+    SMS_REMINDER_THRESHOLD: float = Field(default=0.30, ge=0.0, le=1.0)
+    SMS_REMINDER_MAX_COUNT: int = Field(default=2, ge=1, le=2)
+
+    # Salesforce CRM (Sprint 6 — US-24)
+    # If SALESFORCE_WEBHOOK_URL is empty, CRM sync is skipped (dev/demo mode).
+    SALESFORCE_WEBHOOK_URL: str = ""
+    SALESFORCE_TOKEN: str = ""
+    SALESFORCE_TIMEOUT_SECONDS: float = Field(default=3.0, gt=0)
+    SALESFORCE_MAX_RETRIES: int = Field(default=3, ge=1, le=5)
+    SALESFORCE_RETRY_DELAY_SECONDS: float = Field(default=2.0, gt=0)
+
+    # MLflow Model Registry (Sprint 6 — US-33)
+    MLFLOW_MODEL_NAME: str = "noshow-risk-model"
+    MLFLOW_PROMOTION_F1_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
+    MLFLOW_PROMOTION_AUC_THRESHOLD: float = Field(default=0.87, ge=0.0, le=1.0)
+
+    # Kafka IoT ingestion (Sprint 7 — US-25)
+    # If KAFKA_BROKERS is empty, consumer starts in degraded mode (CSV buffer).
+    KAFKA_BROKERS: str = ""
+    KAFKA_TOPIC_IOT: str = "iot-vitals"
+    KAFKA_BUFFER_DIR: str = "/tmp/kafka-buffer"
+
+    # LSTM Anomaly Detection (Sprint 7 — US-27)
+    LSTM_MODEL_PATH: str = "models/lstm_anomaly_detector.pt"
+    LSTM_ANOMALY_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
+
+    # MLOps / Drift Detection (Sprint 8 — US-35)
+    EVIDENTLY_PSI_THRESHOLD: float = Field(default=0.25, ge=0.0, le=1.0)
+    AIRFLOW_DAG_FOLDER: str = "dags"
+
     @property
     def DATABASE_URL(self) -> str:
         """Async URL for SQLAlchemy (asyncpg driver)."""
@@ -80,7 +116,7 @@ class Settings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=["../.env", ".env"],  # ../.env for local runs from backend/, .env inside Docker
         env_file_encoding="utf-8",
         case_sensitive=True,
     )

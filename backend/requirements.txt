@@ -1,6 +1,6 @@
 # ── Web Framework ─────────────────────────────────────────
 fastapi==0.115.5
-uvicorn[standard]==0.32.1
+uvicorn[standard]==0.34.0
 
 # ── Database ──────────────────────────────────────────────
 sqlalchemy==2.0.36          # ORM (async support via asyncpg)
@@ -39,3 +39,32 @@ sse-starlette==2.1.3        # Server-Sent Events for streaming chat endpoint
 pytest==8.3.4
 pytest-asyncio==0.24.0
 pytest-cov==6.0.0           # coverage report (DoD requires ≥80%)
+
+# ── Machine Learning (Sprint 5) ───────────────────────────
+xgboost==2.1.2              # Production no-show model
+lightgbm==4.5.0             # Benchmarking
+catboost==1.2.7             # Benchmarking
+scikit-learn==1.5.2         # Pipeline + metrics
+imbalanced-learn==0.12.4    # SMOTE (k=5)
+shap==0.46.0                # TreeSHAP explainability
+optuna==4.0.0               # Hyperparameter optimization
+mlflow==2.18.0              # MLOps experiment tracking
+
+# ── Data Simulation (Sprint 5) ────────────────────────────
+Faker==33.0.0               # Patient demographics
+sdv==1.18.0                 # Synthetic Data Vault for clinical correlations
+pandas==2.2.3               # Data manipulation
+matplotlib==3.9.2           # EDA visualizations (Notebooks)
+seaborn==0.13.2             # EDA visualizations (Notebooks)
+
+# ── Monitoring (Sprint 10) ────────────────────────────────
+prometheus-client==0.21.0
+
+# ── IoT / Deep Learning (Sprint 7) ───────────────────────
+torch>=2.2.0                # BiLSTM anomaly detector (CPU build; GPU optional)
+aiokafka>=0.11.0            # Async Kafka consumer (iot-vitals topic)
+numpy>=1.26.0               # already transitive via scikit-learn; explicit for torch compat
+
+# ── MLOps / Drift Detection (Sprint 8) ───────────────────
+evidently>=0.4.0            # PSI + feature drift reports (Airflow DAG post-retrain)
+
