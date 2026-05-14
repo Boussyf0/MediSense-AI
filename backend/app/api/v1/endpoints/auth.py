@@ -10,7 +10,7 @@ Endpoints:
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from jose import JWTError
@@ -27,6 +27,7 @@ from app.core.security import (
     blacklist_token,
     is_token_blacklisted,
 )
+from app.core.audit import log_audit
 from app.core.config import get_settings
 from app.core.dependencies import get_current_user, TokenPayload
 from app.schemas.auth import LoginRequest, TokenResponse, RefreshRequest, UserResponse
@@ -36,7 +37,7 @@ settings = get_settings()
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(request: LoginRequest, http_request: Request, db: AsyncSession = Depends(get_db)):
     """
     Authenticate a user and return JWT tokens.
 
@@ -75,6 +76,16 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     # TODO Sprint 2: store refresh_jti in DB for rotation tracking
     # TODO Sprint 2: set refresh_token in httpOnly cookie (more secure than body)
+
+    actor_payload = TokenPayload(sub=str(user.user_uuid), role=user.role.value, jti="", type="access")
+    await log_audit(
+        db=db,
+        actor=actor_payload,
+        request=http_request,
+        action="LOGIN",
+        resource_type="user",
+        resource_uuid=user.user_uuid,
+    )
 
     return TokenResponse(
         access_token=access_token,
