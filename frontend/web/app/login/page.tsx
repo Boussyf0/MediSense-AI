@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore, roleDefaultPath } from '@/lib/auth';
-import { AIWaveform } from '@/components/ai-waveform';
 import { IconEye } from '@/components/icons';
 
 export default function LoginPage() {
@@ -83,7 +83,13 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
-            <AIWaveform bars={5} size="md" />
+            <Image
+              src="/logo.png"
+              alt="MediSense AI"
+              width={64}
+              height={64}
+              style={{ borderRadius: 16 }}
+            />
           </div>
           <div style={{
             fontFamily: 'var(--f-display)', fontSize: 22, fontWeight: 600,

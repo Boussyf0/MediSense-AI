@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth';
 import {
@@ -71,15 +72,13 @@ export function Sidebar() {
       {/* logo */}
       <div style={{ padding: '20px 18px 18px', borderBottom: '1px solid var(--line)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 18 }}>
-            {[8, 14, 18, 14, 8].map((h, i) => (
-              <div key={i} style={{
-                width: 2.5, height: h, borderRadius: 2,
-                background: 'var(--ai-grad)',
-                opacity: 0.7 + (i === 2 ? 0.3 : 0),
-              }} />
-            ))}
-          </div>
+          <Image
+            src="/logo.png"
+            alt="MediSense AI"
+            width={24}
+            height={24}
+            style={{ borderRadius: 6, flexShrink: 0 }}
+          />
           <div style={{
             fontFamily: 'var(--f-display)', fontWeight: 600, fontSize: 14,
             color: 'var(--t0)', letterSpacing: '-0.01em',
