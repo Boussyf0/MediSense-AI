@@ -1,0 +1,15 @@
+#!/bin/sh
+# Pre-push hook: blocks push if tests fail or coverage drops below 80%.
+#
+# Install once per clone:
+#   cd backend && make install-hooks
+#
+# To bypass in an emergency (e.g. pushing a WIP branch):
+#   git push --no-verify
+set -e
+
+BACKEND="$(git rev-parse --show-toplevel)/backend"
+echo "[pre-push] Running test suite + coverage gate (80% required)..."
+cd "$BACKEND"
+pytest -q --cov=app --cov-fail-under=80 --tb=short
+echo "[pre-push] All checks passed."

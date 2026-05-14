@@ -152,7 +152,7 @@ async def fetch_iot_context(
         return IoTContext()
 
 
-def _mock_iot_context(patient_id: str) -> IoTContext:  # noqa: ARG001
+def _mock_iot_context(patient_id: str) -> IoTContext:  # pragma: no cover  # noqa: ARG001
     """
     Return realistic mock anomalies for development and demo.
 

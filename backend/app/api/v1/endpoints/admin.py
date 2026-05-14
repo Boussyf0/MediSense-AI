@@ -15,15 +15,20 @@ RGPD ART. 30:
 """
 from datetime import datetime
 from typing import Annotated, Optional
+import time
 import uuid
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from pydantic import BaseModel, ConfigDict, Field, EmailStr
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.db.session import get_db
 from app.db.models.audit_log import AuditLog
+from app.db.models.user import User, UserRole
 from app.core.dependencies import require_admin, TokenPayload
+from app.core.security import hash_password
 from app.schemas.admin import AuditLogEntry, AuditLogList
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -129,6 +134,12 @@ class RerankEvalRequest(BaseModel):
     top_k: int = Field(default=20, ge=5, le=50, description="Number of chunks to retrieve and evaluate")
 
 
+class RerankItem(BaseModel):
+    rank: int
+    doc: str
+    score: float
+
+
 class RerankEvalResponse(BaseModel):
     query: str
     rank_correlation: float
@@ -137,6 +148,9 @@ class RerankEvalResponse(BaseModel):
     rrf_top3: list[str]
     ce_top3: list[str]
     num_chunks: int
+    rrf_items: list[RerankItem]
+    ce_items: list[RerankItem]
+    ce_latency_ms: int
 
 
 @router.post(
@@ -154,7 +168,7 @@ async def evaluate_reranking(
     current_user: Annotated[TokenPayload, Depends(require_admin)],
 ):
     from app.rag.vectorstore import hybrid_search
-    from app.rag.reranker import evaluate_rrf_vs_crossencoder
+    from app.rag.reranker import evaluate_rrf_vs_crossencoder, rerank
 
     chunks = hybrid_search(query_text=body.query, limit=body.top_k)
 
@@ -167,12 +181,118 @@ async def evaluate_reranking(
             rrf_top3=[],
             ce_top3=[],
             num_chunks=0,
+            rrf_items=[],
+            ce_items=[],
+            ce_latency_ms=0,
         )
 
+    t0 = time.perf_counter()
     metrics = evaluate_rrf_vs_crossencoder(body.query, chunks)
+    ce_latency_ms = int((time.perf_counter() - t0) * 1000)
+
+    rrf_items = [
+        RerankItem(
+            rank=i + 1,
+            doc=(c.get("text") or "")[:120],
+            score=float(c.get("score", 0.0)),
+        )
+        for i, c in enumerate(chunks)
+    ]
+
+    ce_ranked = rerank(body.query, chunks, top_k=len(chunks))
+    ce_items = [
+        RerankItem(
+            rank=i + 1,
+            doc=(r.chunk.get("text") or "")[:120],
+            score=float(r.ce_score),
+        )
+        for i, r in enumerate(ce_ranked)
+    ]
 
     return RerankEvalResponse(
         query=body.query,
         num_chunks=len(chunks),
+        rrf_items=rrf_items,
+        ce_items=ce_items,
+        ce_latency_ms=ce_latency_ms,
         **metrics,
     )
+
+
+# ── User Management ───────────────────────────────────────
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    user_uuid: uuid.UUID
+    email: str
+    role: str
+    first_name: str | None
+    last_name: str | None
+    is_active: bool
+    created_at: datetime
+
+
+class UserListResponse(BaseModel):
+    total: int
+    items: list[UserOut]
+
+
+class UserCreateRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=128)
+    role: UserRole
+    first_name: str | None = Field(default=None, max_length=100)
+    last_name: str | None = Field(default=None, max_length=100)
+
+
+@router.get("/users", response_model=UserListResponse, summary="List all staff accounts")
+async def list_users(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenPayload, Depends(require_admin)],
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+) -> UserListResponse:
+    total_result = await db.execute(select(func.count()).select_from(User))
+    total = total_result.scalar_one()
+
+    rows_result = await db.execute(
+        select(User).order_by(User.created_at.desc()).limit(limit).offset(offset)
+    )
+    users = rows_result.scalars().all()
+
+    return UserListResponse(total=total, items=[UserOut.model_validate(u) for u in users])
+
+
+@router.post(
+    "/users",
+    response_model=UserOut,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new staff account",
+)
+async def create_user(
+    body: UserCreateRequest,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenPayload, Depends(require_admin)],
+) -> UserOut:
+    user = User(
+        email=body.email,
+        hashed_password=hash_password(body.password),
+        role=body.role,
+        first_name=body.first_name,
+        last_name=body.last_name,
+    )
+    db.add(user)
+    try:
+        await db.flush()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Email already registered: {body.email}",
+        )
+    await db.refresh(user)
+    from app.core.audit import log_audit
+    await log_audit(db, current_user, request, action="WRITE", resource_type="user",
+                    resource_uuid=user.user_uuid)
+    return UserOut.model_validate(user)

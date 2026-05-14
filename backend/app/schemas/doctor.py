@@ -51,6 +51,15 @@ class RecommendedAction(BaseModel):
     message: str | None = None
 
 
+class AgentActionOut(BaseModel):
+    """Action row with persistent ID and review state (for UI mutations)."""
+    id: UUID
+    action_type: str
+    payload: dict[str, Any]
+    modified_payload: dict[str, Any] | None = None
+    status: str
+
+
 # ── DPA Summary (US-41 GET response) ────────────────────────────────────────
 
 class DPASummaryOut(BaseModel):
@@ -60,6 +69,7 @@ class DPASummaryOut(BaseModel):
     symptoms: list[str] = []
     iot_summary: IoTSummaryOut = Field(default_factory=IoTSummaryOut)
     recommended_actions: list[RecommendedAction] = []
+    agent_actions: list[AgentActionOut] = []
     confidence: float = 0.0
     data_freshness_minutes: int = 0
     status: str = "PENDING"     # PENDING | APPROVED | MODIFIED | REJECTED

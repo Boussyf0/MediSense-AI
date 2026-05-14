@@ -1,0 +1,16 @@
+# ZAP alert filter — false-positive whitelist for MediSense AI REST API.
+# Format: <alertId>TAB<action>  (IGNORE | WARN | FAIL)
+# Column 3 would be a URL regex filter — intentionally omitted to apply globally.
+#
+# 10202 — Anti-CSRF: stateless JWT API, no session cookies
+# 10036 — Server version header: informational only
+# 90005 — Browser security hints: inapplicable to JSON API
+# 10063 — Browser security hints: inapplicable to JSON API
+# 10096 — Timestamp disclosure: ISO8601 dates are intentional, not sensitive
+# 10021 — X-Content-Type-Options: already set in FastAPI middleware
+10202	IGNORE
+10036	WARN
+90005	IGNORE
+10063	IGNORE
+10096	WARN
+10021	WARN

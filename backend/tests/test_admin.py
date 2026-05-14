@@ -189,3 +189,144 @@ async def test_audit_logs_total_reflects_filters(client, test_db):
 
     data = response.json()
     assert data["total"] == 3
+
+
+# ── User Management ────────────────────────────────────────
+
+USER_PAYLOAD = {
+    "email": f"newdoc_{uuid.uuid4().hex[:8]}@clinique.ma",
+    "password": "SecurePass123",
+    "role": "doctor",
+    "first_name": "Ahmed",
+    "last_name": "Benali",
+}
+
+
+@pytest.mark.asyncio
+async def test_create_user_returns_201(client):
+    payload = {**USER_PAYLOAD, "email": f"doc_{uuid.uuid4().hex[:8]}@clinique.ma"}
+    response = await client.post(
+        "/api/v1/admin/users",
+        json=payload,
+        headers=auth(admin_token()),
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["email"] == payload["email"]
+    assert data["role"] == "doctor"
+    assert "hashed_password" not in data
+
+
+@pytest.mark.asyncio
+async def test_create_user_requires_admin(client):
+    response = await client.post(
+        "/api/v1/admin/users",
+        json={**USER_PAYLOAD, "email": f"doc_{uuid.uuid4().hex[:8]}@clinique.ma"},
+        headers=auth(doctor_token()),
+    )
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_create_user_duplicate_email_returns_409(client):
+    email = f"dup_{uuid.uuid4().hex[:8]}@clinique.ma"
+    payload = {**USER_PAYLOAD, "email": email}
+    r1 = await client.post("/api/v1/admin/users", json=payload, headers=auth(admin_token()))
+    assert r1.status_code == 201
+    r2 = await client.post("/api/v1/admin/users", json=payload, headers=auth(admin_token()))
+    assert r2.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_list_users_returns_200(client):
+    email = f"list_{uuid.uuid4().hex[:8]}@clinique.ma"
+    await client.post(
+        "/api/v1/admin/users",
+        json={**USER_PAYLOAD, "email": email},
+        headers=auth(admin_token()),
+    )
+    response = await client.get("/api/v1/admin/users", headers=auth(admin_token()))
+    assert response.status_code == 200
+    data = response.json()
+    assert "total" in data
+    assert "items" in data
+    assert any(u["email"] == email for u in data["items"])
+
+
+@pytest.mark.asyncio
+async def test_list_users_requires_admin(client):
+    response = await client.get("/api/v1/admin/users", headers=auth(doctor_token()))
+    assert response.status_code == 403
+
+
+# ── Rerank Eval ───────────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_rerank_eval_happy(client, monkeypatch):
+    fake_chunks = [
+        {"id": "c1", "score": 0.91, "text": "Paracetamol soulage la douleur et la fievre chez l adulte"},
+        {"id": "c2", "score": 0.84, "text": "Ibuprofene est un anti-inflammatoire non steroidien"},
+        {"id": "c3", "score": 0.70, "text": "Aspirine est utilise contre la douleur et la fievre"},
+    ]
+
+    def fake_hybrid_search(query_text, limit):
+        return fake_chunks
+
+    def fake_eval(query, chunks):
+        return {
+            "rank_correlation": 0.91,
+            "top3_overlap": 1.0,
+            "mrr_rrf": 1.0,
+            "rrf_top3": ["c1", "c2", "c3"],
+            "ce_top3": ["c1", "c2", "c3"],
+        }
+
+    class FakeReranked:
+        def __init__(self, chunk, ce_score):
+            self.chunk = chunk
+            self.ce_score = ce_score
+            self.original_rank = 0
+
+    def fake_rerank(query, chunks, top_k):
+        return [FakeReranked(c, 0.99 - 0.1 * i) for i, c in enumerate(chunks)]
+
+    monkeypatch.setattr("app.rag.vectorstore.hybrid_search", fake_hybrid_search)
+    monkeypatch.setattr("app.rag.reranker.evaluate_rrf_vs_crossencoder", fake_eval)
+    monkeypatch.setattr("app.rag.reranker.rerank", fake_rerank)
+
+    response = await client.post(
+        "/api/v1/admin/rerank-eval",
+        json={"query": "paracetamol", "top_k": 5},
+        headers=auth(admin_token()),
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["query"] == "paracetamol"
+    assert data["num_chunks"] == 3
+    assert len(data["rrf_items"]) == 3
+    assert len(data["ce_items"]) == 3
+    assert data["rrf_items"][0]["rank"] == 1
+    assert data["rrf_items"][0]["doc"].startswith("Paracetamol")
+    assert "ce_latency_ms" in data
+    assert isinstance(data["ce_latency_ms"], int)
+    assert data["rank_correlation"] == 0.91
+
+
+@pytest.mark.asyncio
+async def test_rerank_eval_doctor_forbidden(client):
+    response = await client.post(
+        "/api/v1/admin/rerank-eval",
+        json={"query": "paracetamol"},
+        headers=auth(doctor_token()),
+    )
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_rerank_eval_empty_query_422(client):
+    response = await client.post(
+        "/api/v1/admin/rerank-eval",
+        json={"query": ""},
+        headers=auth(admin_token()),
+    )
+    assert response.status_code == 422

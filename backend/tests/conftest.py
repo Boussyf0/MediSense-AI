@@ -78,6 +78,8 @@ def db_schema():
     # Now build the schema inside the test DB
     engine = create_engine(TEST_DATABASE_URL_SYNC)
     with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto"))
+        conn.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
         conn.execute(text("CREATE SCHEMA IF NOT EXISTS secure"))
     Base.metadata.create_all(engine)
     engine.dispose()
@@ -147,6 +149,9 @@ def mock_redis():
     """
     with patch(
         "app.core.security.is_token_blacklisted",
+        new=AsyncMock(return_value=False),
+    ), patch(
+        "app.core.dependencies.is_token_blacklisted",
         new=AsyncMock(return_value=False),
     ):
         yield

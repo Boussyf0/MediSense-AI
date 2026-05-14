@@ -37,6 +37,7 @@ class ConsentUpdate(BaseModel):
     consent_iot: Optional[bool] = None
     consent_nlp: Optional[bool] = None
     consent_sharing: Optional[bool] = None
+    sms_opt_out: Optional[bool] = None
     channel: str = "web"
     cgu_version: Optional[str] = None
 
@@ -62,6 +63,7 @@ class ConsentResponse(BaseModel):
     consent_iot: bool
     consent_nlp: bool
     consent_sharing: bool
+    sms_opt_out: bool
     updated_at: datetime
 
     model_config = {"from_attributes": True}
@@ -84,6 +86,7 @@ class PatientRecord(BaseModel):
     consent_iot: bool
     consent_nlp: bool
     consent_sharing: bool
+    sms_opt_out: bool
     birth_year: Optional[int]
     sex: Optional[str]
     city_code: Optional[str]

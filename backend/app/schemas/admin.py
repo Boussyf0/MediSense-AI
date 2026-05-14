@@ -7,8 +7,8 @@ Schemas defined here:
 """
 from datetime import datetime
 from uuid import UUID
-from typing import Optional, List
-from pydantic import BaseModel
+from typing import Any, Optional, List
+from pydantic import BaseModel, field_validator
 
 
 class AuditLogEntry(BaseModel):
@@ -30,6 +30,11 @@ class AuditLogEntry(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @field_validator("ip_address", mode="before")
+    @classmethod
+    def coerce_ip(cls, v: Any) -> Optional[str]:
+        return str(v) if v is not None else None
 
 
 class AuditLogList(BaseModel):

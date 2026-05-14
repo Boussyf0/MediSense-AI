@@ -40,6 +40,7 @@ from app.schemas.doctor import (
     IoTSummaryOut,
     IoTAnomalyOut,
     RecommendedAction,
+    AgentActionOut,
     ApprovalRequest,
     RejectionRequest,
     DPAActionDecision,
@@ -100,6 +101,7 @@ async def get_dpa_summary(
         symptoms=payload.get("symptoms", []),
         iot_summary=_parse_iot_summary(payload.get("iot_summary", {})),
         recommended_actions=_parse_actions(payload.get("recommended_actions", [])),
+        agent_actions=_parse_agent_actions(getattr(summary, "actions", [])),
         confidence=payload.get("confidence", 0.0),
         data_freshness_minutes=freshness_minutes,
         status=summary.status,
@@ -144,6 +146,7 @@ async def approve_dpa_summary(
     new_status = "MODIFIED" if body.edited_actions else "APPROVED"
     now = datetime.now(timezone.utc)
     doctor_uuid = uuid.UUID(current_user.sub)
+    current_version = int(summary.version)  # freeze expected version before session sync
 
     # Build payload_after
     payload_after = dict(summary.payload_before)
@@ -153,10 +156,14 @@ async def approve_dpa_summary(
     # Optimistic lock update
     stmt = (
         update(DPASummary)
-        .where(DPASummary.id == summary_id, DPASummary.version == summary.version)
+        .where(
+            DPASummary.id == summary_id,
+            DPASummary.status == "PENDING",
+            DPASummary.version == current_version,
+        )
         .values(
             status=new_status,
-            version=summary.version + 1,
+            version=current_version + 1,
             doctor_id=doctor_uuid,
             payload_after=payload_after,
             doctor_note=body.doctor_note,
@@ -182,7 +189,7 @@ async def approve_dpa_summary(
     return ApprovalResponse(
         summary_id=summary_id,
         status=new_status,
-        version=summary.version + 1,
+        version=current_version + 1,
         reviewed_at=now,
         message=f"Résumé {new_status.lower()} avec succès.",
     )
@@ -220,13 +227,18 @@ async def reject_dpa_summary(
 
     now = datetime.now(timezone.utc)
     doctor_uuid = uuid.UUID(current_user.sub)
+    current_version = int(summary.version)  # freeze expected version before session sync
 
     stmt = (
         update(DPASummary)
-        .where(DPASummary.id == summary_id, DPASummary.version == summary.version)
+        .where(
+            DPASummary.id == summary_id,
+            DPASummary.status == "PENDING",
+            DPASummary.version == current_version,
+        )
         .values(
             status="REJECTED",
-            version=summary.version + 1,
+            version=current_version + 1,
             doctor_id=doctor_uuid,
             doctor_note=body.doctor_note,
             reviewed_at=now,
@@ -250,7 +262,7 @@ async def reject_dpa_summary(
     return ApprovalResponse(
         summary_id=summary_id,
         status="REJECTED",
-        version=summary.version + 1,
+        version=current_version + 1,
         reviewed_at=now,
         message="Résumé rejeté. Raison enregistrée pour amélioration du modèle.",
     )
@@ -330,6 +342,10 @@ async def _get_or_404(summary_id: uuid.UUID, db: AsyncSession) -> DPASummary:
     summary = result.scalar_one_or_none()
     if not summary:
         raise HTTPException(status_code=404, detail="Résumé DPA introuvable")
+    # Refresh to ensure we read the actual DB state regardless of identity map cache.
+    # SQLAlchemy's synchronize_session can leave stale values in the identity map
+    # across requests sharing the same session (common in tests).
+    await db.refresh(summary)
     return summary
 
 
@@ -364,3 +380,24 @@ def _parse_actions(raw: list) -> list[RecommendedAction]:
             except Exception:
                 pass
     return actions
+
+
+def _parse_agent_actions(raw: list) -> list[AgentActionOut]:
+    """Convert ORM AgentAction rows to API-safe models."""
+    out: list[AgentActionOut] = []
+    if not isinstance(raw, list):
+        return out
+    for action in raw:
+        try:
+            out.append(
+                AgentActionOut(
+                    id=action.id,
+                    action_type=action.action_type,
+                    payload=action.payload or {},
+                    modified_payload=action.modified_payload,
+                    status=action.status,
+                )
+            )
+        except Exception:
+            continue
+    return out
