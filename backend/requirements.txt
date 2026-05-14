@@ -57,3 +57,14 @@ pandas==2.2.3               # Data manipulation
 matplotlib==3.9.2           # EDA visualizations (Notebooks)
 seaborn==0.13.2             # EDA visualizations (Notebooks)
 
+# ── Monitoring (Sprint 10) ────────────────────────────────
+prometheus-client==0.21.0
+
+# ── IoT / Deep Learning (Sprint 7) ───────────────────────
+torch>=2.2.0                # BiLSTM anomaly detector (CPU build; GPU optional)
+aiokafka>=0.11.0            # Async Kafka consumer (iot-vitals topic)
+numpy>=1.26.0               # already transitive via scikit-learn; explicit for torch compat
+
+# ── MLOps / Drift Detection (Sprint 8) ───────────────────
+evidently>=0.4.0            # PSI + feature drift reports (Airflow DAG post-retrain)
+

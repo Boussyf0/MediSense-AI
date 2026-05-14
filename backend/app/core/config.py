@@ -79,6 +79,20 @@ class Settings(BaseSettings):
     MLFLOW_PROMOTION_F1_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
     MLFLOW_PROMOTION_AUC_THRESHOLD: float = Field(default=0.87, ge=0.0, le=1.0)
 
+    # Kafka IoT ingestion (Sprint 7 — US-25)
+    # If KAFKA_BROKERS is empty, consumer starts in degraded mode (CSV buffer).
+    KAFKA_BROKERS: str = ""
+    KAFKA_TOPIC_IOT: str = "iot-vitals"
+    KAFKA_BUFFER_DIR: str = "/tmp/kafka-buffer"
+
+    # LSTM Anomaly Detection (Sprint 7 — US-27)
+    LSTM_MODEL_PATH: str = "models/lstm_anomaly_detector.pt"
+    LSTM_ANOMALY_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
+
+    # MLOps / Drift Detection (Sprint 8 — US-35)
+    EVIDENTLY_PSI_THRESHOLD: float = Field(default=0.25, ge=0.0, le=1.0)
+    AIRFLOW_DAG_FOLDER: str = "dags"
+
     @property
     def DATABASE_URL(self) -> str:
         """Async URL for SQLAlchemy (asyncpg driver)."""

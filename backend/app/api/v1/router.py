@@ -6,7 +6,8 @@ Adding a new endpoint module:
   2. Import its router here and add api_router.include_router(...)
 """
 from fastapi import APIRouter
-from app.api.v1.endpoints import health, auth, patients, admin, chat, doctor, predict, agenda, crm, iot, reminders, appointments, doctors
+from app.api.v1.endpoints import health, auth, patients, admin, chat, doctor, predict, agenda, crm, iot, reminders, appointments, doctors, anomalies
+from app.api.v1.endpoints.metrics import router as metrics_router
 
 api_router = APIRouter()
 
@@ -23,3 +24,5 @@ api_router.include_router(iot.router)        # Sprint 9/10: IoT vitals + device 
 api_router.include_router(reminders.router)  # Sprint 9/10: Medication reminders
 api_router.include_router(appointments.router)  # Sprint 9/10: Patient-facing /appointments
 api_router.include_router(doctors.router)        # Sprint 9/10: Doctors directory for booking
+api_router.include_router(anomalies.router)      # Sprint 7: US-28 BiLSTM anomaly detection
+api_router.include_router(metrics_router)        # Sprint 10: US-57 Prometheus metrics
