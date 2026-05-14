@@ -122,11 +122,124 @@ services:
     depends_on:
       - fastapi
 
+  # ── Kafka IoT ingestion (Sprint 7 — US-25) ───────────────────────────────
+  # Processes Samsung Watch BLE telemetry at 10 msg/s.
+  # Set KAFKA_BROKERS=kafka:9092 in .env to enable the consumer in FastAPI.
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: medisense_zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - medisense_network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: medisense_kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "29092:29092"
+    networks:
+      - medisense_network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  # ── Airflow (Sprint 8 — US-34) ────────────────────────────────────────────
+  # Weekly retraining DAG: medisense_retrain_noshow_weekly
+  # Access UI at http://localhost:8080 (admin / medisense2026)
+  airflow:
+    image: apache/airflow:2.9.3-python3.12
+    container_name: medisense_airflow
+    restart: unless-stopped
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
+      AIRFLOW_ADMIN_USER: admin
+      AIRFLOW_ADMIN_PASSWORD: medisense2026
+      MEDISENSE_BACKEND_DIR: /opt/medisense/backend
+      MLFLOW_PROMOTION_F1_THRESHOLD: "0.80"
+      MLFLOW_PROMOTION_AUC_THRESHOLD: "0.87"
+    volumes:
+      - ./dags:/opt/airflow/dags:ro
+      - ./backend:/opt/medisense/backend:ro
+      - airflow_logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    networks:
+      - medisense_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create --username admin --password medisense2026
+          --firstname MediSense --lastname Admin --role Admin --email admin@medisense.ma || true &&
+        airflow webserver &
+        airflow scheduler
+      "
+
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    container_name: medisense_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - medisense_network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: medisense_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-medisense2026}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/medisense_overview.json
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3001:3000"
+    networks:
+      - medisense_network
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   redis_data:
   qdrant_data:
   ollama_models:
+  prometheus_data:
+  grafana_data:
+  airflow_logs:
 
 networks:
   medisense_network:
