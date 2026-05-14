@@ -29,7 +29,7 @@ curl -s http://localhost:8000/api/v1/health | python -m json.tool
 # "noshow_model": "loaded", "qdrant": "ok", "redis": "ok"
 
 # 6. Grafana dashboard
-open http://localhost:3001  # admin / admin
+open http://localhost:3001  # admin / medisense2026 (ou valeur de GF_SECURITY_ADMIN_PASSWORD)
 ```
 
 **Comptes de démo :**
@@ -254,11 +254,10 @@ jupyter notebook notebooks/demo_offline.ipynb
 
 **Option C — Script CLI**
 ```bash
-# Demo purement CLI sans Docker
-cd backend
+# Demo purement CLI sans Docker (exécuter depuis la racine du repo)
 python scripts/smoke_test.py --base http://localhost:8000/api/v1
-python scripts/train_lstm_anomaly.py --quick --epochs 5  # 2min
-python scripts/detect_drift.py --dry-run
+cd backend && python scripts/train_lstm_anomaly.py --quick --epochs 5  # 2min
+cd backend && python scripts/detect_drift.py --dry-run
 ```
 
 ---
@@ -279,6 +278,10 @@ import asyncio
 from app.db.session import AsyncSessionLocal
 from app.db.models.user import User
 from sqlalchemy import delete
+async def main():
+    async with AsyncSessionLocal() as session:
+        await session.execute(delete(User))
+        await session.commit()
 asyncio.run(main())
 "
 

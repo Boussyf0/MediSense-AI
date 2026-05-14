@@ -10,6 +10,7 @@ Exit 0: all checks passed
 Exit 1: one or more checks failed
 """
 import argparse
+import os
 import sys
 
 try:
@@ -42,6 +43,7 @@ def run_smoke(base: str, args) -> None:
     # Pass --insecure only when testing against localhost self-signed certs.
     verify = not args.insecure
     client = httpx.Client(base_url=base, timeout=10.0, verify=verify)
+    import atexit; atexit.register(client.close)
 
     print(f"\n{BOLD}MediSense AI — Smoke Test{RESET}")
     print(f"Target: {base}\n")
@@ -55,7 +57,9 @@ def run_smoke(base: str, args) -> None:
     token = {}
 
     def do_login():
-        r = client.post("/auth/login", json={"email": "admin@medisense.ma", "password": "Admin1234!"})
+        email = os.getenv("SMOKE_ADMIN_EMAIL", "admin@medisense.ma")
+        password = os.getenv("SMOKE_ADMIN_PASSWORD", "Admin1234!")
+        r = client.post("/auth/login", json={"email": email, "password": password})
         r.raise_for_status()
         token["access"] = r.json()["access_token"]
 
@@ -63,9 +67,15 @@ def run_smoke(base: str, args) -> None:
 
     if token:
         auth = {"Authorization": f"Bearer {token['access']}"}
-        me_resp = client.get("/auth/me", headers=auth)
-        check("GET /auth/me → 200", lambda: me_resp.raise_for_status())
-        user_uuid = me_resp.json().get("user_uuid", "") if me_resp.is_success else ""
+        me: dict = {"user_uuid": ""}
+
+        def do_get_me():
+            r = client.get("/auth/me", headers=auth)
+            r.raise_for_status()
+            me["user_uuid"] = r.json().get("user_uuid", "")
+
+        check("GET /auth/me → 200", do_get_me)
+        user_uuid = me["user_uuid"]
 
         # ── Admin endpoints ───────────────────────────────────
         print(f"\n{BOLD}[Admin]{RESET}")

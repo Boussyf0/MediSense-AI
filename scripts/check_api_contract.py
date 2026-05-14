@@ -68,7 +68,7 @@ def _fetch_openapi_routes() -> list[tuple[str, str]]:
     if not spec_path.exists():
         # Try to generate it
         result = subprocess.run(
-            ["python", "-c",
+            [sys.executable, "-c",
              "from app.main import app; import json; "
              "open('openapi.json','w').write(json.dumps(app.openapi()))"],
             cwd=ROOT / "backend",
@@ -173,7 +173,10 @@ def main() -> None:
         if wired:
             status = "✅ wired"
         elif intentional:
-            reason = next(v for k, v in INTENTIONAL_NO_UI.items() if key.startswith(k.split(" (")[0]) or key_norm.startswith(k.split(" (")[0]))
+            reason = next(
+                v for k, v in INTENTIONAL_NO_UI.items()
+                if key.startswith(k.split(" (")[0]) or key_norm.startswith(k.split(" (")[0])
+            )
             status = f"N/A  ({reason[:60]}…)" if len(reason) > 60 else f"N/A  ({reason})"
         else:
             status = "❌ UNLINKED"
