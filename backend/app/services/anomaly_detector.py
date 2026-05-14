@@ -24,8 +24,13 @@ MIN_READINGS_FOR_SCORE = 5      # need at least 5 points before scoring
 
 
 async def _get_redis():
-    from app.core.deps import get_redis_client  # type: ignore[import]
-    return await get_redis_client()
+    import redis.asyncio as aioredis
+    from app.core.config import get_settings
+    return await aioredis.from_url(
+        get_settings().REDIS_URL,
+        encoding="utf-8",
+        decode_responses=True,
+    )
 
 
 def _key(window: str, patient_uuid: str) -> str:
