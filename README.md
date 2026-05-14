@@ -2,8 +2,8 @@
 
 ![CI](https://github.com/Boussyf0/MediSense-AI/actions/workflows/ci.yml/badge.svg?branch=main)
 ![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen)
-![Tests](https://img.shields.io/badge/tests-311%20passed-brightgreen)
-![Python](https://img.shields.io/badge/python-3.11%20|%203.12-blue)
+![Tests](https://img.shields.io/badge/tests-333%20passed-brightgreen)
+![Python](https://img.shields.io/badge/python-3.11-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **Candidate:** Abderrahim Boussyf
