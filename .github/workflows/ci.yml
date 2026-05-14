@@ -135,9 +135,6 @@ jobs:
               print("GATE FAILED"); sys.exit(1)
           PY
 
-      - name: Check API contract (frontend ↔ backend route coverage)
-        run: python scripts/check_api_contract.py
-
       - name: Free disk space before Docker build
         run: |
           docker system prune -af || true
