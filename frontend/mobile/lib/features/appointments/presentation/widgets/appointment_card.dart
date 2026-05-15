@@ -6,8 +6,35 @@ import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/widgets/anim/bubble_in.dart';
 import '../../data/models/appointment_model.dart';
 
+class _StatusChip extends StatelessWidget {
+  final AppointmentStatus status;
+  const _StatusChip(this.status);
+
+  @override
+  Widget build(BuildContext context) {
+    final c = status.color;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: c.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: c.withValues(alpha: 0.30)),
+      ),
+      child: Text(
+        status.label,
+        style: AppFonts.body(
+          color: c,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.1,
+        ),
+      ),
+    );
+  }
+}
+
 /// Risk-coded appointment card — glowing dot + time column, name/age,
-/// doctor line, reason, risk chip with score. Mirrors `appointments.jsx >
+/// doctor line, reason, status badge + risk chip. Mirrors `appointments.jsx >
 /// ApptCard`.
 class AppointmentCard extends StatelessWidget {
   final AppointmentModel appointment;
@@ -145,50 +172,57 @@ class AppointmentCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  // Risk chip
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(99),
-                      border: Border.all(
-                        color: color.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: color,
-                            shape: BoxShape.circle,
+                  // Status + risk chips row
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _StatusChip(appointment.status),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(99),
+                          border: Border.all(
+                            color: color.withValues(alpha: 0.25),
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _riskLabel,
-                          style: AppFonts.body(
-                            color: color,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                        if (scorePct != null) ...[
-                          const SizedBox(width: 6),
-                          Text(
-                            '· $scorePct%',
-                            style: AppFonts.mono(
-                              color: color.withValues(alpha: 0.85),
-                              fontSize: 10,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _riskLabel,
+                              style: AppFonts.body(
+                                color: color,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.1,
+                              ),
+                            ),
+                            if (scorePct != null) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                '· $scorePct%',
+                                style: AppFonts.mono(
+                                  color: color.withValues(alpha: 0.85),
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

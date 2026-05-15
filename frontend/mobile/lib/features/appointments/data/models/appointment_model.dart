@@ -26,6 +26,26 @@ extension RiskColorExt on RiskColor {
       };
 }
 
+enum AppointmentStatus { scheduled, confirmed, cancelled, completed, noShow, unknown }
+
+extension AppointmentStatusExt on AppointmentStatus {
+  String get label => switch (this) {
+        AppointmentStatus.scheduled => 'Planifié',
+        AppointmentStatus.confirmed => 'Confirmé',
+        AppointmentStatus.cancelled => 'Annulé',
+        AppointmentStatus.completed => 'Terminé',
+        AppointmentStatus.noShow    => 'Absent',
+        AppointmentStatus.unknown   => '—',
+      };
+
+  Color get color => switch (this) {
+        AppointmentStatus.confirmed || AppointmentStatus.completed => const Color(0xFF22C55E),
+        AppointmentStatus.cancelled || AppointmentStatus.noShow    => const Color(0xFFEF4444),
+        AppointmentStatus.scheduled                                => const Color(0xFFA78BFA),
+        AppointmentStatus.unknown                                  => const Color(0xFF64748B),
+      };
+}
+
 class AppointmentModel {
   final String id;
   final String time;
@@ -33,6 +53,7 @@ class AppointmentModel {
   final String appointmentType;
   final RiskColor riskColor;
   final double? noShowProbability;
+  final AppointmentStatus status;
 
   const AppointmentModel({
     required this.id,
@@ -40,26 +61,33 @@ class AppointmentModel {
     required this.doctorName,
     required this.appointmentType,
     required this.riskColor,
+    required this.status,
     this.noShowProbability,
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> j) {
     final rc = switch (j['risk_color'] as String?) {
-      'green' => RiskColor.green,
+      'green'  => RiskColor.green,
       'orange' => RiskColor.orange,
-      'red' => RiskColor.red,
-      _ => RiskColor.unknown,
+      'red'    => RiskColor.red,
+      _        => RiskColor.unknown,
+    };
+    final st = switch ((j['status'] as String?)?.toUpperCase()) {
+      'SCHEDULED' => AppointmentStatus.scheduled,
+      'CONFIRMED' => AppointmentStatus.confirmed,
+      'CANCELLED' => AppointmentStatus.cancelled,
+      'COMPLETED' => AppointmentStatus.completed,
+      'NO_SHOW'   => AppointmentStatus.noShow,
+      _           => AppointmentStatus.unknown,
     };
     return AppointmentModel(
       id: j['appointment_uuid'] as String? ?? j['id'] as String? ?? '',
-      time:
-          j['appointment_time'] as String? ?? j['time'] as String? ?? '',
+      time: j['appointment_time'] as String? ?? j['time'] as String? ?? '',
       doctorName: j['doctor_name'] as String? ?? 'Dr. —',
-      appointmentType:
-          j['appointment_type'] as String? ?? 'Consultation',
+      appointmentType: j['appointment_type'] as String? ?? 'Consultation',
       riskColor: rc,
-      noShowProbability:
-          (j['noshow_probability'] as num?)?.toDouble(),
+      status: st,
+      noShowProbability: (j['noshow_probability'] as num?)?.toDouble(),
     );
   }
 }

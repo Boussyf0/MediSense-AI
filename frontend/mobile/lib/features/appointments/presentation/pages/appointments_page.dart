@@ -8,6 +8,7 @@ import '../../../../core/api/dio_client.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/widgets/anim/bubble_in.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/appointment_model.dart';
 import '../widgets/appointment_card.dart';
 
@@ -62,6 +63,8 @@ class _AppointmentsPageState extends ConsumerState<AppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isPatient =
+        ref.watch(authProvider).user?.role == 'patient';
     final apptAsync = ref.watch(appointmentsProvider(_selectedDate));
     final dateLabel =
         DateFormat('EEEE d MMMM', 'fr_FR').format(_selectedDate);
@@ -149,20 +152,24 @@ class _AppointmentsPageState extends ConsumerState<AppointmentsPage> {
                   return _EmptyState(onPick: _pickDate);
                 }
 
-                final low = appointments
-                    .where((a) => a.riskColor == RiskColor.green)
-                    .length;
-                final med = appointments
-                    .where((a) => a.riskColor == RiskColor.orange)
-                    .length;
-                final high = appointments
-                    .where((a) => a.riskColor == RiskColor.red)
-                    .length;
+                final summaryCard = isPatient
+                    ? _StatusSummaryCard(appointments: appointments)
+                    : _RiskSummaryCard(
+                        high: appointments
+                            .where((a) => a.riskColor == RiskColor.red)
+                            .length,
+                        med: appointments
+                            .where((a) => a.riskColor == RiskColor.orange)
+                            .length,
+                        low: appointments
+                            .where((a) => a.riskColor == RiskColor.green)
+                            .length,
+                      );
 
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 110),
                   children: [
-                    _RiskSummaryCard(high: high, med: med, low: low),
+                    summaryCard,
                     const SizedBox(height: 16),
                     ...appointments.asMap().entries.map(
                           (e) => AppointmentCard(
@@ -199,7 +206,7 @@ class _AppointmentsPageState extends ConsumerState<AppointmentsPage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(
-              '$total pat.',
+              '$total RDV',
               style: AppFonts.mono(
                 color: AppColors.textSecondary,
                 fontSize: 10,
@@ -208,6 +215,58 @@ class _AppointmentsPageState extends ConsumerState<AppointmentsPage> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _StatusSummaryCard extends StatelessWidget {
+  final List<AppointmentModel> appointments;
+  const _StatusSummaryCard({required this.appointments});
+
+  @override
+  Widget build(BuildContext context) {
+    int count(AppointmentStatus s) =>
+        appointments.where((a) => a.status == s).length;
+
+    final cells = [
+      _RiskCell(
+        n: count(AppointmentStatus.confirmed) +
+            count(AppointmentStatus.scheduled),
+        label: 'Planifié',
+        color: AppColors.aiFrom,
+        idx: 0,
+      ),
+      _RiskCell(
+        n: count(AppointmentStatus.completed),
+        label: 'Terminé',
+        color: AppColors.riskSafe,
+        idx: 1,
+      ),
+      _RiskCell(
+        n: count(AppointmentStatus.cancelled) +
+            count(AppointmentStatus.noShow),
+        label: 'Annulé',
+        color: AppColors.riskHigh,
+        idx: 2,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface1,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < cells.length; i++) ...[
+            Expanded(child: cells[i]),
+            if (i < cells.length - 1)
+              Container(width: 1, height: 56, color: AppColors.line),
+          ],
+        ],
+      ),
     );
   }
 }
