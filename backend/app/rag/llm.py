@@ -19,22 +19,30 @@ from typing import AsyncGenerator
 import httpx
 
 from app.core.config import get_settings
+from app.api.v1.endpoints.metrics import rag_requests_total
 
 logger = logging.getLogger(__name__)
 
-MEDICAL_SYSTEM_PROMPT = """Tu es MediSense, assistant medical IA specialise dans l'aide au triage de symptomes.
+MEDICAL_SYSTEM_PROMPT = """Tu es MediSense, assistant medical IA specialise dans l'aide au triage et l'education sante des patients.
 
 REGLES OBLIGATOIRES:
-1. Reponds UNIQUEMENT a partir des sources fournies dans le contexte ci-dessous.
-2. Si les sources ne contiennent pas l'information demandee, dis exactement:
-   "Je ne dispose pas d'informations fiables sur ce sujet. Veuillez consulter votre medecin."
-3. Ne JAMAIS inventer de posologie, dosage ou diagnostic.
-4. URGENCE — si le patient mentionne: douleur thoracique, difficulte respiratoire,
+1. Privilegie les sources fournies. Si elles ne couvrent pas la question, donne
+   une orientation generale prudente (hygiene de vie, signes d'alerte, quand
+   consulter) puis invite a consulter un professionnel.
+2. Ne JAMAIS inventer de posologie, dosage precis ou diagnostic. Pour toute
+   question de dosage, renvoie au medecin/pharmacien sans donner de chiffre.
+3. URGENCE — si le patient mentionne: douleur thoracique, difficulte respiratoire,
    perte de conscience, paralysie faciale, douleur intense soudaine -> reponds:
    "URGENCE: Appelez le 15 (SAMU) ou le 141 immediatement."
-5. Cite tes sources entre crochets: [Source: nom, type]
-6. Termine TOUJOURS par:
+4. Cite les sources utilisees entre crochets quand pertinentes: [Source: nom, type]
+5. Termine TOUJOURS par:
    "Ceci est une aide informative et non un diagnostic medical. Consultez un professionnel de sante."
+
+FORMAT DE REPONSE (OBLIGATOIRE):
+- Maximum 3-4 phrases courtes (hors disclaimer regle 5).
+- Pas d'introduction ("Bien sur", "En tant qu'assistant", "Selon les sources").
+- Va droit au point clinique avec un conseil concret et actionnable.
+- Pas de liste a puces sauf si la question demande explicitement une enumeration.
 
 LANGUE: {language_instruction}
 
@@ -44,10 +52,11 @@ CONTEXTE MEDICAL:
 DONNEES TEMPS REEL (MCP):
 {mcp_context}"""
 
-_MAX_CONTEXT_CHUNKS = 6
-_MAX_CHUNK_TEXT_CHARS = 900
-_MAX_MCP_TEXT_CHARS = 600
-_NUM_PREDICT = 80  # CPU inference: ~1 tok/s → ~80s; Groq/Metal: < 1s
+_MAX_CONTEXT_CHUNKS = 4
+_MAX_CHUNK_TEXT_CHARS = 600
+_MAX_MCP_TEXT_CHARS = 400
+_NUM_PREDICT = 220  # ~3 phrases + disclaimer + citation source
+_STOP_SEQUENCES = ["\n\n\n", "###", "</s>", "<|im_end|>"]
 
 
 def _clip(text: str, max_chars: int) -> str:
@@ -112,9 +121,10 @@ async def _ollama_generate(
                 "prompt": user_message,
                 "stream": False,
                 "options": {
-                    "temperature": 0.3,
+                    "temperature": 0.2,
                     "num_predict": _NUM_PREDICT,
                     "top_p": 0.9,
+                    "stop": _STOP_SEQUENCES,
                 },
             },
         )
@@ -138,9 +148,10 @@ async def _ollama_stream(
                 "prompt": user_message,
                 "stream": True,
                 "options": {
-                    "temperature": 0.3,
+                    "temperature": 0.2,
                     "num_predict": _NUM_PREDICT,
                     "top_p": 0.9,
+                    "stop": _STOP_SEQUENCES,
                 },
             },
         ) as response:
@@ -184,8 +195,8 @@ async def _groq_generate(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
-        "temperature": 0.3,
-        "max_tokens": 512,
+        "temperature": 0.2,
+        "max_tokens": 220,
         "stream": False,
     }
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -213,8 +224,8 @@ async def _groq_stream(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
-        "temperature": 0.3,
-        "max_tokens": 512,
+        "temperature": 0.2,
+        "max_tokens": 220,
         "stream": True,
     }
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -268,6 +279,8 @@ async def generate(
     system_prompt = _build_system_prompt(context_chunks, mcp_data, response_lang)
     provider = settings.LLM_PROVIDER.lower()
 
+    rag_requests_total.labels(language=response_lang, provider=provider).inc()
+
     if provider == "groq":
         return await _groq_generate(user_message, system_prompt)
     return await _ollama_generate(user_message, system_prompt)
@@ -283,6 +296,8 @@ async def generate_stream(
     settings = get_settings()
     system_prompt = _build_system_prompt(context_chunks, mcp_data, response_lang)
     provider = settings.LLM_PROVIDER.lower()
+
+    rag_requests_total.labels(language=response_lang, provider=provider).inc()
 
     if provider == "groq":
         async for token in _groq_stream(user_message, system_prompt):

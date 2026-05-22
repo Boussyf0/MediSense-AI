@@ -1,8 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/app_config.dart';
 
 const _storage = FlutterSecureStorage();
+
+/// Incremented whenever a token refresh fails and the session is cleared.
+/// Wire this to GoRouter's refreshListenable to auto-redirect to login.
+final sessionExpiredNotifier = ValueNotifier<int>(0);
 
 Dio createDio() {
   final dio = Dio(BaseOptions(
@@ -45,6 +50,7 @@ class _AuthInterceptor extends Interceptor {
       return handler.resolve(retry);
     } catch (_) {
       await _storage.deleteAll();
+      sessionExpiredNotifier.value++;
       handler.next(err);
     }
   }

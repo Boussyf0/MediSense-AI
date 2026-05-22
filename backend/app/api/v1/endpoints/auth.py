@@ -64,6 +64,21 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
             detail="Account is deactivated",
         )
 
+    # Self-heal: every patient user must have a matching Patient row, otherwise
+    # booking and IoT endpoints reject the JWT with "Patient not found". Legacy
+    # accounts created before admin.py started inserting both rows are missing
+    # this — insert it idempotently so existing accounts work end-to-end.
+    if user.role.value == "patient":
+        from app.db.models.patient import Patient
+        existing = (
+            await db.execute(
+                select(Patient).where(Patient.patient_uuid == user.user_uuid)
+            )
+        ).scalar_one_or_none()
+        if existing is None:
+            db.add(Patient(patient_uuid=user.user_uuid))
+            await db.flush()
+
     # Create token pair
     access_token = create_access_token(
         subject=str(user.user_uuid),

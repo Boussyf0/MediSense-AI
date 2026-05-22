@@ -12,6 +12,7 @@ import { IconCalendar, IconSync } from '@/components/icons';
 interface BackendAppointmentPrediction {
   appointment_uuid: string;
   patient_uuid: string;
+  patient_name?: string | null;
   scheduled_at: string;
   noshow_probability: number | null;
   risk_color: 'green' | 'orange' | 'red' | null;
@@ -30,6 +31,11 @@ function riskFromColor(color: BackendAppointmentPrediction['risk_color']): RiskL
   if (color === 'orange') return 'warn';
   if (color === 'red') return 'danger';
   return null;
+}
+
+function patientLabel(item: BackendAppointmentPrediction): string {
+  const name = (item.patient_name ?? '').trim();
+  return name ? name : `Patient ${item.patient_uuid.slice(0, 8)}`;
 }
 
 export default function DpaPage() {
@@ -112,12 +118,12 @@ export default function DpaPage() {
         }}>
           {(data ?? []).map((item) => (
             <div key={item.appointment_uuid} style={cardStyle}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <div style={{ color: 'var(--t0)', fontWeight: 600, fontSize: 13 }}>
-                  Patient {item.patient_uuid.slice(0, 8)}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div style={{ color: 'var(--t0)', fontWeight: 600, fontSize: 13 }}>
+                    {patientLabel(item)}
+                  </div>
+                  <RiskBadge level={riskFromColor(item.risk_color)} prob={item.noshow_probability ?? undefined} />
                 </div>
-                <RiskBadge level={riskFromColor(item.risk_color)} prob={item.noshow_probability ?? undefined} />
-              </div>
               <div style={{ color: 'var(--t2)', fontSize: 12.5, marginBottom: 12 }}>
                 {new Date(item.scheduled_at).toLocaleString('fr-FR')} · {item.status.toLowerCase()}
               </div>

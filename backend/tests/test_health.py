@@ -40,3 +40,14 @@ async def test_health_status_values(client):
     response = await client.get("/api/v1/health")
     data = response.json()
     assert data["status"] in ("healthy", "degraded")
+
+
+@pytest.mark.asyncio
+async def test_health_detailed_returns_snapshot(client):
+    """admin/system page consumes /health/detailed — must always return 200 with full structure."""
+    response = await client.get("/api/v1/health/detailed")
+    assert response.status_code == 200
+    data = response.json()
+    assert {"services", "models", "kafka", "tables", "env"}.issubset(data.keys())
+    assert "lstm_anomaly" in data["models"]
+    assert "brokers" in data["kafka"]

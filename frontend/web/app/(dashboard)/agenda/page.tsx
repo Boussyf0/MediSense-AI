@@ -17,6 +17,7 @@ type FeedbackValue = 'presented' | 'no_show';
 interface BackendAppointmentPrediction {
   appointment_uuid: string;
   patient_uuid: string;
+  patient_name?: string | null;
   scheduled_at: string;
   noshow_probability: number | null;
   risk_color: 'green' | 'orange' | 'red' | null;
@@ -238,11 +239,16 @@ function riskFromColor(color: BackendAppointmentPrediction['risk_color']): RiskL
   return null;
 }
 
+function patientLabel(pred: BackendAppointmentPrediction): string {
+  const name = (pred.patient_name ?? '').trim();
+  return name ? name : `Patient ${pred.patient_uuid.slice(0, 8)}`;
+}
+
 function mapPredictionToRow(pred: BackendAppointmentPrediction): AppointmentRow {
   return {
     appointment_uuid: pred.appointment_uuid,
     patient_uuid: pred.patient_uuid,
-    patient_name: `Patient ${pred.patient_uuid.slice(0, 8)}`,
+    patient_name: patientLabel(pred),
     time: formatHour(pred.scheduled_at),
     motif: pred.status.replaceAll('_', ' ').toLowerCase(),
     no_show_prob: pred.noshow_probability ?? 0,
@@ -262,9 +268,6 @@ export default function AgendaPage() {
   const isPatient = user?.role === 'patient';
 
   const [date, setDate] = useState(today());
-
-  // Patients see their own appointments — different view entirely
-  if (isPatient) return <PatientAgendaView date={date} setDate={setDate} />;
   const [toast, setToast] = useState<string | null>(null);
   const [feedbackByAppointment, setFeedbackByAppointment] = useState<Record<string, FeedbackValue>>({});
 
@@ -293,7 +296,10 @@ export default function AgendaPage() {
       showToast('SMS envoyé avec succès');
       queryClient.invalidateQueries({ queryKey: ['no-show'] });
     },
-    onError: () => showToast("Échec de l'envoi SMS"),
+    onError: (err: unknown) => {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      showToast(detail ? `Échec de l'envoi: ${detail}` : "Échec de l'envoi SMS");
+    },
   });
 
   const dispatchMutation = useMutation({
@@ -346,6 +352,10 @@ export default function AgendaPage() {
 
   const toCallOrText = counts.danger + counts.warn;
   const totalRdv = appointments.length;
+
+  // Patients see their own appointments — different view entirely.
+  // Placed after every hook call so the hooks order stays stable across renders.
+  if (isPatient) return <PatientAgendaView date={date} setDate={setDate} />;
 
   return (
     <DashPage
@@ -468,7 +478,7 @@ export default function AgendaPage() {
             onSms={() => smsMutation.mutate(apt.appointment_uuid)}
             smsPending={smsMutation.isPending && smsMutation.variables === apt.appointment_uuid}
             onFeedback={(outcome) => feedbackMutation.mutate({ appointmentUuid: apt.appointment_uuid, outcome })}
-            onOpen={() => router.push(`/patients/${apt.patient_uuid}/dpa`)}
+            onOpen={() => router.push(`/agenda/${apt.appointment_uuid}/brief`)}
           />
         ))}
       </div>

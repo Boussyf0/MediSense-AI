@@ -9,7 +9,7 @@ import '../../data/models/biometric_model.dart';
 class BiometricChart extends StatelessWidget {
   final List<BiometricPoint> points;
   final Color color;
-  final double Function(BiometricPoint) valueSelector;
+  final double? Function(BiometricPoint) valueSelector;
   const BiometricChart({
     super.key,
     required this.points,
@@ -23,8 +23,11 @@ class BiometricChart extends StatelessWidget {
 
     final spots = <FlSpot>[];
     for (var i = 0; i < points.length; i++) {
-      spots.add(FlSpot(i.toDouble(), valueSelector(points[i])));
+      final y = valueSelector(points[i]);
+      if (y == null) continue;
+      spots.add(FlSpot(i.toDouble(), y));
     }
+    if (spots.isEmpty) return const SizedBox.shrink();
 
     final ys = spots.map((s) => s.y);
     final minY = ys.reduce((a, b) => a < b ? a : b) - 2;

@@ -18,6 +18,7 @@ class UserRole(str, enum.Enum):
     SECRETARY = "secretary"
     ADMIN = "admin"
     PATIENT = "patient"
+    CAREGIVER = "caregiver"
 
 
 class User(Base):
@@ -41,6 +42,7 @@ class User(Base):
     )
     first_name: Mapped[str | None] = mapped_column(String(100))
     last_name: Mapped[str | None] = mapped_column(String(100))
+    specialty: Mapped[str | None] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

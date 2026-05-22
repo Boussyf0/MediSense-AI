@@ -18,17 +18,30 @@ from app.db.models.patient import Patient
 
 # ── lstm_anomaly_service ──────────────────────────────────────────────────
 
-def test_score_window_no_model_returns_zero():
+def test_score_window_no_model_returns_zero(monkeypatch):
     """When no .pt model file exists, score_window must return 0.0 gracefully."""
-    from app.services.lstm_anomaly_service import score_window
+    from app.services import lstm_anomaly_service
+    from app.core.config import get_settings
+
+    # Reset module cache and point LSTM_MODEL_PATH at a non-existent file.
+    monkeypatch.setattr(lstm_anomaly_service, "_model", None)
+    monkeypatch.setattr(lstm_anomaly_service, "_device", None)
+    monkeypatch.setattr(get_settings(), "LSTM_MODEL_PATH", "models/_does_not_exist.pt")
+
     vitals = [{"hr": 72, "spo2": 98, "hrv": 42, "temperature": 36.6}] * 10
-    score = score_window(vitals)
-    assert score == 0.0
+    assert lstm_anomaly_service.score_window(vitals) == 0.0
 
 
-def test_score_window_empty_vitals_returns_zero():
-    from app.services.lstm_anomaly_service import score_window
-    assert score_window([]) == 0.0
+def test_score_window_empty_vitals_returns_zero(monkeypatch):
+    """Empty vitals list should fail safely → 0.0 (no crash)."""
+    from app.services import lstm_anomaly_service
+    from app.core.config import get_settings
+
+    monkeypatch.setattr(lstm_anomaly_service, "_model", None)
+    monkeypatch.setattr(lstm_anomaly_service, "_device", None)
+    monkeypatch.setattr(get_settings(), "LSTM_MODEL_PATH", "models/_does_not_exist.pt")
+
+    assert lstm_anomaly_service.score_window([]) == 0.0
 
 
 def test_is_critical_above_threshold():
@@ -154,6 +167,54 @@ async def test_get_recent_scores_with_redis():
     assert result["patient_uuid"] == patient_uuid
     assert result["score_5m"] is None
     assert result["readings_5m"] == 0
+
+
+# ── narrative builder ─────────────────────────────────────────────────────
+
+def _ts_at(hour: int) -> float:
+    """Build a UTC epoch timestamp at the given hour-of-day for narrative tests."""
+    return datetime(2026, 5, 20, hour, 30, tzinfo=timezone.utc).timestamp()
+
+
+def test_narrative_hr_spike_evening_effort():
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 142, "spo2": 96, "hrv": 38}
+    # 5m window with wide HR spread → effort proxy fires
+    window = [
+        {"hr": 95}, {"hr": 110}, {"hr": 125}, {"hr": 138}, {"hr": 142},
+    ]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=0.4, window_readings=window, now_ts=_ts_at(20),
+    )
+    assert "142 bpm" in text
+    assert "ce soir" in text
+    assert "effort" in text
+    assert "SpO₂ 96%" in text
+
+
+def test_narrative_hypoxia_sleep_window():
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 60, "spo2": 88, "hrv": 35}
+    window = [{"hr": 58}, {"hr": 60}, {"hr": 61}, {"hr": 59}, {"hr": 60}]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=0.2, window_readings=window, now_ts=_ts_at(3),
+    )
+    assert "Hypoxie" in text
+    assert "88%" in text
+    assert "sommeil" in text
+
+
+def test_narrative_trend_tail_when_60m_elevated():
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 135, "spo2": 97, "hrv": 30}
+    window = [{"hr": 132}, {"hr": 135}, {"hr": 136}, {"hr": 138}, {"hr": 135}]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=0.75, window_readings=window, now_ts=_ts_at(14),
+    )
+    assert "tendance" in text.lower() or "heure" in text.lower()
 
 
 # ── kafka_consumer ────────────────────────────────────────────────────────

@@ -62,10 +62,45 @@ class AgentActionOut(BaseModel):
 
 # ── DPA Summary (US-41 GET response) ────────────────────────────────────────
 
+class DPAPatientCard(BaseModel):
+    """Demographic context for the DPA header. All fields nullable — the
+    Patient row may be incomplete (RGPD-minimal seed)."""
+    age: int | None = None
+    sex: str | None = None
+    chronic_conditions: list[str] = []
+
+
+class DPAPastAppointment(BaseModel):
+    """One row of past consultation context (completed or no-show)."""
+    appointment_uuid: UUID
+    scheduled_at: datetime
+    status: str
+    urgency_flag: str | None = None
+    rag_summary: str | None = None
+
+
+class DPAPastSummary(BaseModel):
+    """One row of prior clinical decisions made on this patient."""
+    summary_id: UUID
+    created_at: datetime | None = None
+    status: str
+    actions_count: int = 0
+    top_action: str | None = None    # short label of the most prominent prior action
+
+
+class DPAHistory(BaseModel):
+    """Fallback context when the 7d/30d live windows are empty —
+    surfaces older clinical signal the doctor still needs to see."""
+    past_appointments: list[DPAPastAppointment] = []
+    previous_summaries: list[DPAPastSummary] = []
+
+
 class DPASummaryOut(BaseModel):
     """Full DPA summary returned by GET /doctor/patient/{uuid}/dpa-summary."""
     summary_id: UUID
     patient_uuid: UUID
+    patient_name: str | None = None
+    patient: DPAPatientCard = Field(default_factory=DPAPatientCard)
     symptoms: list[str] = []
     iot_summary: IoTSummaryOut = Field(default_factory=IoTSummaryOut)
     recommended_actions: list[RecommendedAction] = []
@@ -75,6 +110,7 @@ class DPASummaryOut(BaseModel):
     status: str = "PENDING"     # PENDING | APPROVED | MODIFIED | REJECTED
     version: int = 1
     created_at: datetime | None = None
+    history: DPAHistory = Field(default_factory=DPAHistory)
 
     class Config:
         from_attributes = True

@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import TokenPayload, require_any_staff, require_role, require_secretary
 from app.db.models.appointment import Appointment
+from app.db.models.user import User
 from app.db.models.noshow_feedback import NoShowFeedback
 from app.db.session import get_db
 from app.services.noshow_predictor import get_risk_color
@@ -20,6 +21,7 @@ router = APIRouter(prefix="/predictions", tags=["ml"])
 class AppointmentPrediction(BaseModel):
     appointment_uuid: uuid.UUID
     patient_uuid: uuid.UUID
+    patient_name: str | None = None
     scheduled_at: datetime
     noshow_probability: float | None
     risk_color: str | None
@@ -77,6 +79,18 @@ async def get_noshow_predictions_batch(
     """
     result = await db.execute(_build_doctor_appointments_query(doctor_uuid, date))
     appointments = result.scalars().all()
+    patient_names: dict[uuid.UUID, str] = {}
+    if appointments:
+        patient_ids = {appt.patient_uuid for appt in appointments}
+        if patient_ids:
+            rows = await db.execute(
+                select(User.user_uuid, User.first_name, User.last_name, User.email)
+                .where(User.user_uuid.in_(patient_ids))
+            )
+            for user_uuid, first_name, last_name, email in rows.all():
+                label = " ".join(part for part in [first_name, last_name] if part) or email
+                if label:
+                    patient_names[user_uuid] = label
 
     if auto_send_smart_sms:
         await dispatch_smart_sms_reminders(db, appointments)
@@ -91,6 +105,7 @@ async def get_noshow_predictions_batch(
             AppointmentPrediction(
                 appointment_uuid=appt.appointment_uuid,
                 patient_uuid=appt.patient_uuid,
+                patient_name=patient_names.get(appt.patient_uuid),
                 scheduled_at=appt.scheduled_at,
                 noshow_probability=risk_probability,
                 risk_color=risk_color,

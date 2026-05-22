@@ -1,7 +1,12 @@
 services:
 
   postgres:
-    image: postgres:16-alpine
+    # TimescaleDB extends PostgreSQL 16 — drop-in replacement for the regular image.
+    # Hypertables for biometric_reading and biometric_anomalies are created in
+    # alembic migration 20260622_000000_sprint7_timescale_hypertables.py
+    # (the migration is a no-op when the timescaledb extension is unavailable,
+    # so plain Postgres deployments — Neon free tier, etc. — continue to work).
+    image: timescale/timescaledb:2.15.0-pg16
     container_name: medisense_postgres
     restart: unless-stopped
     environment:
@@ -20,6 +25,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: medisense_postgres_exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    networks:
+      - medisense_network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   redis:
     image: redis:7-alpine
@@ -66,6 +83,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+      # Lifespan probes Qdrant + LLM + warms LSTM — give it room before the first check.
+      start_period: 45s
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -159,6 +178,26 @@ services:
       timeout: 10s
       retries: 5
 
+  # ── IoT Simulator (Sprint 7) ──────────────────────────────────────────────
+  # Replaces the missing Samsung Watch BLE gateway in dev/demo environments.
+  # Publishes synthetic biometric readings to KAFKA_TOPIC_IOT at SIM_RATE_HZ.
+  iot-simulator:
+    build:
+      context: ./backend/services/iot_simulator
+    container_name: medisense_iot_simulator
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_TOPIC_IOT: ${KAFKA_TOPIC_IOT:-iot-vitals}
+      SIM_RATE_HZ: "10"
+      SIM_ANOMALY_RATIO: "0.05"
+      SIM_PATIENT_UUIDS: ${SIM_PATIENT_UUIDS:-}
+    networks:
+      - medisense_network
+
   # ── Airflow (Sprint 8 — US-34) ────────────────────────────────────────────
   # Weekly retraining DAG: medisense_retrain_noshow_weekly
   # Access UI at http://localhost:8080 (admin / medisense2026)
@@ -168,7 +207,9 @@ services:
     restart: unless-stopped
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+      # Airflow has its own database — sharing the app DB causes alembic_version
+      # collisions (airflow's alembic mistakes the app's revision for its own).
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/airflow
       AIRFLOW__CORE__FERNET_KEY: ""
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
@@ -213,6 +254,79 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=15d'
 
+  # ── MLflow tracking server (Sprint 8) ────────────────────────────────────
+  # Reachable at http://localhost:5500. Stores metadata in the MediSense
+  # Postgres (mlflow schema, auto-created on first connection) and artefacts
+  # in MinIO so notebooks/training scripts can log models and registry runs.
+  minio:
+    image: minio/minio:latest
+    container_name: medisense_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - medisense_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  minio-bootstrap:
+    image: minio/mc:latest
+    container_name: medisense_minio_bootstrap
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - medisense_network
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    entrypoint: >
+      /bin/sh -c "
+        sleep 3 &&
+        mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
+        mc mb -p local/mlflow-artifacts || true &&
+        echo 'minio bootstrap done'
+      "
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.18.0
+    container_name: medisense_mlflow
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    # SQLite backend keeps the official mlflow image dependency-free (no
+    # psycopg2 bundled). Metadata persists in the mlflow_data volume; model
+    # artefacts go to MinIO. For multi-user prod, swap to Postgres + a
+    # custom image that ships psycopg2.
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/store/mlflow.db
+      --default-artifact-root s3://mlflow-artifacts/
+      --serve-artifacts
+    volumes:
+      - mlflow_data:/mlflow/store
+    ports:
+      - "5500:5000"
+    networks:
+      - medisense_network
+
   grafana:
     image: grafana/grafana:10.4.2
     container_name: medisense_grafana
@@ -240,6 +354,8 @@ volumes:
   prometheus_data:
   grafana_data:
   airflow_logs:
+  minio_data:
+  mlflow_data:
 
 networks:
   medisense_network:

@@ -18,7 +18,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
-from sqlalchemy import select, func, text
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.orchestrator import AgentRoute, run_agent_flow
@@ -31,8 +31,9 @@ from app.core.conversation_cache import (
     set_conversation_meta,
 )
 from app.core.dependencies import TokenPayload, require_patient
-from app.db.models.conversation import Conversation, Message
+from app.db.models.conversation import Conversation
 from app.db.models.patient import Patient
+from app.api.v1.endpoints.metrics import active_conversations
 from app.schemas.chat import (
     ChatRequest,
     ChatResponse,
@@ -59,84 +60,88 @@ async def send_message(
     - Otherwise, creates a new conversation.
     - For token-by-token streaming use `POST /chat/stream` instead.
     """
-    patient_id = uuid.UUID(current_user.sub)
-    await _ensure_patient_profile_exists(db, patient_id)
+    active_conversations.inc()
+    try:
+        patient_id = uuid.UUID(current_user.sub)
+        await _ensure_patient_profile_exists(db, patient_id)
 
-    # Resolve or create conversation
-    if body.conversation_id:
-        conv = await _get_conversation(db, body.conversation_id, patient_id)
-    else:
-        conv = Conversation(patient_id=patient_id)
-        db.add(conv)
-        await db.flush()
+        # Resolve or create conversation
+        if body.conversation_id:
+            conv = await _get_conversation(db, body.conversation_id, patient_id)
+        else:
+            conv = Conversation(patient_id=patient_id)
+            db.add(conv)
+            await db.flush()
 
-    # Non-streaming path
-    result = await run(
-        body.message,
-        patient_id=str(patient_id),
-        db=db,
-    )
-    agent_result = await run_agent_flow(
-        query_fr=result.query_fr,
-        patient_id=str(patient_id),
-        conversation_id=str(conv.id),
-        iot_anomalies=result.iot_context.anomalies if result.iot_context else [],
-        is_urgent_from_rag=result.is_urgent,
-        db=db,
-    )
-    final_reply = _merge_agent_message(
-        result.reply,
-        agent_result.chat_message if agent_result.route != AgentRoute.INFO else "",
-    )
-    final_is_urgent = result.is_urgent or agent_result.route == AgentRoute.ESCALATE
+        # Non-streaming path
+        result = await run(
+            body.message,
+            patient_id=str(patient_id),
+            db=db,
+        )
+        agent_result = await run_agent_flow(
+            query_fr=result.query_fr,
+            patient_id=str(patient_id),
+            conversation_id=str(conv.id),
+            iot_anomalies=result.iot_context.anomalies if result.iot_context else [],
+            is_urgent_from_rag=result.is_urgent,
+            db=db,
+        )
+        final_reply = _merge_agent_message(
+            result.reply,
+            agent_result.chat_message if agent_result.route != AgentRoute.INFO else "",
+        )
+        final_is_urgent = result.is_urgent or agent_result.route == AgentRoute.ESCALATE
 
-    # Auto-generate title from first message
-    if not conv.title:
-        conv.title = body.message[:80]
+        # Auto-generate title from first message
+        if not conv.title:
+            conv.title = body.message[:80]
 
-    conv.language = result.language
-    await set_conversation_meta(str(conv.id), str(patient_id), result.language)
-    sources_out = [SourceOut(**s) for s in result.sources]
+        conv.language = result.language
+        await set_conversation_meta(str(conv.id), str(patient_id), result.language)
+        sources_out = [SourceOut(**s) for s in result.sources]
 
-    # Persist user message (encrypted)
-    user_msg_id, user_created_at = await _save_message(db, conv.id, "user", body.message)
-    await push_turn(
-        conversation_id=str(conv.id),
-        role="user",
-        content=body.message,
-        message_id=str(user_msg_id),
-        created_at=user_created_at,
-    )
+        # Persist user message (encrypted)
+        user_msg_id, user_created_at = await _save_message(db, conv.id, "user", body.message)
+        await push_turn(
+            conversation_id=str(conv.id),
+            role="user",
+            content=body.message,
+            message_id=str(user_msg_id),
+            created_at=user_created_at,
+        )
 
-    # Persist assistant reply (encrypted)
-    assistant_msg_id, assistant_created_at = await _save_message(
-        db,
-        conv.id,
-        "assistant",
-        final_reply,
-        sources=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
-        confidence=result.confidence,
-    )
-    await push_turn(
-        conversation_id=str(conv.id),
-        role="assistant",
-        content=final_reply,
-        context_chunks=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
-        confidence=result.confidence,
-        message_id=str(assistant_msg_id),
-        created_at=assistant_created_at,
-    )
+        # Persist assistant reply (encrypted)
+        assistant_msg_id, assistant_created_at = await _save_message(
+            db,
+            conv.id,
+            "assistant",
+            final_reply,
+            sources=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
+            confidence=result.confidence,
+        )
+        await push_turn(
+            conversation_id=str(conv.id),
+            role="assistant",
+            content=final_reply,
+            context_chunks=[{"source": s.source, "type": s.type, "name": s.name, "score": s.score} for s in sources_out],
+            confidence=result.confidence,
+            message_id=str(assistant_msg_id),
+            created_at=assistant_created_at,
+        )
 
-    await db.commit()
+        await db.commit()
 
-    return ChatResponse(
-        reply=final_reply,
-        sources=sources_out,
-        conversation_id=conv.id,
-        language=result.language,
-        confidence=result.confidence,
-        is_urgent=final_is_urgent,
-    )
+        return ChatResponse(
+            reply=final_reply,
+            sources=sources_out,
+            conversation_id=conv.id,
+            language=result.language,
+            confidence=result.confidence,
+            is_urgent=final_is_urgent,
+        )
+    finally:
+        active_conversations.dec()
 
 
 @router.post(
@@ -183,7 +188,7 @@ async def send_message_stream(
     if body.conversation_id:
         conv = await _get_conversation(db, body.conversation_id, patient_id)
     else:
-        conv = Conversation(patient_id=patient_id)
+        conv = Conversation(patient_id=patient_id, title=body.message[:80])
         db.add(conv)
         await db.flush()
     await set_conversation_meta(str(conv.id), str(patient_id), conv.language or "fr")
@@ -205,27 +210,54 @@ async def list_conversations(
     limit: int = Query(default=20, le=100),
     offset: int = Query(default=0, ge=0),
 ):
-    """List the patient's conversations (newest first)."""
+    """List the patient's conversations (newest activity first)."""
     patient_id = uuid.UUID(current_user.sub)
 
-    stmt = (
-        select(
-            Conversation.id,
-            Conversation.title,
-            Conversation.language,
-            Conversation.created_at,
-            func.count(Message.id).label("message_count"),
-        )
-        .outerjoin(Message)
-        .where(Conversation.patient_id == patient_id)
-        .group_by(Conversation.id)
-        .order_by(Conversation.created_at.desc())
-        .limit(limit)
-        .offset(offset)
-    )
+    stmt = text("""
+        SELECT
+            c.id,
+            c.title,
+            c.language,
+            c.created_at,
+            COALESCE(m_stats.cnt, 0) AS message_count,
+            m_last.created_at AS last_message_at,
+            CASE
+                WHEN m_last.content_encrypted IS NOT NULL
+                THEN pgp_sym_decrypt(m_last.content_encrypted, :key)
+                ELSE NULL
+            END AS preview
+        FROM conversations c
+        LEFT JOIN LATERAL (
+            SELECT COUNT(*) AS cnt FROM messages WHERE conversation_id = c.id
+        ) m_stats ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT content_encrypted, created_at
+            FROM messages
+            WHERE conversation_id = c.id
+            ORDER BY created_at DESC
+            LIMIT 1
+        ) m_last ON TRUE
+        WHERE c.patient_id = :patient_id
+        ORDER BY COALESCE(m_last.created_at, c.created_at) DESC
+        LIMIT :limit OFFSET :offset
+    """)
 
-    result = await db.execute(stmt)
+    result = await db.execute(
+        stmt,
+        {
+            "patient_id": patient_id,
+            "key": settings.PGCRYPTO_KEY,
+            "limit": limit,
+            "offset": offset,
+        },
+    )
     rows = result.all()
+
+    def _truncate(text_val: str | None, max_len: int = 140) -> str | None:
+        if not text_val:
+            return None
+        cleaned = text_val.strip().replace("\n", " ")
+        return cleaned if len(cleaned) <= max_len else cleaned[: max_len - 1] + "…"
 
     return [
         ConversationOut(
@@ -234,6 +266,8 @@ async def list_conversations(
             language=row.language,
             created_at=row.created_at.isoformat(),
             message_count=row.message_count,
+            last_message_at=row.last_message_at.isoformat() if row.last_message_at else None,
+            preview=_truncate(row.preview),
         )
         for row in rows
     ]

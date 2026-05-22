@@ -1,0 +1,89 @@
+{
+  "annotations": {"list": []},
+  "description": "MediSense AI — IoT pipeline: Kafka, anomalies, WS, FCM",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "MediSense — IoT & Real-time",
+  "uid": "medisense-iot",
+  "tags": ["medisense", "iot"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "templating": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Kafka consumer lag (msgs)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum by (topic, partition) (medisense_kafka_consumer_lag)",
+          "legendFormat": "{{topic}}/{{partition}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Anomalies detected / min by severity",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum by (severity) (rate(medisense_iot_anomalies_total[1m])) * 60",
+          "legendFormat": "{{severity}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Active WS connections",
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum by (role) (medisense_ws_active_connections)", "legendFormat": "{{role}}", "refId": "A"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "FCM send success rate (last hour)",
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum(rate(medisense_fcm_sends_total{outcome=\"success\"}[1h])) / clamp_min(sum(rate(medisense_fcm_sends_total[1h])), 0.0001)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "orange", "value": 0.8},
+            {"color": "green", "value": 0.95}
+          ]}
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Anomalies (24h)",
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(increase(medisense_iot_anomalies_total[24h]))", "refId": "A"}
+      ]
+    }
+  ]
+}

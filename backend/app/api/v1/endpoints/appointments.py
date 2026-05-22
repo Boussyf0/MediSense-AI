@@ -18,11 +18,18 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import TokenPayload, get_current_user
+from app.core.pricing import price_for_duration
 from app.db.models.appointment import Appointment
 from app.db.models.patient import Patient
 from app.db.models.user import User, UserRole
 from app.db.session import get_db
-from app.services.noshow_predictor import get_risk_color
+from app.services.noshow_predictor import (
+    build_appointment_features,
+    get_risk_color,
+    noshow_predictor,
+    FeatureValidationError,
+    ModelNotReadyError,
+)
 
 router = APIRouter(prefix="/appointments", tags=["appointments"])
 
@@ -33,6 +40,9 @@ class AppointmentItem(BaseModel):
     appointment_time: str
     appointment_type: str
     doctor_name: str
+    doctor_specialty: str | None
+    duration_minutes: int
+    price_mad: int
     status: str
     noshow_probability: float | None
     risk_color: str | None
@@ -100,6 +110,9 @@ async def list_my_appointments(
                 appointment_time=appt.scheduled_at.strftime("%H:%M"),
                 appointment_type="Consultation",
                 doctor_name=f"Dr. {doctor_label}",
+                doctor_specialty=doctor.specialty,
+                duration_minutes=appt.duration_minutes,
+                price_mad=price_for_duration(appt.duration_minutes),
                 status=appt.status,
                 noshow_probability=appt.noshow_probability,
                 risk_color=(
@@ -204,6 +217,32 @@ async def create_appointment(
     db.add(appt)
     await db.flush()
 
+    # Best-effort no-show prediction so the doctor's agenda summary cards
+    # reflect real risk levels immediately. Booking must succeed even if
+    # the model artefact is missing or the patient has too few features.
+    try:
+        from sqlalchemy import func as sa_func
+        previous_noshows = (
+            await db.execute(
+                select(sa_func.count(Appointment.appointment_uuid)).where(
+                    Appointment.patient_uuid == body.patient_uuid,
+                    Appointment.status == "NO_SHOW",
+                )
+            )
+        ).scalar_one()
+        features = build_appointment_features(
+            patient=patient,
+            appointment=appt,
+            previous_noshows=previous_noshows or 0,
+            now=datetime.now(timezone.utc),
+        )
+        prediction = noshow_predictor.predict(features)
+        appt.noshow_probability = prediction["noshow_probability"]
+        appt.noshow_model_ver = prediction["model_version"]
+        await db.flush()
+    except (ModelNotReadyError, FeatureValidationError):
+        pass
+
     doctor_label = " ".join(
         part for part in [doctor.first_name, doctor.last_name] if part
     ) or doctor.email
@@ -216,4 +255,70 @@ async def create_appointment(
         duration_minutes=appt.duration_minutes,
         status=appt.status,
         doctor_name=f"Dr. {doctor_label}",
+    )
+
+
+@router.patch(
+    "/{appointment_uuid}/cancel",
+    response_model=AppointmentItem,
+    summary="Cancel an appointment (patient cancels own; staff cancels any)",
+)
+async def cancel_appointment(
+    appointment_uuid: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+):
+    """
+    Patients can cancel only their own scheduled/confirmed appointments;
+    doctors/secretaries/admins can cancel any.
+
+    Terminal states (CANCELLED/COMPLETED/NO_SHOW) reject with 409.
+    """
+    caller_uuid = uuid.UUID(current_user.sub)
+
+    row = (
+        await db.execute(
+            select(Appointment, User)
+            .join(User, User.user_uuid == Appointment.doctor_uuid)
+            .where(Appointment.appointment_uuid == appointment_uuid)
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Appointment not found",
+        )
+    appt, doctor = row
+
+    if current_user.role == "patient" and appt.patient_uuid != caller_uuid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Patients can only cancel their own appointments",
+        )
+
+    if appt.status.upper() in {"CANCELLED", "COMPLETED", "NO_SHOW"}:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Appointment is already {appt.status}",
+        )
+
+    appt.status = "CANCELLED"
+    await db.flush()
+
+    doctor_label = " ".join(
+        part for part in [doctor.first_name, doctor.last_name] if part
+    ) or doctor.email
+
+    return AppointmentItem(
+        appointment_uuid=appt.appointment_uuid,
+        scheduled_at=appt.scheduled_at,
+        appointment_time=appt.scheduled_at.strftime("%H:%M"),
+        appointment_type="Consultation",
+        doctor_name=f"Dr. {doctor_label}",
+        doctor_specialty=doctor.specialty,
+        duration_minutes=appt.duration_minutes,
+        price_mad=price_for_duration(appt.duration_minutes),
+        status=appt.status,
+        noshow_probability=appt.noshow_probability,
+        risk_color=None,
     )

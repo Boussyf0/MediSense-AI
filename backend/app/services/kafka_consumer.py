@@ -26,6 +26,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app.api.v1.endpoints.metrics import kafka_consumer_lag
 from app.core.config import get_settings
 from app.db.models.biometric_reading import BiometricReading
 from app.db.session import AsyncSessionLocal
@@ -37,7 +38,11 @@ _consumer_task: asyncio.Task | None = None  # singleton reference
 
 
 async def _persist_reading(payload: dict) -> None:
-    """Insert one BiometricReading row from a decoded Kafka message."""
+    """Insert one BiometricReading row from a decoded Kafka message.
+
+    Background task — no request middleware → must commit explicitly,
+    otherwise the session context manager rolls back on exit.
+    """
     async with AsyncSessionLocal() as db:
         reading = BiometricReading(
             patient_uuid=uuid.UUID(payload["patient_uuid"]),
@@ -47,7 +52,7 @@ async def _persist_reading(payload: dict) -> None:
             hrv=int(payload["hrv"]),
         )
         db.add(reading)
-        await db.flush()
+        await db.commit()
 
 
 async def _buffer_payload(payload: dict) -> None:
@@ -111,6 +116,21 @@ async def _kafka_consumer_loop() -> None:  # pragma: no cover
             except Exception as exc:
                 logger.error("Failed to persist IoT reading: %s", exc)
                 await _buffer_payload(msg.value)
+
+            # Report consumer lag per (topic, partition):
+            #   lag = end_offset - current_position
+            # Cheap (broker memory lookup), updated on every message.
+            try:
+                assigned = list(consumer.assignment())
+                end_offsets = await consumer.end_offsets(assigned)
+                for tp, end_off in end_offsets.items():
+                    pos = await consumer.position(tp)
+                    kafka_consumer_lag.labels(
+                        topic=tp.topic,
+                        partition=str(tp.partition),
+                    ).set(max(0, end_off - pos))
+            except Exception:
+                pass
 
             drain_counter += 1
             if drain_counter % 300 == 0:  # drain every ~5 min at 1 msg/s

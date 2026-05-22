@@ -1,0 +1,80 @@
+{
+  "annotations": {"list": []},
+  "description": "MediSense AI — RAG retrieval, rerank, LLM, fallback rate",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "MediSense — RAG",
+  "uid": "medisense-rag",
+  "tags": ["medisense", "rag"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "templating": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "RAG retrieval p95 (s) by stage",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (stage, le) (rate(medisense_rag_retrieval_latency_seconds_bucket[5m])))",
+          "legendFormat": "{{stage}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "RAG requests / min by language",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum by (language) (rate(medisense_rag_requests_total[1m])) * 60",
+          "legendFormat": "{{language}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Fallback rate (last hour)",
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum(rate(medisense_rag_fallback_total[1h])) / clamp_min(sum(rate(medisense_rag_requests_total[1h])), 0.0001)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "orange", "value": 0.05},
+            {"color": "red", "value": 0.2}
+          ]}
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Fallbacks by reason",
+      "gridPos": {"h": 6, "w": 16, "x": 8, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum by (reason) (rate(medisense_rag_fallback_total[5m]))", "legendFormat": "{{reason}}", "refId": "A"}
+      ]
+    }
+  ]
+}

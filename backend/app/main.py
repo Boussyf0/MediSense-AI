@@ -10,10 +10,12 @@ from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redi
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+import time
 
 from app.core.config import get_settings
 from app.db.session import engine
 from app.api.v1.router import api_router
+from app.api.v1.endpoints.metrics import http_requests_total, http_request_duration_seconds
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -52,7 +54,37 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠ LLM provider check failed: {e}")
 
+    # Prometheus metric seeding — initialise label combinations to zero so
+    # Grafana panels render "0" rather than "No data" out of the box.
+    try:
+        from app.api.v1.endpoints.metrics import seed_metrics, model_age_seconds
+        seed_metrics()
+        from pathlib import Path
+        import os, time as _t
+        lstm_path = Path(settings.LSTM_MODEL_PATH)
+        if lstm_path.exists():
+            age = _t.time() - os.path.getmtime(lstm_path)
+            model_age_seconds.labels(model="lstm_anomaly").set(age)
+        print("✓ Prometheus metrics seeded")
+    except Exception as e:
+        print(f"⚠ Metric seeding failed: {e}")
+
+    # Kafka IoT consumer — persists iot-vitals messages into biometric_reading
+    try:
+        from app.services.kafka_consumer import start_kafka_consumer, stop_kafka_consumer
+        await start_kafka_consumer()
+        print("✓ IoT Kafka consumer task scheduled")
+    except Exception as e:
+        print(f"⚠ IoT Kafka consumer failed to start: {e}")
+        stop_kafka_consumer = None  # type: ignore[assignment]
+
     yield
+
+    if stop_kafka_consumer is not None:
+        try:
+            await stop_kafka_consumer()
+        except Exception as e:
+            print(f"⚠ IoT Kafka consumer shutdown error: {e}")
 
     await engine.dispose()
     print("✓ Database connections closed")
@@ -88,6 +120,38 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+
+# ── Prometheus Middleware ─────────────────────────────────
+@app.middleware("http")
+async def prometheus_middleware(request: Request, call_next):
+    start_time = time.time()
+    
+    # Skip metrics endpoint to avoid noise
+    if request.url.path == f"{settings.API_V1_PREFIX}/metrics":
+        return await call_next(request)
+
+    response = await call_next(request)
+    
+    duration = time.time() - start_time
+    
+    # We use request.scope.get("route") to get the generic path (e.g. /patients/{uuid})
+    # instead of the specific path (e.g. /patients/123) to avoid label cardinality explosion.
+    route = request.scope.get("route")
+    path = route.path if route else request.url.path
+    
+    http_requests_total.labels(
+        method=request.method,
+        endpoint=path,
+        status_code=response.status_code
+    ).inc()
+    
+    http_request_duration_seconds.labels(
+        method=request.method,
+        endpoint=path
+    ).observe(duration)
+    
+    return response
 
 
 # ── Global exception handler — ensures CORS headers on 500 ───────────────────

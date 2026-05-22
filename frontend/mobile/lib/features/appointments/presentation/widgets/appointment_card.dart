@@ -7,23 +7,23 @@ import '../../../../core/widgets/anim/bubble_in.dart';
 import '../../data/models/appointment_model.dart';
 
 class _StatusChip extends StatelessWidget {
-  final AppointmentStatus status;
-  const _StatusChip(this.status);
+  final Color color;
+  final String label;
+  const _StatusChip({required this.color, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    final c = status.color;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: c.withValues(alpha: 0.30)),
+        border: Border.all(color: color.withValues(alpha: 0.30)),
       ),
       child: Text(
-        status.label,
+        label,
         style: AppFonts.body(
-          color: c,
+          color: color,
           fontSize: 11,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.1,
@@ -33,15 +33,42 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-/// Risk-coded appointment card — glowing dot + time column, name/age,
-/// doctor line, reason, status badge + risk chip. Mirrors `appointments.jsx >
-/// ApptCard`.
+class _InfoPill extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _InfoPill({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: AppColors.textMuted),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: AppFonts.body(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Risk-coded appointment card — full details for patients (date, duration,
+/// specialty, price) and the same density for staff. Auto-derives "Terminé"
+/// when the visit window has elapsed.
 class AppointmentCard extends StatelessWidget {
   final AppointmentModel appointment;
   final int index;
   final String? patientName;
   final int? patientAge;
   final String? reason;
+  final bool isPatientView;
+  final VoidCallback? onTap;
 
   const AppointmentCard({
     super.key,
@@ -50,6 +77,8 @@ class AppointmentCard extends StatelessWidget {
     this.patientName,
     this.patientAge,
     this.reason,
+    this.isPatientView = false,
+    this.onTap,
   });
 
   String _formatTime(String raw) {
@@ -68,6 +97,17 @@ class AppointmentCard extends StatelessWidget {
         RiskColor.unknown => 'Non calculé',
       };
 
+  ({Color color, String label}) _resolvedStatus() {
+    final s = appointment.status;
+    if (s == AppointmentStatus.completed) {
+      return (color: s.color, label: 'Terminé par le docteur');
+    }
+    if (appointment.isElapsedButOpen) {
+      return (color: const Color(0xFF22C55E), label: 'Terminé');
+    }
+    return (color: s.color, label: s.label);
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = appointment.riskColor.color;
@@ -76,10 +116,17 @@ class AppointmentCard extends StatelessWidget {
         : null;
     final name = patientName ?? appointment.doctorName;
     final reasonText = reason ?? appointment.appointmentType;
+    final dateLabel = appointment.scheduledAt != null
+        ? DateFormat('EEE d MMM', 'fr_FR').format(appointment.scheduledAt!)
+        : null;
+    final resolved = _resolvedStatus();
 
     return BubbleIn(
       delay: Duration(milliseconds: 40 * index),
-      child: Container(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
         decoration: BoxDecoration(
@@ -121,6 +168,17 @@ class AppointmentCard extends StatelessWidget {
                       letterSpacing: 0.4,
                     ),
                   ),
+                  if (dateLabel != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      dateLabel,
+                      style: AppFonts.mono(
+                        color: AppColors.textMuted,
+                        fontSize: 9,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -154,14 +212,27 @@ class AppointmentCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    appointment.doctorName,
-                    style: AppFonts.body(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
+                  if (isPatientView && appointment.doctorSpecialty != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      appointment.doctorSpecialty!,
+                      style: AppFonts.body(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                  ],
+                  if (!isPatientView) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      appointment.doctorName,
+                      style: AppFonts.body(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Text(
                     reasonText,
@@ -171,14 +242,35 @@ class AppointmentCard extends StatelessWidget {
                       height: 1.4,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  // Duration + price line — always shown so patients know
+                  // how long the slot is and how much it costs.
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 4,
+                    children: [
+                      _InfoPill(
+                        icon: Icons.schedule_rounded,
+                        text: '${appointment.durationMinutes} min',
+                      ),
+                      if (appointment.priceMad > 0)
+                        _InfoPill(
+                          icon: Icons.payments_outlined,
+                          text: '${appointment.priceMad} MAD',
+                        ),
+                    ],
+                  ),
                   const SizedBox(height: 10),
-                  // Status + risk chips row
+                  // Status chip; risk chip is hidden in patient view
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      _StatusChip(appointment.status),
-                      Container(
+                      _StatusChip(
+                        color: resolved.color,
+                        label: resolved.label,
+                      ),
+                      if (!isPatientView) Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -235,6 +327,7 @@ class AppointmentCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

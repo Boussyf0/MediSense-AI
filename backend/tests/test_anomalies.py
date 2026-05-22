@@ -1,13 +1,17 @@
 """
-Tests for POST /api/v1/anomalies/detect and GET /api/v1/anomalies/recent/{uuid}.
+Tests for POST /api/v1/anomalies/detect, GET /api/v1/anomalies/recent/{uuid},
+and GET /api/v1/anomalies/summary.
 Coverage targets: anomalies.py endpoint + anomaly_detector service + lstm_anomaly_service unit paths.
 """
 import uuid
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from app.core.security import create_access_token
+from app.db.models.biometric_reading import BiometricReading
+from app.db.models.patient import Patient
 
 
 def doctor_headers() -> dict[str, str]:
@@ -160,3 +164,74 @@ async def test_recent_returns_scores(client):
     assert data["patient_uuid"] == patient_uuid
     assert data["score_5m"] == pytest.approx(0.12)
     assert data["alert_critical"] is False
+
+
+# ── GET /anomalies/summary ────────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_summary_no_auth_403(client):
+    r = await client.get("/api/v1/anomalies/summary")
+    assert r.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_summary_doctor_role_403(client):
+    r = await client.get(
+        "/api/v1/anomalies/summary",
+        headers=doctor_headers(),
+    )
+    assert r.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_summary_no_data_returns_friendly_message(client, test_db):
+    patient_uuid = uuid.uuid4()
+    test_db.add(Patient(patient_uuid=patient_uuid, consent_iot=True))
+    await test_db.flush()
+    token = create_access_token(subject=str(patient_uuid), role="patient")
+
+    r = await client.get(
+        "/api/v1/anomalies/summary",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["sample_count"] == 0
+    assert data["hrv_trend_pct"] is None
+    assert "Synchronisez" in data["summary"]
+
+
+@pytest.mark.asyncio
+async def test_summary_with_readings_computes_trend(client, test_db):
+    patient_uuid = uuid.uuid4()
+    test_db.add(Patient(patient_uuid=patient_uuid, consent_iot=True))
+    await test_db.flush()
+
+    now = datetime.now(timezone.utc)
+    # Prior 6 days: high HRV ~50; last 24h: low HRV ~30 → trend down ~-40%
+    for i in range(48):
+        test_db.add(BiometricReading(
+            patient_uuid=patient_uuid,
+            ts=now - timedelta(hours=24 + i),
+            hr=72, spo2=98, hrv=50,
+        ))
+    for i in range(12):
+        test_db.add(BiometricReading(
+            patient_uuid=patient_uuid,
+            ts=now - timedelta(hours=i),
+            hr=72, spo2=98, hrv=30,
+        ))
+    await test_db.flush()
+
+    token = create_access_token(subject=str(patient_uuid), role="patient")
+    r = await client.get(
+        "/api/v1/anomalies/summary",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["sample_count"] == 60
+    assert data["hrv_trend_pct"] is not None
+    assert data["hrv_trend_pct"] < -10
+    assert "HRV" in data["summary"]

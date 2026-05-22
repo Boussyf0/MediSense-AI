@@ -10,17 +10,33 @@ import '../../../../core/theme/app_fonts.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/doctor_model.dart';
 
-final _doctorsProvider = FutureProvider<List<DoctorModel>>((ref) async {
+final _doctorsProvider = FutureProvider.autoDispose<List<DoctorModel>>((ref) async {
+  final auth = ref.watch(authProvider);
+  if (auth.user == null) return <DoctorModel>[];
+
   final dio = createDio();
-  final res = await dio.get('/doctors');
-  final list = res.data as List;
-  return list
-      .map((j) => DoctorModel.fromJson(j as Map<String, dynamic>))
-      .toList();
+  try {
+    final res = await dio.get('/doctors');
+    final list = res.data as List;
+    return list
+        .map((j) => DoctorModel.fromJson(j as Map<String, dynamic>))
+        .toList();
+  } on DioException catch (e) {
+    final status = e.response?.statusCode;
+    if (status == 401 || status == 403) {
+      throw Exception('Session expirée — reconnectez-vous');
+    }
+    if (e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout) {
+      throw Exception('Serveur injoignable — vérifiez votre connexion');
+    }
+    throw Exception('Erreur ${status ?? "réseau"} — réessayez');
+  }
 });
 
 class BookingPage extends ConsumerStatefulWidget {
-  const BookingPage({super.key});
+  final DoctorModel? preselectedDoctor;
+  const BookingPage({super.key, this.preselectedDoctor});
 
   @override
   ConsumerState<BookingPage> createState() => _BookingPageState();
@@ -37,6 +53,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   @override
   void initState() {
     super.initState();
+    _doctor = widget.preselectedDoctor;
     // Hydrate auth user if we landed here without a populated provider
     // (e.g. hot reload, deep link, warm restart bypassing splash).
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -178,7 +195,30 @@ class _BookingPageState extends ConsumerState<BookingPage> {
             const SizedBox(height: 8),
             doctorsAsync.when(
               loading: () => _skeletonField(),
-              error: (_, __) => _errorField('Impossible de charger les docteurs'),
+              error: (e, _) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _errorField(
+                    e is Exception
+                        ? e.toString().replaceFirst('Exception: ', '')
+                        : 'Impossible de charger les docteurs',
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => ref.invalidate(_doctorsProvider),
+                    child: Center(
+                      child: Text(
+                        'Réessayer',
+                        style: AppFonts.body(
+                          color: AppColors.aiFrom,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               data: (doctors) {
                 if (doctors.isEmpty) {
                   return _errorField('Aucun docteur disponible');

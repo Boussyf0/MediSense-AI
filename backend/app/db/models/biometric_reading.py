@@ -22,7 +22,7 @@ class BiometricReading(Base):
     ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     hr: Mapped[int] = mapped_column(Integer, nullable=False)
     spo2: Mapped[int] = mapped_column(Integer, nullable=False)
-    hrv: Mapped[int] = mapped_column(Integer, nullable=False)
+    hrv: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

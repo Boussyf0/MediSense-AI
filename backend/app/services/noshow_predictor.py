@@ -9,6 +9,11 @@ import joblib
 import numpy as np
 import pandas as pd
 
+from app.api.v1.endpoints.metrics import (
+    noshow_predictions_total,
+    prediction_latency_seconds,
+)
+
 logger = logging.getLogger(__name__)
 
 FEATURE_COLUMNS = [
@@ -43,6 +48,42 @@ def get_risk_color(probability: float) -> str:
     if probability >= ORANGE_THRESHOLD:
         return "orange"
     return "green"
+
+
+def build_appointment_features(
+    *,
+    patient,  # app.db.models.patient.Patient
+    appointment,  # app.db.models.appointment.Appointment
+    previous_noshows: int,
+    now,  # datetime in UTC
+    default_distance_km: float = 5.0,
+    default_weather_score: float = 0.5,
+) -> Dict[str, Any]:
+    """
+    Compose the FEATURE_COLUMNS dict for the no-show model from DB state.
+
+    Patient.distance_to_clinic and weather_score aren't stored — sensible
+    defaults are used so a prediction can always be made at booking time.
+    Once those columns/feeds exist they replace the defaults.
+    """
+    birth_year = patient.birth_year or (now.year - 35)
+    age = max(0, min(120, now.year - birth_year))
+    sex = (patient.sex or "M").upper()
+    if sex not in ("M", "F"):
+        sex = "M"
+    chronic_count = len(patient.chronic_conditions or [])
+    days_since_booking = max(0, (appointment.scheduled_at - now).days)
+    return {
+        "age": age,
+        "sex": sex,
+        "distance_to_clinic": default_distance_km,
+        "weather_score": default_weather_score,
+        "previous_noshows": previous_noshows,
+        "days_since_booking": days_since_booking,
+        "day_of_week": appointment.scheduled_at.weekday(),
+        "appointment_hour": appointment.scheduled_at.hour,
+        "chronic_conditions_count": chronic_count,
+    }
 
 
 class NoShowPredictor:
@@ -145,18 +186,22 @@ class NoShowPredictor:
             raise FeatureValidationError(f"Missing required features: {', '.join(missing_columns)}")
 
         try:
-            input_df = pd.DataFrame([features], columns=FEATURE_COLUMNS)
-            input_df["sex"] = self.label_encoder.transform(input_df["sex"])
-            transformed_features = self.scaler.transform(input_df)
+            with prediction_latency_seconds.labels(model="noshow").time():
+                input_df = pd.DataFrame([features], columns=FEATURE_COLUMNS)
+                input_df["sex"] = self.label_encoder.transform(input_df["sex"])
+                transformed_features = self.scaler.transform(input_df)
 
-            probability = float(self.model.predict_proba(transformed_features)[0, 1])
-            shap_contributions = self._build_shap_contributions(transformed_features)
+                probability = float(self.model.predict_proba(transformed_features)[0, 1])
+                shap_contributions = self._build_shap_contributions(transformed_features)
+
+            risk_color = get_risk_color(probability)
+            noshow_predictions_total.labels(risk_level=risk_color).inc()
         except ValueError as exc:
             raise FeatureValidationError(str(exc)) from exc
 
         return {
             "noshow_probability": round(probability, 4),
-            "risk_color": get_risk_color(probability),
+            "risk_color": risk_color,
             "shap_contributions": shap_contributions,
             "model_version": self.model_version,
         }

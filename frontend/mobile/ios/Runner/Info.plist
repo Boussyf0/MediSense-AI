@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>MediSense AI utilise l'appareil photo pour mettre à jour votre photo de profil.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MediSense AI a besoin d'accéder à vos photos pour mettre à jour votre photo de profil.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>MediSense AI lit votre fréquence cardiaque, SpO₂ et HRV depuis Apple Santé pour suivre votre état et détecter d'éventuelles anomalies.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>MediSense AI n'écrit pas dans Apple Santé.</string>
 </dict>
 </plist>

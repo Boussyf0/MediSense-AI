@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/chat_remote_datasource.dart';
 import '../../data/models/chat_models.dart';
@@ -63,7 +65,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
         messages: [..._msgs, userMsg, streamingMsg], isStreaming: true);
 
     String accumulated = '';
+    String? language;
+    List<ChatSource>? streamedSources;
     final String msgId = streamingMsg.id;
+    bool gotDone = false;
 
     try {
       await for (final event
@@ -77,9 +82,17 @@ class ChatNotifier extends StateNotifier<ChatState> {
             updated[idx] = updated[idx].copyWith(content: accumulated);
           }
           state = state.copyWith(messages: updated);
+        } else if (type == 'lang') {
+          language = event['value'] as String?;
+        } else if (type == 'sources') {
+          final list = event['value'] as List?;
+          streamedSources = list
+              ?.map((s) => ChatSource.fromJson(s as Map<String, dynamic>))
+              .toList();
         } else if (type == 'done') {
+          gotDone = true;
           final convId = event['conversation_id'] as String?;
-          final sources = (event['sources'] as List?)
+          final doneSources = (event['sources'] as List?)
               ?.map((s) =>
                   ChatSource.fromJson(s as Map<String, dynamic>))
               .toList();
@@ -90,9 +103,9 @@ class ChatNotifier extends StateNotifier<ChatState> {
             updated[idx] = updated[idx].copyWith(
               content: accumulated,
               isStreaming: false,
-              language: event['language'] as String?,
+              language: (event['language'] as String?) ?? language,
               confidence: (event['confidence'] as num?)?.toDouble(),
-              sources: sources,
+              sources: doneSources ?? streamedSources,
               isUrgent: isUrgent,
             );
           }
@@ -105,12 +118,30 @@ class ChatNotifier extends StateNotifier<ChatState> {
           return;
         }
       }
-    } catch (e) {
+      if (!gotDone) {
+        final updated = [..._msgs];
+        final idx = updated.indexWhere((m) => m.id == msgId);
+        if (idx >= 0) {
+          updated[idx] = updated[idx].copyWith(
+            content: accumulated.isEmpty
+                ? 'Aucune réponse reçue du serveur. Réessayez.'
+                : accumulated,
+            isStreaming: false,
+            language: language,
+            sources: streamedSources,
+          );
+        }
+        state = state.copyWith(messages: updated, isStreaming: false);
+      }
+    } catch (e, st) {
+      developer.log('Chat stream error', error: e, stackTrace: st);
       final updated = [..._msgs];
       final idx = updated.indexWhere((m) => m.id == msgId);
       if (idx >= 0) {
         updated[idx] = updated[idx].copyWith(
-          content: 'Erreur de connexion. Vérifiez votre réseau.',
+          content: accumulated.isNotEmpty
+              ? accumulated
+              : 'Erreur: $e',
           isStreaming: false,
         );
       }

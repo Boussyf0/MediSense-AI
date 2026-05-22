@@ -138,6 +138,60 @@ class TestDPASummaryGet:
         assert data["status"] == "PENDING"
 
     @pytest.mark.asyncio
+    async def test_get_returns_latest_existing_summary_after_approval(self, client, test_db):
+        """
+        After approval, GET must return the persisted APPROVED summary so the UI
+        reflects the doctor's decision. Without this, the endpoint would rebuild
+        a fresh PENDING summary on every load and the approval state would never
+        be visible (root cause of the agenda "valider → rien ne change" bug).
+        """
+        patient_id = str(uuid.uuid4())
+        summary_id = await _insert_dpa_summary(test_db, patient_id, status="APPROVED", version=2)
+        token = _make_doctor_token()
+
+        resp = await client.get(
+            f"/api/v1/doctor/patient/{patient_id}/dpa-summary",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["summary_id"] == str(summary_id)
+        assert data["status"] == "APPROVED"
+        assert data["version"] == 2
+
+    @pytest.mark.asyncio
+    async def test_get_with_refresh_builds_new_summary(self, client, test_db):
+        """?refresh=true forces a fresh build even when an existing summary is present."""
+        patient_id = str(uuid.uuid4())
+        old_summary_id = await _insert_dpa_summary(test_db, patient_id, status="APPROVED", version=2)
+        token = _make_doctor_token()
+
+        from app.db.models.dpa_summary import DPASummary
+        mock_summary = MagicMock(spec=DPASummary)
+        mock_summary.id = uuid.uuid4()
+        mock_summary.status = "PENDING"
+        mock_summary.version = 1
+        mock_summary.created_at = datetime.now(timezone.utc)
+        mock_summary.actions = []
+        mock_summary.payload_before = {
+            "symptoms": [], "iot_summary": {"latest_anomalies": [], "trend": "stable"},
+            "recommended_actions": [], "confidence": 0.5, "data_freshness_minutes": 0,
+        }
+        with patch(
+            "app.api.v1.endpoints.doctor.dpa_summarizer.build",
+            AsyncMock(return_value=mock_summary),
+        ):
+            resp = await client.get(
+                f"/api/v1/doctor/patient/{patient_id}/dpa-summary?refresh=true",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        assert resp.status_code == 200
+        assert resp.json()["summary_id"] != str(old_summary_id)
+        assert resp.json()["status"] == "PENDING"
+
+    @pytest.mark.asyncio
     async def test_summary_response_has_correct_schema(self, client):
         """Verify all required DPASummaryOut fields are present."""
         from app.db.models.dpa_summary import DPASummary
@@ -175,6 +229,108 @@ class TestDPASummaryGet:
         data = resp.json()
         for field in required_fields:
             assert field in data, f"Missing field: {field}"
+
+    @pytest.mark.asyncio
+    async def test_patient_card_populated_from_patient_row(self, client, test_db):
+        """When a Patient row exists, the DPA response carries real age/sex/chronics."""
+        from app.db.models.patient import Patient
+
+        patient_id = uuid.uuid4()
+        test_db.add(Patient(
+            patient_uuid=patient_id,
+            birth_year=1978,
+            sex="F",
+            chronic_conditions=["asthma", "htn"],
+            consent_iot=False, consent_nlp=False,
+            consent_sharing=False, sms_opt_out=False,
+        ))
+        await _insert_dpa_summary(test_db, str(patient_id))
+        token = _make_doctor_token()
+
+        resp = await client.get(
+            f"/api/v1/doctor/patient/{patient_id}/dpa-summary",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 200
+        card = resp.json()["patient"]
+        # Age is derived from birth_year against the current year — accept a
+        # small window so the test doesn't flake on Jan 1.
+        assert card["age"] is not None and 45 <= card["age"] <= 50
+        assert card["sex"] == "F"
+        assert card["chronic_conditions"] == ["asthma", "htn"]
+
+    @pytest.mark.asyncio
+    async def test_patient_card_defaults_when_no_patient_row(self, client, test_db):
+        """No Patient row → card uses safe defaults (all None / empty)."""
+        patient_id = str(uuid.uuid4())
+        await _insert_dpa_summary(test_db, patient_id)
+        token = _make_doctor_token()
+
+        resp = await client.get(
+            f"/api/v1/doctor/patient/{patient_id}/dpa-summary",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 200
+        card = resp.json()["patient"]
+        assert card["age"] is None
+        assert card["sex"] is None
+        assert card["chronic_conditions"] == []
+
+    @pytest.mark.asyncio
+    async def test_history_includes_past_appointments_and_summaries(self, client, test_db):
+        """When the live window is empty, the response carries patient history
+        so the doctor still has context to act on."""
+        from datetime import datetime, timezone, timedelta
+        from app.db.models.appointment import Appointment
+        from app.db.models.patient import Patient
+        from app.db.models.user import User, UserRole
+
+        patient_id = uuid.uuid4()
+        doctor_id = uuid.uuid4()
+        test_db.add(Patient(
+            patient_uuid=patient_id,
+            consent_iot=False, consent_nlp=False,
+            consent_sharing=False, sms_opt_out=False,
+        ))
+        test_db.add(User(
+            user_uuid=doctor_id, email=f"dr-{doctor_id}@medisense.ai",
+            hashed_password="hashed", role=UserRole.DOCTOR,
+            first_name="Karim", last_name="Bennis", is_active=True,
+        ))
+        await test_db.flush()
+
+        # Past appointment (completed, 10 days ago).
+        past_appt_uuid = uuid.uuid4()
+        test_db.add(Appointment(
+            appointment_uuid=past_appt_uuid,
+            patient_uuid=patient_id,
+            doctor_uuid=doctor_id,
+            scheduled_at=datetime.now(timezone.utc) - timedelta(days=10),
+            duration_minutes=20,
+            status="COMPLETED",
+            urgency_flag="routine",
+            rag_summary="Patient stable, suivi annuel.",
+        ))
+
+        # An older approved DPA summary, plus the current PENDING one.
+        await _insert_dpa_summary(test_db, str(patient_id), status="APPROVED", version=2)
+        await _insert_dpa_summary(test_db, str(patient_id))
+        token = _make_doctor_token()
+
+        resp = await client.get(
+            f"/api/v1/doctor/patient/{patient_id}/dpa-summary",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 200
+        history = resp.json()["history"]
+        assert len(history["past_appointments"]) == 1
+        assert history["past_appointments"][0]["status"] == "COMPLETED"
+        assert history["past_appointments"][0]["rag_summary"].startswith("Patient stable")
+        # current summary must be excluded → exactly one prior summary.
+        assert len(history["previous_summaries"]) == 1
+        assert history["previous_summaries"][0]["status"] == "APPROVED"
+        assert history["previous_summaries"][0]["actions_count"] == 1
+        assert history["previous_summaries"][0]["top_action"] is not None
 
 
 # ── US-42: Approve / Reject ───────────────────────────────────────────────────
@@ -421,6 +577,52 @@ class TestDPADecideAction:
         data = resp.json()
         assert data["summary_id"] == str(summary_id)
         assert "Action approved." in data["message"]
+
+    @pytest.mark.asyncio
+    async def test_summary_approve_preserves_per_action_rejection(self, client, test_db):
+        """
+        Per-action decisions must survive a subsequent summary-level approval.
+
+        Flow:
+          1. Doctor rejects action A via PATCH /action/{id}
+          2. Doctor clicks 'Valider et signer' → POST /approve on the summary
+        Action A must remain status='rejected', not be flipped back to 'approved'
+        by the bulk update inside approve_dpa_summary.
+        """
+        from sqlalchemy import select
+        from app.db.models.dpa_summary import AgentAction
+
+        patient_id = str(uuid.uuid4())
+        summary_id = await _insert_dpa_summary(test_db, patient_id)
+        rejected_id = await self._insert_action(test_db, summary_id)
+        pending_id = await self._insert_action(test_db, summary_id)
+        token = _make_doctor_token()
+
+        patch_resp = await client.patch(
+            f"/api/v1/doctor/dpa-summary/{summary_id}/action/{rejected_id}",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"status": "rejected"},
+        )
+        assert patch_resp.status_code == 200
+
+        approve_resp = await client.post(
+            f"/api/v1/doctor/dpa-summary/{summary_id}/approve",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"doctor_note": "OK pour le reste"},
+        )
+        assert approve_resp.status_code == 200
+
+        test_db.expire_all()
+        rows = (
+            await test_db.execute(
+                select(AgentAction.id, AgentAction.status).where(
+                    AgentAction.summary_id == summary_id
+                )
+            )
+        ).all()
+        statuses = {row.id: row.status for row in rows}
+        assert statuses[rejected_id] == "rejected"
+        assert statuses[pending_id] == "approved"
 
     @pytest.mark.asyncio
     async def test_decide_action_wrong_summary_id_returns_404(self, client, test_db):

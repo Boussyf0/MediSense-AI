@@ -3,6 +3,11 @@
 -- This script runs ONCE on first container start
 -- ============================================================
 
+-- Airflow uses its own database to avoid alembic_version collisions with the app.
+-- CREATE DATABASE is not idempotent in PG, so wrap in a DO block.
+SELECT 'CREATE DATABASE airflow OWNER ' || current_user
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'airflow')\gexec
+
 -- Enable pgcrypto for AES-256 encryption (RGPD at-rest)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 

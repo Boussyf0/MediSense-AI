@@ -17,6 +17,8 @@ from dataclasses import dataclass
 
 from sentence_transformers import CrossEncoder
 
+from app.api.v1.endpoints.metrics import rag_retrieval_latency_seconds
+
 MODEL_NAME = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
 
 
@@ -55,7 +57,8 @@ def rerank(query: str, chunks: list[dict], top_k: int = 5) -> list[RerankedChunk
     pairs = [(query, chunk.get("text", "")) for chunk in chunks]
 
     # Score all pairs
-    scores = model.predict(pairs)
+    with rag_retrieval_latency_seconds.labels(stage="rerank").time():
+        scores = model.predict(pairs)
 
     # Combine with original data
     ranked = [

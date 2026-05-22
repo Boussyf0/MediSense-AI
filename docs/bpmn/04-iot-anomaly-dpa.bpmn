@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_IoT" targetNamespace="http://medisense.ai/bpmn">
+  <bpmn:process id="Process_IoT" name="IoT Ingestion to Anomaly to DPA" isExecutable="false">
+    <bpmn:startEvent id="Start_Watch" name="Samsung Watch reading">
+      <bpmn:outgoing>F_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_BLE" name="BLE gateway">
+      <bpmn:incoming>F_1</bpmn:incoming>
+      <bpmn:outgoing>F_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GW_Kafka" name="Kafka reachable?">
+      <bpmn:incoming>F_2</bpmn:incoming>
+      <bpmn:outgoing>F_KNo</bpmn:outgoing>
+      <bpmn:outgoing>F_KYes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Buffer" name="Buffer to NDJSON /tmp (drain every 5m)">
+      <bpmn:incoming>F_KNo</bpmn:incoming>
+      <bpmn:outgoing>F_Buf</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:serviceTask id="Task_Consume" name="kafka_consumer.py consume iot-vitals">
+      <bpmn:incoming>F_KYes</bpmn:incoming>
+      <bpmn:incoming>F_Buf</bpmn:incoming>
+      <bpmn:outgoing>F_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Persist" name="Persist BiometricReading">
+      <bpmn:incoming>F_3</bpmn:incoming>
+      <bpmn:outgoing>F_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Ingest" name="anomaly_detector.ingest_reading (Redis 5m+60m windows)">
+      <bpmn:incoming>F_4</bpmn:incoming>
+      <bpmn:outgoing>F_5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_Points" name="More than 5 points?">
+      <bpmn:incoming>F_5</bpmn:incoming>
+      <bpmn:outgoing>F_PNo</bpmn:outgoing>
+      <bpmn:outgoing>F_PYes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_Wait" name="Wait for more">
+      <bpmn:incoming>F_PNo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_Score" name="LSTM score 5m critical + 60m trend">
+      <bpmn:incoming>F_PYes</bpmn:incoming>
+      <bpmn:outgoing>F_6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_Critical" name="score_5m critical?">
+      <bpmn:incoming>F_6</bpmn:incoming>
+      <bpmn:outgoing>F_CritYes</bpmn:outgoing>
+      <bpmn:outgoing>F_CritNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="Task_FCM" name="FCM push + WebSocket to doctors">
+      <bpmn:incoming>F_CritYes</bpmn:incoming>
+      <bpmn:outgoing>F_7</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:exclusiveGateway id="GW_Trend" name="trend > 0.60?">
+      <bpmn:incoming>F_CritNo</bpmn:incoming>
+      <bpmn:outgoing>F_TYes</bpmn:outgoing>
+      <bpmn:outgoing>F_TNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_Store" name="Store only">
+      <bpmn:incoming>F_TNo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_DPA" name="Generate DPA summary (PENDING)">
+      <bpmn:incoming>F_TYes</bpmn:incoming>
+      <bpmn:outgoing>F_8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_Review" name="Doctor reviews on dashboard">
+      <bpmn:incoming>F_7</bpmn:incoming>
+      <bpmn:incoming>F_8</bpmn:incoming>
+      <bpmn:outgoing>F_9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_Decision" name="Approve / Reject">
+      <bpmn:incoming>F_9</bpmn:incoming>
+      <bpmn:outgoing>F_10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_Audit" name="Audit log + status update">
+      <bpmn:incoming>F_10</bpmn:incoming>
+      <bpmn:outgoing>F_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Final" name="End">
+      <bpmn:incoming>F_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="F_1" sourceRef="Start_Watch" targetRef="Task_BLE"/>
+    <bpmn:sequenceFlow id="F_2" sourceRef="Task_BLE" targetRef="GW_Kafka"/>
+    <bpmn:sequenceFlow id="F_KNo" name="no" sourceRef="GW_Kafka" targetRef="Task_Buffer"/>
+    <bpmn:sequenceFlow id="F_KYes" name="yes" sourceRef="GW_Kafka" targetRef="Task_Consume"/>
+    <bpmn:sequenceFlow id="F_Buf" sourceRef="Task_Buffer" targetRef="Task_Consume"/>
+    <bpmn:sequenceFlow id="F_3" sourceRef="Task_Consume" targetRef="Task_Persist"/>
+    <bpmn:sequenceFlow id="F_4" sourceRef="Task_Persist" targetRef="Task_Ingest"/>
+    <bpmn:sequenceFlow id="F_5" sourceRef="Task_Ingest" targetRef="GW_Points"/>
+    <bpmn:sequenceFlow id="F_PNo" name="no" sourceRef="GW_Points" targetRef="End_Wait"/>
+    <bpmn:sequenceFlow id="F_PYes" name="yes" sourceRef="GW_Points" targetRef="Task_Score"/>
+    <bpmn:sequenceFlow id="F_6" sourceRef="Task_Score" targetRef="GW_Critical"/>
+    <bpmn:sequenceFlow id="F_CritYes" name="yes" sourceRef="GW_Critical" targetRef="Task_FCM"/>
+    <bpmn:sequenceFlow id="F_CritNo" name="no" sourceRef="GW_Critical" targetRef="GW_Trend"/>
+    <bpmn:sequenceFlow id="F_TYes" name="yes" sourceRef="GW_Trend" targetRef="Task_DPA"/>
+    <bpmn:sequenceFlow id="F_TNo" name="no" sourceRef="GW_Trend" targetRef="End_Store"/>
+    <bpmn:sequenceFlow id="F_7" sourceRef="Task_FCM" targetRef="Task_Review"/>
+    <bpmn:sequenceFlow id="F_8" sourceRef="Task_DPA" targetRef="Task_Review"/>
+    <bpmn:sequenceFlow id="F_9" sourceRef="Task_Review" targetRef="GW_Decision"/>
+    <bpmn:sequenceFlow id="F_10" sourceRef="GW_Decision" targetRef="Task_Audit"/>
+    <bpmn:sequenceFlow id="F_End" sourceRef="Task_Audit" targetRef="End_Final"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_1">
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_IoT">
+      <bpmndi:BPMNShape id="Start_Watch_di" bpmnElement="Start_Watch"><dc:Bounds x="80" y="200" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BLE_di" bpmnElement="Task_BLE"><dc:Bounds x="160" y="178" width="120" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Kafka_di" bpmnElement="GW_Kafka" isMarkerVisible="true"><dc:Bounds x="320" y="193" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Buffer_di" bpmnElement="Task_Buffer"><dc:Bounds x="280" y="80" width="240" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Consume_di" bpmnElement="Task_Consume"><dc:Bounds x="420" y="178" width="220" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Persist_di" bpmnElement="Task_Persist"><dc:Bounds x="680" y="178" width="160" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Ingest_di" bpmnElement="Task_Ingest"><dc:Bounds x="880" y="178" width="240" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Points_di" bpmnElement="GW_Points" isMarkerVisible="true"><dc:Bounds x="1160" y="193" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Wait_di" bpmnElement="End_Wait"><dc:Bounds x="1167" y="80" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Score_di" bpmnElement="Task_Score"><dc:Bounds x="1250" y="178" width="220" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Critical_di" bpmnElement="GW_Critical" isMarkerVisible="true"><dc:Bounds x="1510" y="193" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FCM_di" bpmnElement="Task_FCM"><dc:Bounds x="1600" y="80" width="240" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Trend_di" bpmnElement="GW_Trend" isMarkerVisible="true"><dc:Bounds x="1610" y="320" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Store_di" bpmnElement="End_Store"><dc:Bounds x="1617" y="430" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DPA_di" bpmnElement="Task_DPA"><dc:Bounds x="1720" y="320" width="240" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Review_di" bpmnElement="Task_Review"><dc:Bounds x="2040" y="178" width="220" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Decision_di" bpmnElement="GW_Decision" isMarkerVisible="true"><dc:Bounds x="2300" y="193" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Audit_di" bpmnElement="Task_Audit"><dc:Bounds x="2400" y="178" width="200" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Final_di" bpmnElement="End_Final"><dc:Bounds x="2640" y="200" width="36" height="36"/></bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="F_1_di" bpmnElement="F_1"><di:waypoint x="116" y="218"/><di:waypoint x="160" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_2_di" bpmnElement="F_2"><di:waypoint x="280" y="218"/><di:waypoint x="320" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_KNo_di" bpmnElement="F_KNo"><di:waypoint x="345" y="193"/><di:waypoint x="345" y="140"/><di:waypoint x="400" y="140"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_KYes_di" bpmnElement="F_KYes"><di:waypoint x="370" y="218"/><di:waypoint x="420" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_Buf_di" bpmnElement="F_Buf"><di:waypoint x="520" y="140"/><di:waypoint x="530" y="178"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_3_di" bpmnElement="F_3"><di:waypoint x="640" y="218"/><di:waypoint x="680" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_4_di" bpmnElement="F_4"><di:waypoint x="840" y="218"/><di:waypoint x="880" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_5_di" bpmnElement="F_5"><di:waypoint x="1120" y="218"/><di:waypoint x="1160" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_PNo_di" bpmnElement="F_PNo"><di:waypoint x="1185" y="193"/><di:waypoint x="1185" y="116"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_PYes_di" bpmnElement="F_PYes"><di:waypoint x="1210" y="218"/><di:waypoint x="1250" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_6_di" bpmnElement="F_6"><di:waypoint x="1470" y="218"/><di:waypoint x="1510" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_CritYes_di" bpmnElement="F_CritYes"><di:waypoint x="1535" y="193"/><di:waypoint x="1535" y="120"/><di:waypoint x="1600" y="120"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_CritNo_di" bpmnElement="F_CritNo"><di:waypoint x="1535" y="243"/><di:waypoint x="1535" y="345"/><di:waypoint x="1610" y="345"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_TYes_di" bpmnElement="F_TYes"><di:waypoint x="1660" y="345"/><di:waypoint x="1720" y="360"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_TNo_di" bpmnElement="F_TNo"><di:waypoint x="1635" y="370"/><di:waypoint x="1635" y="430"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_7_di" bpmnElement="F_7"><di:waypoint x="1840" y="120"/><di:waypoint x="2150" y="120"/><di:waypoint x="2150" y="178"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_8_di" bpmnElement="F_8"><di:waypoint x="1960" y="360"/><di:waypoint x="2150" y="360"/><di:waypoint x="2150" y="258"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_9_di" bpmnElement="F_9"><di:waypoint x="2260" y="218"/><di:waypoint x="2300" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_10_di" bpmnElement="F_10"><di:waypoint x="2350" y="218"/><di:waypoint x="2400" y="218"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_End_di" bpmnElement="F_End"><di:waypoint x="2600" y="218"/><di:waypoint x="2640" y="218"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

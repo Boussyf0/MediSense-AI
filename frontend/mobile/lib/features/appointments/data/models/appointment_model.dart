@@ -49,7 +49,11 @@ extension AppointmentStatusExt on AppointmentStatus {
 class AppointmentModel {
   final String id;
   final String time;
+  final DateTime? scheduledAt;
+  final int durationMinutes;
+  final int priceMad;
   final String doctorName;
+  final String? doctorSpecialty;
   final String appointmentType;
   final RiskColor riskColor;
   final double? noShowProbability;
@@ -62,8 +66,44 @@ class AppointmentModel {
     required this.appointmentType,
     required this.riskColor,
     required this.status,
+    required this.durationMinutes,
+    required this.priceMad,
+    this.scheduledAt,
+    this.doctorSpecialty,
     this.noShowProbability,
   });
+
+  /// True when the visit window has elapsed but the appointment is still in
+  /// a non-terminal state. Lets the patient UI surface "Terminé" automatically
+  /// without waiting for a backend transition.
+  bool get isElapsedButOpen {
+    if (scheduledAt == null) return false;
+    if (status == AppointmentStatus.cancelled ||
+        status == AppointmentStatus.completed ||
+        status == AppointmentStatus.noShow) {
+      return false;
+    }
+    final endsAt =
+        scheduledAt!.add(Duration(minutes: durationMinutes));
+    return DateTime.now().toUtc().isAfter(endsAt.toUtc());
+  }
+
+  /// Backend hardcodes appointment_type to "Consultation" today; teleconsult
+  /// is signalled by the string containing "télé"/"tele"/"visio". Once a real
+  /// telehealth flag lands in the schema this collapses to a single field.
+  bool get isTeleconsult {
+    final t = appointmentType.toLowerCase();
+    return t.contains('télé') ||
+        t.contains('tele') ||
+        t.contains('visio') ||
+        t.contains('video');
+  }
+
+  /// Distance from now to `scheduledAt`. Negative if in the past.
+  Duration? get timeUntilStart {
+    if (scheduledAt == null) return null;
+    return scheduledAt!.difference(DateTime.now());
+  }
 
   factory AppointmentModel.fromJson(Map<String, dynamic> j) {
     final rc = switch (j['risk_color'] as String?) {
@@ -73,17 +113,28 @@ class AppointmentModel {
       _        => RiskColor.unknown,
     };
     final st = switch ((j['status'] as String?)?.toUpperCase()) {
-      'SCHEDULED' => AppointmentStatus.scheduled,
-      'CONFIRMED' => AppointmentStatus.confirmed,
-      'CANCELLED' => AppointmentStatus.cancelled,
-      'COMPLETED' => AppointmentStatus.completed,
-      'NO_SHOW'   => AppointmentStatus.noShow,
-      _           => AppointmentStatus.unknown,
+      'PENDING' || 'SCHEDULED' => AppointmentStatus.scheduled,
+      'CONFIRMED'              => AppointmentStatus.confirmed,
+      'CANCELLED'              => AppointmentStatus.cancelled,
+      'COMPLETED'              => AppointmentStatus.completed,
+      'NO_SHOW'                => AppointmentStatus.noShow,
+      _                        => AppointmentStatus.unknown,
     };
+    DateTime? scheduledAt;
+    final rawScheduled = j['scheduled_at'] as String?;
+    if (rawScheduled != null) {
+      try {
+        scheduledAt = DateTime.parse(rawScheduled);
+      } catch (_) {}
+    }
     return AppointmentModel(
       id: j['appointment_uuid'] as String? ?? j['id'] as String? ?? '',
       time: j['appointment_time'] as String? ?? j['time'] as String? ?? '',
+      scheduledAt: scheduledAt,
+      durationMinutes: (j['duration_minutes'] as num?)?.toInt() ?? 20,
+      priceMad: (j['price_mad'] as num?)?.toInt() ?? 0,
       doctorName: j['doctor_name'] as String? ?? 'Dr. —',
+      doctorSpecialty: j['doctor_specialty'] as String?,
       appointmentType: j['appointment_type'] as String? ?? 'Consultation',
       riskColor: rc,
       status: st,

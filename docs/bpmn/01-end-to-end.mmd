@@ -1,0 +1,62 @@
+---
+title: MediSense AI - End-to-End High-Level Process
+---
+flowchart LR
+    classDef patient fill:#E3F2FD,stroke:#1565C0,color:#000
+    classDef doctor  fill:#E8F5E9,stroke:#2E7D32,color:#000
+    classDef sec     fill:#FFF3E0,stroke:#EF6C00,color:#000
+    classDef admin   fill:#F3E5F5,stroke:#6A1B9A,color:#000
+    classDef sys     fill:#ECEFF1,stroke:#455A64,color:#000
+
+    P0([Patient opens app]):::patient --> P1[Login /auth/login]:::patient
+    P1 --> G1{Credentials valid?}
+    G1 -- no --> P1
+    G1 -- yes --> P2[Issue JWT + audit LOGIN]:::sys
+    P2 --> P3{Action?}
+    P3 -- chat --> CHAT0
+    P3 -- book --> BK0
+    P3 -- view vitals --> IOT0
+
+    CHAT0[POST /chat]:::patient --> R1[Fetch IoT context 30d]:::sys
+    R1 --> R2[Detect language + normalize FR]:::sys
+    R2 --> R3[Hybrid retrieval Qdrant+BM25+MCP]:::sys
+    R3 --> R4[Safety pre-check]:::sys
+    R4 --> G2{Urgent or IoT critical?}
+    G2 -- yes --> ESC[Triage URGENT escalate]:::sys
+    G2 -- no  --> R5[LLM generate + post-check]:::sys
+    R5 --> R6[Return + cache 24h]:::sys
+    ESC --> CRM1
+
+    BK0[POST /appointments]:::patient --> BK1[Validate doctor + slot]:::sys
+    BK1 --> G3{Conflict?}
+    G3 -- yes --> BKERR[409 Conflict]:::sys
+    G3 -- no  --> BK2[XGBoost no-show predict]:::sys
+    BK2 --> BK3[Persist + risk_color]:::sys
+    BK3 --> CRM1[Fire-and-forget CRM task]:::sys
+
+    S0[Secretary opens agenda]:::sec --> S1[GET /predictions/no-show/batch]:::sec
+    S1 --> G4{risk_color = red?}
+    G4 -- yes --> S2[Dispatch SMS reminders]:::sec
+    G4 -- no  --> S3[Monitor CRM tasks]:::sec
+    S2 --> S3
+    S3 --> S4[Retry failed CRM sync]:::sec
+
+    D0[Doctor dashboard]:::doctor --> D1[View agenda + risk chips]:::doctor
+    D1 --> D2[Mark appointment outcome]:::doctor
+    D2 --> D3{Anomaly trend high?}
+    D3 -- yes --> D4[Review DPA summary]:::doctor
+    D4 --> D5[Approve / Reject DPA]:::doctor
+    D3 -- no --> DEND([End])
+
+    IOT0[Samsung Watch BLE gateway]:::sys --> IOT1[Kafka iot-vitals]:::sys
+    IOT1 --> IOT2[Consumer persists reading]:::sys
+    IOT2 --> IOT3[Anomaly detector 5m + 60m LSTM]:::sys
+    IOT3 --> G5{Critical?}
+    G5 -- yes --> IOT4[FCM push + WebSocket to doctors]:::sys
+    G5 -- trending --> IOT5[Trigger DPA summary]:::sys
+    IOT4 --> D0
+    IOT5 --> D4
+
+    A0[Admin]:::admin --> A1[GET /admin/audit-logs]:::admin
+    A0 --> A2[Provision users]:::admin
+    A0 --> A3[POST /admin/rerank-eval]:::admin
