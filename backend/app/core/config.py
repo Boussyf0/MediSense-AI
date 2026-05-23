@@ -75,9 +75,21 @@ class Settings(BaseSettings):
     SALESFORCE_RETRY_DELAY_SECONDS: float = Field(default=2.0, gt=0)
 
     # MLflow Model Registry (Sprint 6 — US-33)
+    MLFLOW_TRACKING_URI: str = "http://mlflow:5000"
     MLFLOW_MODEL_NAME: str = "noshow-risk-model"
     MLFLOW_PROMOTION_F1_THRESHOLD: float = Field(default=0.80, ge=0.0, le=1.0)
     MLFLOW_PROMOTION_AUC_THRESHOLD: float = Field(default=0.87, ge=0.0, le=1.0)
+
+    # MinIO object store (Sprint 6 — backs MLflow artifacts)
+    MINIO_ROOT_USER: str = "minioadmin"
+    MINIO_ROOT_PASSWORD: str = "minioadmin"
+
+    # Grafana dashboards (Sprint 9 — monitoring)
+    GRAFANA_USER: str = "admin"
+    GRAFANA_PASSWORD: str = ""
+
+    # IoT simulator worker — comma-separated patient UUIDs to seed readings for
+    SIM_PATIENT_UUIDS: str = ""
 
     # Kafka IoT ingestion (Sprint 7 — US-25)
     # If KAFKA_BROKERS is empty, consumer starts in degraded mode (CSV buffer).
@@ -92,6 +104,11 @@ class Settings(BaseSettings):
     # MLOps / Drift Detection (Sprint 8 — US-35)
     EVIDENTLY_PSI_THRESHOLD: float = Field(default=0.25, ge=0.0, le=1.0)
     AIRFLOW_DAG_FOLDER: str = "dags"
+
+    # FCM Push Notifications (Sprint 7 — US-29)
+    # Base64-encoded Firebase service account JSON. If empty, FCM runs in mock
+    # mode and merely logs the payload (used in dev/CI/cloud demo without keys).
+    FCM_SERVICE_ACCOUNT_B64: str = ""
 
     @property
     def DATABASE_URL(self) -> str:

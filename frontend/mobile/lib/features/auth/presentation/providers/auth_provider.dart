@@ -3,6 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/models/user_model.dart';
 import '../../../../core/api/dio_client.dart';
+import '../../../../services/fcm_service.dart';
+import '../../../../services/inbox_poller.dart';
 
 const _storage = FlutterSecureStorage();
 final _dioProvider = Provider((ref) => createDio());
@@ -32,6 +34,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = await _ds.login(email, password);
       await _storage.write(key: 'onboarded', value: 'true');
       state = state.copyWith(user: user, loading: false);
+      // Fire-and-forget — never block the login UX on a push-token round-trip.
+      // ignore: unawaited_futures
+      FcmService.instance.registerWithBackend();
+      // ignore: unawaited_futures
+      InboxPoller.instance.start();
     } catch (e) {
       state = state.copyWith(loading: false, error: e.toString());
       rethrow;
@@ -39,6 +46,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    // Revoke push token first so the backend stops pushing to a stale device.
+    InboxPoller.instance.stop();
+    await FcmService.instance.unregister();
     await _ds.logout();
     state = const AuthState();
   }

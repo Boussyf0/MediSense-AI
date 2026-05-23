@@ -499,31 +499,99 @@ class TestCRMEndpoints:
 
 
 class TestCrmSmsSend:
-    async def test_sms_send_happy(self, client, test_db):
-        appt_uuid = await seed_appointment(test_db)
-        response = await client.post(
-            f"/api/v1/crm/sms/send/{appt_uuid}",
-            headers=auth("secretary"),
+    @staticmethod
+    def _patch_send_path(phone: str = "+212600000001"):
+        """Mock SMS provider + FCM so tests don't need pgcrypto/Firebase creds."""
+        return (
+            patch("app.api.v1.endpoints.crm._get_patient_phone_number",
+                  AsyncMock(return_value=phone)),
+            patch("app.api.v1.endpoints.crm._send_sms",
+                  AsyncMock(return_value="mock-id")),
+            patch("app.api.v1.endpoints.crm.send_to_tokens",
+                  AsyncMock(return_value=1)),
         )
+
+    async def test_sms_send_happy_dispatches_and_bumps_counter(self, client, test_db):
+        """
+        Happy path must actually dispatch (status=sent) and bump
+        appointment.sms_reminders_sent so the agenda counter moves —
+        the regression we just fixed.
+        """
+        from sqlalchemy import select
+        appt_uuid = await seed_appointment(test_db)
+
+        phone_p, sms_p, push_p = self._patch_send_path()
+        with phone_p, sms_p as sms_mock, push_p as push_mock:
+            response = await client.post(
+                f"/api/v1/crm/sms/send/{appt_uuid}",
+                headers=auth("secretary"),
+            )
+
         assert response.status_code == 200
         data = response.json()
-        assert data["appointment_uuid"] == str(appt_uuid)
-        assert data["task_type"] == "sms_reminder"
-        assert data["status"] == "pending"
+        assert data["status"] == "sent"
+        assert sms_mock.await_count == 1
+        assert push_mock.await_count == 1
+
+        test_db.expire_all()
+        bumped = (
+            await test_db.execute(
+                select(Appointment.sms_reminders_sent).where(
+                    Appointment.appointment_uuid == appt_uuid
+                )
+            )
+        ).scalar_one()
+        assert bumped == 1
+
+    async def test_sms_send_pushes_when_phone_missing(self, client, test_db):
+        """No phone on file but FCM tokens present → still succeeds via push."""
+        appt_uuid = await seed_appointment(test_db)
+        with (
+            patch("app.api.v1.endpoints.crm._get_patient_phone_number",
+                  AsyncMock(return_value=None)),
+            patch("app.api.v1.endpoints.crm._send_sms",
+                  AsyncMock(return_value="mock-id")) as sms_mock,
+            patch("app.api.v1.endpoints.crm.send_to_tokens",
+                  AsyncMock(return_value=1)) as push_mock,
+        ):
+            response = await client.post(
+                f"/api/v1/crm/sms/send/{appt_uuid}",
+                headers=auth("secretary"),
+            )
+        assert response.status_code == 200
+        assert response.json()["status"] == "sent"
+        assert sms_mock.await_count == 0
+        assert push_mock.await_count == 1
+
+    async def test_sms_send_502_when_both_channels_fail(self, client, test_db):
+        appt_uuid = await seed_appointment(test_db)
+        with (
+            patch("app.api.v1.endpoints.crm._get_patient_phone_number",
+                  AsyncMock(return_value=None)),
+            patch("app.api.v1.endpoints.crm.send_to_tokens",
+                  AsyncMock(return_value=0)),
+        ):
+            response = await client.post(
+                f"/api/v1/crm/sms/send/{appt_uuid}",
+                headers=auth("secretary"),
+            )
+        assert response.status_code == 502
 
     async def test_sms_send_idempotent_same_day(self, client, test_db):
         appt_uuid = await seed_appointment(test_db)
-        r1 = await client.post(
-            f"/api/v1/crm/sms/send/{appt_uuid}",
-            headers=auth("secretary"),
-        )
-        assert r1.status_code == 200
-        r2 = await client.post(
-            f"/api/v1/crm/sms/send/{appt_uuid}",
-            headers=auth("secretary"),
-        )
-        assert r2.status_code == 200
+        phone_p, sms_p, push_p = self._patch_send_path()
+        with phone_p, sms_p, push_p:
+            r1 = await client.post(
+                f"/api/v1/crm/sms/send/{appt_uuid}",
+                headers=auth("secretary"),
+            )
+            r2 = await client.post(
+                f"/api/v1/crm/sms/send/{appt_uuid}",
+                headers=auth("secretary"),
+            )
+        assert r1.status_code == 200 and r2.status_code == 200
         assert r1.json()["id"] == r2.json()["id"]
+        assert r2.json()["status"] == "sent"
 
     async def test_sms_send_no_auth_403(self, client):
         response = await client.post(f"/api/v1/crm/sms/send/{uuid.uuid4()}")

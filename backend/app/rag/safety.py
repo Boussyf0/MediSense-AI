@@ -16,8 +16,11 @@ from dataclasses import dataclass
 
 from app.rag.medical_entities import ExtractedEntities
 
-# Minimum average retrieval score to trust the response
-CONFIDENCE_THRESHOLD = 0.3
+# Minimum average retrieval score to trust the response.
+# Below this, we still call the LLM but it must default to general guidance
+# + "consult a professional" disclaimer (enforced by the system prompt).
+# Set low so ordinary questions ("fatigue", "doliprane") reach the LLM.
+CONFIDENCE_THRESHOLD = 0.1
 
 # ── Adversarial query patterns (checked against the raw query, before LLM) ──
 
@@ -223,9 +226,9 @@ def pre_generation_check(
             confidence=avg_score,
         )
 
-    # 6. Normal path — drug mentioned → pre-add dosage disclaimer
-    if entities.drug_names:
-        disclaimers.append(DOSAGE_DISCLAIMER)
+    # 6. Normal path — dosage disclaimer is appended post-hoc only if the
+    # LLM output actually mentions a dosage (handled by post_generation_check).
+    # Pre-adding it caused refusal answers to ship with a misleading dosage warning.
 
     return SafetyResult(
         should_block=False,

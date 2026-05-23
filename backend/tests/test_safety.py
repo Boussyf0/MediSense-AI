@@ -47,7 +47,7 @@ class TestPreGenerationCheck:
 
     def test_low_confidence_blocks_generation(self):
         entities = _make_entities()
-        result = pre_generation_check(entities, [0.1, 0.2])
+        result = pre_generation_check(entities, [0.0, 0.05])
         assert result.should_block is True
         assert result.override_response == LOW_CONFIDENCE_MESSAGE
 
@@ -62,11 +62,15 @@ class TestPreGenerationCheck:
         assert result.should_block is False
         assert result.override_response is None
 
-    def test_drug_adds_dosage_disclaimer(self):
+    def test_drug_does_not_force_dosage_disclaimer_pre_gen(self):
+        """Drug presence alone must not pre-add the dosage disclaimer:
+        otherwise a refusal answer ships with a misleading dosage warning.
+        The dosage disclaimer is appended post-hoc only if the LLM output
+        actually contains a dose pattern (see TestPostGenerationCheck)."""
         entities = _make_entities(drug_names=["paracetamol"])
         result = pre_generation_check(entities, [0.5, 0.6])
         assert result.should_block is False
-        assert DOSAGE_DISCLAIMER in result.disclaimers
+        assert DOSAGE_DISCLAIMER not in result.disclaimers
 
     def test_no_drug_no_dosage_disclaimer(self):
         entities = _make_entities()

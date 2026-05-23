@@ -1,0 +1,23 @@
+---
+title: MediSense AI - IoT Ingestion to Anomaly to DPA
+---
+flowchart TD
+    W([Samsung Watch]) --> BLE[BLE gateway]
+    BLE --> K{Kafka reachable?}
+    K -- no --> BUF[Buffer to NDJSON /tmp - drain every 5m]
+    K -- yes --> KC[kafka_consumer.py consume iot-vitals]
+    BUF --> KC
+    KC --> DB[(Persist BiometricReading)]
+    DB --> AD[anomaly_detector.ingest_reading<br/>Redis 5m + 60m sliding windows]
+    AD --> M{Greater than 5 points?}
+    M -- no --> END1([wait for more])
+    M -- yes --> SC[LSTM score 5m critical + 60m trend]
+    SC --> G1{score_5m critical?}
+    G1 -- yes --> P1[FCM push + WebSocket to doctors]
+    G1 -- no --> G2{trend greater than 0.60?}
+    G2 -- yes --> DPA[Generate DPA summary - PENDING]
+    G2 -- no --> END2([store only])
+    P1 --> DOC([Doctor reviews on dashboard])
+    DPA --> DOC
+    DOC --> DEC{Approve / Reject}
+    DEC --> AUD[Audit log + status update]

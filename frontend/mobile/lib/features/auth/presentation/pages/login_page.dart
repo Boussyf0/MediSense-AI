@@ -13,8 +13,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage>
-    with TickerProviderStateMixin {
-  late final List<AnimationController> _bars;
+    with SingleTickerProviderStateMixin {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loading = false;
@@ -23,20 +22,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   final _storage = const FlutterSecureStorage();
 
   @override
-  void initState() {
-    super.initState();
-    _bars = List.generate(
-      5,
-      (i) => AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 350 + i * 70),
-      )..repeat(reverse: true),
-    );
-  }
-
-  @override
   void dispose() {
-    for (final c in _bars) { c.dispose(); }
     _emailCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
@@ -81,7 +67,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    final barH = [10.0, 20.0, 34.0, 20.0, 10.0];
     return Scaffold(
       backgroundColor: AppColors.surface0,
       body: Stack(
@@ -91,46 +76,36 @@ class _LoginPageState extends ConsumerState<LoginPage>
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 60),
-                  // Small waveform logo (52×52 rounded container)
+                  const SizedBox(height: 56),
+                  // Logo — centered, large, with glow
                   Container(
-                    width: 52,
-                    height: 52,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: const Color(0xFF1C2333).withValues(alpha: 0.6),
-                      border: Border.all(
-                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(
-                          5,
-                          (i) => AnimatedBuilder(
-                            animation: _bars[i],
-                            builder: (_, __) => Container(
-                              width: 3,
-                              margin: const EdgeInsets.symmetric(horizontal: 1),
-                              height: barH[i] * (0.25 + 0.75 * _bars[i].value),
-                              decoration: BoxDecoration(
-                                gradient: AppColors.aiGrad,
-                                borderRadius: BorderRadius.circular(1.5),
-                              ),
-                            ),
-                          ),
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF8B5CF6).withValues(alpha: 0.35),
+                          blurRadius: 48,
+                          spreadRadius: 4,
                         ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(32),
+                      child: Image.asset(
+                        'assets/branding/app_icon.png',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 24),
                   // Title
                   const Text(
                     'Connexion',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 32,
@@ -142,6 +117,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                   const SizedBox(height: 8),
                   const Text(
                     'Bon retour. Vos données restent au Maroc.',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14,

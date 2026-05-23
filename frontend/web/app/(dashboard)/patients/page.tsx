@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { DashPage } from '@/components/dashboard-shell';
+import { DashButton } from '@/components/dash-button';
 import { StatusBadge } from '@/components/status-badge';
 
 interface PatientListItem {
@@ -80,6 +81,17 @@ export default function PatientsPage() {
         data
           ? `${data.total} patient${data.total > 1 ? 's' : ''} ${onlyActive ? 'actifs' : 'au total'}`
           : 'Roster clinique — RGPD pseudonymisé'
+      }
+      actions={
+        <Link href="/admin/patients/new" style={{ textDecoration: 'none' }}>
+          <DashButton
+            kind="gradient"
+            small
+            icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>}
+          >
+            Nouveau patient
+          </DashButton>
+        </Link>
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

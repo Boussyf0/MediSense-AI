@@ -10,7 +10,7 @@ Endpoints:
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from jose import JWTError
@@ -27,6 +27,7 @@ from app.core.security import (
     blacklist_token,
     is_token_blacklisted,
 )
+from app.core.audit import log_audit
 from app.core.config import get_settings
 from app.core.dependencies import get_current_user, TokenPayload
 from app.schemas.auth import LoginRequest, TokenResponse, RefreshRequest, UserResponse
@@ -36,7 +37,7 @@ settings = get_settings()
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(request: LoginRequest, http_request: Request, db: AsyncSession = Depends(get_db)):
     """
     Authenticate a user and return JWT tokens.
 
@@ -63,6 +64,21 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             detail="Account is deactivated",
         )
 
+    # Self-heal: every patient user must have a matching Patient row, otherwise
+    # booking and IoT endpoints reject the JWT with "Patient not found". Legacy
+    # accounts created before admin.py started inserting both rows are missing
+    # this — insert it idempotently so existing accounts work end-to-end.
+    if user.role.value == "patient":
+        from app.db.models.patient import Patient
+        existing = (
+            await db.execute(
+                select(Patient).where(Patient.patient_uuid == user.user_uuid)
+            )
+        ).scalar_one_or_none()
+        if existing is None:
+            db.add(Patient(patient_uuid=user.user_uuid))
+            await db.flush()
+
     # Create token pair
     access_token = create_access_token(
         subject=str(user.user_uuid),
@@ -75,6 +91,16 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     # TODO Sprint 2: store refresh_jti in DB for rotation tracking
     # TODO Sprint 2: set refresh_token in httpOnly cookie (more secure than body)
+
+    actor_payload = TokenPayload(sub=str(user.user_uuid), role=user.role.value, jti="", type="access")
+    await log_audit(
+        db=db,
+        actor=actor_payload,
+        request=http_request,
+        action="LOGIN",
+        resource_type="user",
+        resource_uuid=user.user_uuid,
+    )
 
     return TokenResponse(
         access_token=access_token,

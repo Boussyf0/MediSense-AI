@@ -22,6 +22,35 @@ interface RerankEvalResponse {
   num_chunks: number;
 }
 
+interface SuiteAggregate {
+  mean: number;
+  median: number;
+  std: number;
+  min: number;
+  max: number;
+}
+
+interface SuiteRow {
+  query: string;
+  rank_correlation: number;
+  top3_overlap: number;
+  mrr_rrf: number;
+  ce_latency_ms: number;
+  num_chunks: number;
+}
+
+interface RerankSuiteResponse {
+  n_queries: number;
+  n_evaluated: number;
+  rank_correlation: SuiteAggregate;
+  top3_overlap: SuiteAggregate;
+  mrr_rrf: SuiteAggregate;
+  ce_latency_ms: SuiteAggregate;
+  rows: SuiteRow[];
+  recommendation: string;
+  verdict: 'rrf_ok' | 'ce_conditional' | 'ce_required';
+}
+
 const DEFAULT_QUERY = 'douleurs thoraciques essoufflement insuffisance cardiaque';
 
 function RankColumn({
@@ -78,6 +107,163 @@ function RankColumn({
   );
 }
 
+function SuiteMetricCard({
+  label, sub, value, color,
+}: { label: string; sub: string; value: string; color: string }) {
+  return (
+    <div style={{
+      flex: 1, padding: 16, background: 'var(--s1)', border: '1px solid var(--line)', borderRadius: 12,
+    }}>
+      <div style={{
+        fontFamily: 'var(--f-mono)', fontSize: 9.5, color: 'var(--t3)',
+        letterSpacing: '0.14em', textTransform: 'uppercase',
+      }}>{label}</div>
+      <div style={{
+        fontFamily: 'var(--f-display)', fontSize: 26, fontWeight: 600, color,
+        marginTop: 4, letterSpacing: '-0.02em',
+      }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'var(--t2)', marginTop: 2 }}>{sub}</div>
+    </div>
+  );
+}
+
+function SuiteResults({ suite }: { suite: RerankSuiteResponse }) {
+  const verdictColor =
+    suite.verdict === 'rrf_ok' ? '#22C55E'
+    : suite.verdict === 'ce_conditional' ? '#F59E0B'
+    : '#EF4444';
+  const verdictLabel =
+    suite.verdict === 'rrf_ok' ? 'RRF SUFFISANT'
+    : suite.verdict === 'ce_conditional' ? 'CE CONDITIONNEL'
+    : 'CE REQUIS';
+
+  // Sort rows by rank_correlation ascending so worst queries surface first
+  const sortedRows = [...suite.rows].sort((a, b) => a.rank_correlation - b.rank_correlation);
+
+  return (
+    <div style={{ marginBottom: 22 }}>
+      {/* Header strip */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14,
+      }}>
+        <div style={{
+          padding: '6px 12px', borderRadius: 99,
+          background: `${verdictColor}22`, border: `1px solid ${verdictColor}55`,
+          color: verdictColor, fontFamily: 'var(--f-mono)', fontSize: 10,
+          fontWeight: 700, letterSpacing: '0.12em',
+        }}>{verdictLabel}</div>
+        <div style={{
+          fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--t3)',
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+        }}>
+          suite · {suite.n_evaluated}/{suite.n_queries} requêtes évaluées
+        </div>
+      </div>
+
+      {/* Aggregate metrics */}
+      <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
+        <SuiteMetricCard
+          label="Spearman ρ"
+          sub={`médiane ${suite.rank_correlation.median.toFixed(2)} · σ ${suite.rank_correlation.std.toFixed(2)}`}
+          value={suite.rank_correlation.mean.toFixed(2)}
+          color="#22C55E"
+        />
+        <SuiteMetricCard
+          label="Top-3 overlap"
+          sub={`min ${(suite.top3_overlap.min * 3).toFixed(0)}/3 · max ${(suite.top3_overlap.max * 3).toFixed(0)}/3`}
+          value={`${(suite.top3_overlap.mean * 3).toFixed(1)}/3`}
+          color="#A78BFA"
+        />
+        <SuiteMetricCard
+          label="MRR (RRF)"
+          sub={`médiane ${suite.mrr_rrf.median.toFixed(2)}`}
+          value={suite.mrr_rrf.mean.toFixed(2)}
+          color="#38BDF8"
+        />
+        <SuiteMetricCard
+          label="Latence CE"
+          sub={`min ${suite.ce_latency_ms.min.toFixed(0)} · max ${suite.ce_latency_ms.max.toFixed(0)} ms`}
+          value={`${suite.ce_latency_ms.mean.toFixed(0)}ms`}
+          color="#F59E0B"
+        />
+      </div>
+
+      {/* Per-query table */}
+      <div style={{
+        background: 'var(--s1)', border: '1px solid var(--line)', borderRadius: 12,
+        overflow: 'hidden', marginBottom: 14,
+      }}>
+        <div style={{
+          padding: '10px 16px', borderBottom: '1px solid var(--line)',
+          fontFamily: 'var(--f-mono)', fontSize: 9.5, color: 'var(--t3)',
+          letterSpacing: '0.14em', textTransform: 'uppercase',
+        }}>
+          Per-query — trié par ρ croissant (pires en haut)
+        </div>
+        <div style={{ display: 'grid' }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 80px',
+            padding: '8px 16px', gap: 12,
+            background: 'var(--s2)', borderBottom: '1px solid var(--line)',
+            fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t3)',
+            letterSpacing: '0.08em', textTransform: 'uppercase',
+          }}>
+            <div>Query</div>
+            <div style={{ textAlign: 'right' }}>ρ</div>
+            <div style={{ textAlign: 'right' }}>Top-3</div>
+            <div style={{ textAlign: 'right' }}>MRR</div>
+            <div style={{ textAlign: 'right' }}>CE ms</div>
+          </div>
+          {sortedRows.map((row) => {
+            const rhoColor = row.rank_correlation >= 0.5 ? '#22C55E'
+              : row.rank_correlation >= 0.2 ? '#F59E0B' : '#EF4444';
+            return (
+              <div key={row.query} style={{
+                display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 80px',
+                padding: '8px 16px', gap: 12, borderBottom: '1px solid var(--line)',
+                fontSize: 12, color: 'var(--t1)', alignItems: 'center',
+              }}>
+                <div style={{
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{row.query}</div>
+                <div style={{
+                  textAlign: 'right', fontFamily: 'var(--f-mono)', fontWeight: 600, color: rhoColor,
+                }}>{row.rank_correlation.toFixed(2)}</div>
+                <div style={{ textAlign: 'right', fontFamily: 'var(--f-mono)' }}>
+                  {Math.round(row.top3_overlap * 3)}/3
+                </div>
+                <div style={{ textAlign: 'right', fontFamily: 'var(--f-mono)' }}>
+                  {row.mrr_rrf.toFixed(2)}
+                </div>
+                <div style={{ textAlign: 'right', fontFamily: 'var(--f-mono)', color: 'var(--t3)' }}>
+                  {row.ce_latency_ms}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Data-driven recommendation */}
+      <div style={{
+        padding: '14px 16px',
+        background: `${verdictColor}11`, border: `1px solid ${verdictColor}55`,
+        borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 12,
+      }}>
+        <div style={{ color: verdictColor, flexShrink: 0, marginTop: 2 }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>
+          </svg>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1.55 }}>
+          <strong style={{ color: 'var(--t0)' }}>Verdict :</strong> {suite.recommendation}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export default function AdminRerankPage() {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [topK, setTopK] = useState('5');
@@ -89,10 +275,22 @@ export default function AdminRerankPage() {
     },
   });
 
+  const suiteMutation = useMutation<RerankSuiteResponse, Error, void>({
+    mutationFn: async () => {
+      const { data } = await api.post('/admin/rerank-eval/suite', { top_k: 10 });
+      return data as RerankSuiteResponse;
+    },
+  });
+
   const result = runMutation.data;
+  const suite = suiteMutation.data;
   const errObj = runMutation.error as { response?: { data?: { detail?: string } }; message?: string } | null;
+  const suiteErrObj = suiteMutation.error as { response?: { data?: { detail?: string } }; message?: string } | null;
   const errMsg = runMutation.isError
     ? (errObj?.response?.data?.detail || errObj?.message || 'Erreur inconnue')
+    : null;
+  const suiteErrMsg = suiteMutation.isError
+    ? (suiteErrObj?.response?.data?.detail || suiteErrObj?.message || 'Erreur inconnue')
     : null;
 
   return (
@@ -143,19 +341,38 @@ export default function AdminRerankPage() {
           >
             Lancer
           </DashButton>
+          <DashButton
+            kind="ghost"
+            loading={suiteMutation.isPending}
+            onClick={() => suiteMutation.mutate()}
+            icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>}
+          >
+            Run suite (20)
+          </DashButton>
+        </div>
+        <div style={{
+          marginTop: 10, fontSize: 11, color: 'var(--t3)',
+          fontFamily: 'var(--f-mono)', letterSpacing: '0.04em',
+        }}>
+          {suiteMutation.isPending
+            ? 'Évaluation en cours sur 20 requêtes médicales — patientez ~10s…'
+            : 'Suite = 20 requêtes médicales curées (cardio, triage, médicaments, chroniques) pour un verdict statistique.'}
         </div>
       </div>
 
       {/* Error */}
-      {errMsg && (
+      {(errMsg || suiteErrMsg) && (
         <div style={{
           marginBottom: 18, padding: '12px 16px',
           background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.35)',
           color: '#EF4444', borderRadius: 10, fontSize: 13,
         }}>
-          Erreur API : {errMsg}
+          Erreur API : {errMsg || suiteErrMsg}
         </div>
       )}
+
+      {/* Suite results — shown above the single-query block when available */}
+      {suite && <SuiteResults suite={suite} />}
 
       {/* Idle */}
       {!result && !runMutation.isPending && !errMsg && (

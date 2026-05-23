@@ -1,4 +1,4 @@
-package ma.nsynergy.medisense_ai
+package ma.nsynergy.medisense.ai
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,27 @@
+---
+title: MediSense AI - Appointment + No-Show + CRM
+---
+flowchart TD
+    A([Patient books]) --> B[POST /appointments]
+    B --> C{Time in future?}
+    C -- no --> X1[422 Unprocessable]
+    C -- yes --> D{Doctor active?}
+    D -- no --> X2[404 Not Found]
+    D -- yes --> E{Slot conflict?}
+    E -- yes --> X3[409 Conflict]
+    E -- no --> F[noshow_predictor.predict<br/>age, distance, prev_noshows, weather, hour]
+    F --> G[Assign risk_color green/orange/red]
+    G --> H[DB flush + audit WRITE]
+    H --> I[Fire-and-forget salesforce_client.send_crm_event]
+    I --> J([201 Created])
+
+    S([Secretary]) --> S1[GET /predictions/no-show/batch]
+    S1 --> S2{risk_color = red?}
+    S2 -- yes --> S3[POST /reminders/dispatch Twilio SMS]
+    S2 -- no --> S4[Skip]
+    S3 --> S5[Increment sms_reminders_sent]
+
+    CRM([CRM task FAILED]) --> CR1[POST /crm/tasks/uuid/retry]
+    CR1 --> CR2{Salesforce 2xx?}
+    CR2 -- yes --> CR3[status = SYNCED]
+    CR2 -- no --> CR4[Circuit breaker + RETRY]

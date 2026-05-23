@@ -68,3 +68,6 @@ numpy>=1.26.0               # already transitive via scikit-learn; explicit for 
 # ── MLOps / Drift Detection (Sprint 8) ───────────────────
 evidently>=0.4.0            # PSI + feature drift reports (Airflow DAG post-retrain)
 
+# ── Push Notifications (Sprint 7 — US-29) ────────────────
+firebase-admin>=6.5.0       # FCM push for real-time anomaly alerts to mobile
+

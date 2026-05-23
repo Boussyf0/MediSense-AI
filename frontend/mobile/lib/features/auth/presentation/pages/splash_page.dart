@@ -15,7 +15,6 @@ class SplashPage extends ConsumerStatefulWidget {
 }
 
 class _SplashPageState extends ConsumerState<SplashPage> with TickerProviderStateMixin {
-  late final List<AnimationController> _bars;
   late final List<AnimationController> _rings;
   Timer? _ringDelay;
   final _storage = const FlutterSecureStorage();
@@ -23,14 +22,6 @@ class _SplashPageState extends ConsumerState<SplashPage> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-
-    _bars = List.generate(
-      5,
-      (i) => AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 400 + i * 80),
-      )..repeat(reverse: true),
-    );
 
     _rings = List.generate(
       2,
@@ -69,14 +60,12 @@ class _SplashPageState extends ConsumerState<SplashPage> with TickerProviderStat
   @override
   void dispose() {
     _ringDelay?.cancel();
-    for (final c in _bars) { c.dispose(); }
     for (final c in _rings) { c.dispose(); }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final barH = [12.0, 24.0, 40.0, 24.0, 12.0];
     return Scaffold(
       backgroundColor: AppColors.surface0,
       body: Stack(
@@ -119,7 +108,7 @@ class _SplashPageState extends ConsumerState<SplashPage> with TickerProviderStat
                               );
                             },
                           )),
-                      // Glassmorphism logo container
+                      // Logo image container
                       ClipRRect(
                         borderRadius: BorderRadius.circular(28),
                         child: BackdropFilter(
@@ -145,30 +134,13 @@ class _SplashPageState extends ConsumerState<SplashPage> with TickerProviderStat
                                 ),
                               ],
                             ),
-                            child: Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                children: List.generate(
-                                  5,
-                                  (i) => AnimatedBuilder(
-                                    animation: _bars[i],
-                                    builder: (_, __) => Container(
-                                      width: 4,
-                                      margin: const EdgeInsets
-                                          .symmetric(horizontal: 1.5),
-                                      height: barH[i] *
-                                          (0.25 +
-                                              0.75 * _bars[i].value),
-                                      decoration: BoxDecoration(
-                                        gradient: AppColors.aiGrad,
-                                        borderRadius:
-                                            BorderRadius.circular(2),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(27),
+                              child: Image.asset(
+                                'assets/branding/app_icon.png',
+                                width: 96,
+                                height: 96,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

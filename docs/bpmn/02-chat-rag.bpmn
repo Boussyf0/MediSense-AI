@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_ChatRAG" targetNamespace="http://medisense.ai/bpmn">
+  <bpmn:process id="Process_ChatRAG" name="Patient Chat with RAG" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_1" name="Patient sends message">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_PostChat" name="chat.py POST /chat">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:serviceTask id="Task_IoTContext" name="fetch_iot_context 30d">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_DetectLang" name="Detect language Darija/AR/FR">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Normalize" name="Normalize to clinical French (Mistral 7B)">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Retrieval" name="Hybrid retrieval: Qdrant RRF + BM25 + MCP">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Entities" name="Medical entity extraction + ICD-10 boost">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Safety" name="safety.py pre_check">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_Block</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Urgent</bpmn:outgoing>
+      <bpmn:outgoing>Flow_OK</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Disclaimer" name="Return safe disclaimer only">
+      <bpmn:incoming>Flow_Block</bpmn:incoming>
+      <bpmn:outgoing>Flow_DisToEnd</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sendTask id="Task_Escalate" name="Triage URGENT - CRM SAMU 141 + FCM">
+      <bpmn:incoming>Flow_Urgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_EscToEnd</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_LLM" name="llm.py generate stream">
+      <bpmn:incoming>Flow_OK</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_PostCheck" name="safety.py post_check (dosage + disclaimer)">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Persist" name="Persist conversation + Redis cache 24h">
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_1" name="Stream response to patient">
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+      <bpmn:incoming>Flow_DisToEnd</bpmn:incoming>
+      <bpmn:incoming>Flow_EscToEnd</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_PostChat"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_PostChat" targetRef="Task_IoTContext"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_IoTContext" targetRef="Task_DetectLang"/>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_DetectLang" targetRef="Task_Normalize"/>
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_Normalize" targetRef="Task_Retrieval"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Retrieval" targetRef="Task_Entities"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_Entities" targetRef="Gateway_Safety"/>
+    <bpmn:sequenceFlow id="Flow_Block" name="low confidence" sourceRef="Gateway_Safety" targetRef="Task_Disclaimer"/>
+    <bpmn:sequenceFlow id="Flow_Urgent" name="urgent / IoT critical" sourceRef="Gateway_Safety" targetRef="Task_Escalate"/>
+    <bpmn:sequenceFlow id="Flow_OK" name="ok" sourceRef="Gateway_Safety" targetRef="Task_LLM"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_LLM" targetRef="Task_PostCheck"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Task_PostCheck" targetRef="Task_Persist"/>
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Task_Persist" targetRef="EndEvent_1"/>
+    <bpmn:sequenceFlow id="Flow_DisToEnd" sourceRef="Task_Disclaimer" targetRef="EndEvent_1"/>
+    <bpmn:sequenceFlow id="Flow_EscToEnd" sourceRef="Task_Escalate" targetRef="EndEvent_1"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_1">
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_ChatRAG">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="100" y="200" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PostChat_di" bpmnElement="Task_PostChat">
+        <dc:Bounds x="180" y="178" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_IoTContext_di" bpmnElement="Task_IoTContext">
+        <dc:Bounds x="340" y="178" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DetectLang_di" bpmnElement="Task_DetectLang">
+        <dc:Bounds x="500" y="178" width="120" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Normalize_di" bpmnElement="Task_Normalize">
+        <dc:Bounds x="660" y="178" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Retrieval_di" bpmnElement="Task_Retrieval">
+        <dc:Bounds x="840" y="178" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Entities_di" bpmnElement="Task_Entities">
+        <dc:Bounds x="1040" y="178" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Safety_di" bpmnElement="Gateway_Safety" isMarkerVisible="true">
+        <dc:Bounds x="1220" y="193" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Disclaimer_di" bpmnElement="Task_Disclaimer">
+        <dc:Bounds x="1320" y="60" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Escalate_di" bpmnElement="Task_Escalate">
+        <dc:Bounds x="1320" y="320" width="200" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LLM_di" bpmnElement="Task_LLM">
+        <dc:Bounds x="1320" y="178" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PostCheck_di" bpmnElement="Task_PostCheck">
+        <dc:Bounds x="1500" y="178" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Persist_di" bpmnElement="Task_Persist">
+        <dc:Bounds x="1700" y="178" width="160" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="1900" y="200" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="136" y="218"/><di:waypoint x="180" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="300" y="218"/><di:waypoint x="340" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="460" y="218"/><di:waypoint x="500" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="620" y="218"/><di:waypoint x="660" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="800" y="218"/><di:waypoint x="840" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="1000" y="218"/><di:waypoint x="1040" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="1180" y="218"/><di:waypoint x="1220" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Block_di" bpmnElement="Flow_Block">
+        <di:waypoint x="1245" y="193"/><di:waypoint x="1245" y="100"/><di:waypoint x="1320" y="100"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Urgent_di" bpmnElement="Flow_Urgent">
+        <di:waypoint x="1245" y="243"/><di:waypoint x="1245" y="360"/><di:waypoint x="1320" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_OK_di" bpmnElement="Flow_OK">
+        <di:waypoint x="1270" y="218"/><di:waypoint x="1320" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="1460" y="218"/><di:waypoint x="1500" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9">
+        <di:waypoint x="1660" y="218"/><di:waypoint x="1700" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <di:waypoint x="1860" y="218"/><di:waypoint x="1900" y="218"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DisToEnd_di" bpmnElement="Flow_DisToEnd">
+        <di:waypoint x="1480" y="100"/><di:waypoint x="1918" y="100"/><di:waypoint x="1918" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EscToEnd_di" bpmnElement="Flow_EscToEnd">
+        <di:waypoint x="1520" y="360"/><di:waypoint x="1918" y="360"/><di:waypoint x="1918" y="236"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

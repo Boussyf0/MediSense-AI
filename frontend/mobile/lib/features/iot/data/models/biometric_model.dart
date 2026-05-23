@@ -4,12 +4,12 @@ class BiometricPoint {
   final DateTime timestamp;
   final double heartRate;
   final double spo2;
-  final double hrv;
+  final double? hrv;
   const BiometricPoint({
     required this.timestamp,
     required this.heartRate,
     required this.spo2,
-    required this.hrv,
+    this.hrv,
   });
 }
 

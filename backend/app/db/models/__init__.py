@@ -1,6 +1,7 @@
 from .audit_log import AuditLog
 from .biometric_anomaly import BiometricAnomaly
 from .biometric_reading import BiometricReading
+from .caregiver import PatientCaregiver
 from .conversation import Conversation
 from .dpa_summary import DPASummary
 from .iot_device import IotDevice
@@ -16,6 +17,7 @@ __all__ = [
     "AuditLog",
     "BiometricAnomaly",
     "BiometricReading",
+    "PatientCaregiver",
     "Conversation",
     "DPASummary",
     "IotDevice",

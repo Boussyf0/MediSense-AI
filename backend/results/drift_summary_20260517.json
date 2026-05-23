@@ -1,0 +1,17 @@
+{
+  "date": "20260517",
+  "psi_threshold": 0.25,
+  "psi_scores": {
+    "hour_of_day": 0.0421,
+    "day_of_week": 0.0183,
+    "month": 0.1052,
+    "lead_time_days": 0.2876,
+    "patient_noshow_count_12m": 0.1644,
+    "patient_appointment_count_12m": 0.0928,
+    "patient_age": 0.3091
+  },
+  "drifted_features": ["lead_time_days", "patient_age"],
+  "drift_detected": true,
+  "ref_rows": 2000,
+  "cur_rows": 500
+}

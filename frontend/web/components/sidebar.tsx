@@ -1,9 +1,11 @@
 'use client';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/auth';
+import { useAlerts } from './AlertsProvider';
 import {
   IconCalendar, IconUsers, IconDoc, IconSync, IconCheck,
-  IconShield, IconFlask, IconCpu, IconLogout,
+  IconShield, IconFlask, IconCpu, IconLogout, IconBell,
 } from './icons';
 import type { IconProps } from './icons';
 
@@ -45,8 +47,10 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { unread, openFeed } = useAlerts();
   const role = ((user?.role === 'patient' ? 'doctor' : user?.role) ?? 'doctor') as Role;
   const items = NAV[role];
+  const showAlerts = role === 'doctor' || role === 'admin';
 
   const initial = user
     ? (user.first_name?.[0] ?? user.email[0]).toUpperCase()
@@ -71,15 +75,13 @@ export function Sidebar() {
       {/* logo */}
       <div style={{ padding: '20px 18px 18px', borderBottom: '1px solid var(--line)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 18 }}>
-            {[8, 14, 18, 14, 8].map((h, i) => (
-              <div key={i} style={{
-                width: 2.5, height: h, borderRadius: 2,
-                background: 'var(--ai-grad)',
-                opacity: 0.7 + (i === 2 ? 0.3 : 0),
-              }} />
-            ))}
-          </div>
+          <Image
+            src="/logo.png"
+            alt="MediSense AI"
+            width={24}
+            height={24}
+            style={{ borderRadius: 6, flexShrink: 0 }}
+          />
           <div style={{
             fontFamily: 'var(--f-display)', fontWeight: 600, fontSize: 14,
             color: 'var(--t0)', letterSpacing: '-0.01em',
@@ -129,6 +131,69 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Alerts bell — doctors and admins only */}
+      {showAlerts && (
+        <div style={{
+          padding: '6px 10px 2px',
+          borderTop: '1px solid var(--line)',
+        }}>
+          <div style={{
+            fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+            letterSpacing: '0.16em', textTransform: 'uppercase',
+            padding: '4px 8px 6px',
+          }}>
+            Surveillance
+          </div>
+          <button
+            id="sidebar-alerts-btn"
+            onClick={openFeed}
+            aria-label={`Ouvrir les alertes${unread > 0 ? ` (${unread} non lues)` : ''}`}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+              padding: '9px 10px', marginBottom: 2,
+              background: 'transparent',
+              border: 'none',
+              borderLeft: '2px solid transparent',
+              color: unread > 0 ? '#EF4444' : 'var(--t2)',
+              fontFamily: 'var(--f-body)', fontSize: 13,
+              fontWeight: unread > 0 ? 500 : 400,
+              cursor: 'pointer', textAlign: 'left', borderRadius: 6,
+              transition: 'all .15s',
+              position: 'relative',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'var(--s2)';
+              (e.currentTarget as HTMLButtonElement).style.color = unread > 0 ? '#EF4444' : 'var(--t0)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = unread > 0 ? '#EF4444' : 'var(--t2)';
+            }}
+          >
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <IconBell size={18} stroke={1.7} color={unread > 0 ? '#EF4444' : '#64748B'} />
+              {unread > 0 && (
+                <span style={{
+                  position: 'absolute', top: -5, right: -5,
+                  minWidth: 15, height: 15,
+                  background: '#EF4444',
+                  borderRadius: 99, fontSize: 8,
+                  fontFamily: 'var(--f-mono)', fontWeight: 700,
+                  color: '#fff', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  padding: '0 3px',
+                  boxShadow: '0 0 6px rgba(239,68,68,0.6)',
+                  animation: 'pulse 1.5s ease-in-out infinite',
+                }}>
+                  {unread > 99 ? '99+' : unread}
+                </span>
+              )}
+            </div>
+            <span>Alertes</span>
+          </button>
+        </div>
+      )}
 
       {/* user */}
       <div style={{

@@ -21,6 +21,16 @@ const _tagTones = <String, _TagTone>{
   'prévention': _TagTone(Color(0xFF94A3B8), Color(0x1F94A3B8)),
 };
 
+const _filterIcons = <String, IconData>{
+  'all': Icons.apps_rounded,
+  'urgence': Icons.emergency_rounded,
+  'traitement': Icons.medication_rounded,
+  'symptômes': Icons.sick_rounded,
+  'mesure': Icons.monitor_heart_rounded,
+  'nutrition': Icons.restaurant_rounded,
+  'prévention': Icons.shield_rounded,
+};
+
 class _Convo {
   final String id;
   final String title;
@@ -40,16 +50,71 @@ class _Convo {
   });
 
   factory _Convo.fromJson(Map<String, dynamic> j) {
-    final tag = (j['tag'] as String?)?.toLowerCase() ?? 'symptômes';
+    final preview = (j['preview'] as String?) ?? '';
+    final rawTitle = j['title'] as String?;
+    final title = (rawTitle != null && rawTitle.trim().isNotEmpty)
+        ? rawTitle
+        : (preview.isNotEmpty
+            ? (preview.length > 60 ? '${preview.substring(0, 60)}…' : preview)
+            : 'Nouvelle conversation');
+    final searchText = ('$title $preview').toLowerCase();
+    final derivedTag = _deriveTag(searchText);
     return _Convo(
       id: j['id']?.toString() ?? '',
-      title: (j['title'] as String?) ?? 'Conversation',
-      preview: (j['preview'] as String?) ?? '',
-      date: _formatDate(j['last_message_at'] as String?),
-      tag: _tagTones.containsKey(tag) ? tag : 'symptômes',
-      urgent: j['urgent'] == true,
+      title: title,
+      preview: preview,
+      date: _formatDate(
+          (j['last_message_at'] as String?) ?? (j['created_at'] as String?)),
+      tag: derivedTag,
+      urgent: searchText.contains('urgence') ||
+          searchText.contains('samu') ||
+          searchText.contains('141'),
       sources: (j['sources_count'] as num?)?.toInt() ?? 0,
     );
+  }
+
+  static String _deriveTag(String text) {
+    if (text.contains('urgence') ||
+        text.contains('samu') ||
+        text.contains('141') ||
+        text.contains('thoracique') ||
+        text.contains('respirer')) {
+      return 'urgence';
+    }
+    if (text.contains('doliprane') ||
+        text.contains('paracetamol') ||
+        text.contains('ibuprof') ||
+        text.contains('antibiot') ||
+        text.contains('posologie') ||
+        text.contains('dosage') ||
+        text.contains('médicament') ||
+        text.contains('medicament') ||
+        text.contains('comprim')) {
+      return 'traitement';
+    }
+    if (text.contains('tension') ||
+        text.contains('glycém') ||
+        text.contains('glycem') ||
+        text.contains('rythme') ||
+        text.contains('mesure') ||
+        text.contains('cardiaque')) {
+      return 'mesure';
+    }
+    if (text.contains('aliment') ||
+        text.contains('nutrition') ||
+        text.contains('régime') ||
+        text.contains('regime') ||
+        text.contains('manger')) {
+      return 'nutrition';
+    }
+    if (text.contains('prévention') ||
+        text.contains('prevention') ||
+        text.contains('vaccin') ||
+        text.contains('hygiène') ||
+        text.contains('hygiene')) {
+      return 'prévention';
+    }
+    return 'symptômes';
   }
 
   static String _formatDate(String? iso) {
@@ -138,38 +203,57 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
               ),
             ),
             SizedBox(
-              height: 40,
+              height: 56,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 itemCount: filters.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 6),
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, i) {
                   final f = filters[i];
                   final active = f == _filter;
+                  final icon = _filterIcons[f] ?? Icons.label_outline_rounded;
+                  final tone = _tagTones[f];
+                  final fg = active
+                      ? Colors.white
+                      : (tone?.color ?? AppColors.textPrimary);
                   return GestureDetector(
                     onTap: () => setState(() => _filter = f),
                     child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         gradient: active ? AppColors.aiGrad : null,
-                        color: active ? null : const Color(0x991C2333),
+                        color: active
+                            ? null
+                            : (tone?.background ?? AppColors.surface1),
                         borderRadius: BorderRadius.circular(99),
                         border: active
                             ? null
-                            : Border.all(color: AppColors.line, width: 1),
+                            : Border.all(
+                                color: (tone?.color ?? AppColors.line)
+                                    .withValues(alpha: 0.4),
+                                width: 1,
+                              ),
                       ),
-                      child: Center(
-                        child: Text(
-                          f == 'all' ? 'TOUT' : f.toUpperCase(),
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.6,
-                            color: active ? Colors.white : AppColors.text1,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(icon, size: 14, color: fg),
+                          const SizedBox(width: 6),
+                          Text(
+                            f == 'all' ? 'TOUT' : f.toUpperCase(),
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.6,
+                              color: fg,
+                              height: 1.0,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   );
@@ -324,14 +408,26 @@ class _HistoryCard extends StatelessWidget {
                         color: tone.background,
                         borderRadius: BorderRadius.circular(99),
                       ),
-                      child: Text(
-                        convo.tag.toUpperCase(),
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                          color: tone.color,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _filterIcons[convo.tag] ??
+                                Icons.label_outline_rounded,
+                            size: 11,
+                            color: tone.color,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            convo.tag.toUpperCase(),
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                              color: tone.color,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const Spacer(),

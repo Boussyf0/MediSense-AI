@@ -150,7 +150,7 @@ async def _fetch_recent_symptoms(
     try:
         cutoff = datetime.now(timezone.utc) - timedelta(days=SYMPTOM_WINDOW_DAYS)
 
-        # Get conversations for this patient
+        # Get recent conversations for this patient (last 7 days)
         conv_stmt = (
             select(Conversation)
             .where(
@@ -162,6 +162,17 @@ async def _fetch_recent_symptoms(
         )
         conv_result = await db.execute(conv_stmt)
         conversations = list(conv_result.scalars().all())
+
+        # Fallback to historical conversations when no recent interaction exists.
+        if not conversations:
+            history_stmt = (
+                select(Conversation)
+                .where(Conversation.patient_id == patient_id)
+                .order_by(desc(Conversation.created_at))
+                .limit(3)
+            )
+            history_result = await db.execute(history_stmt)
+            conversations = list(history_result.scalars().all())
 
         if not conversations:
             return []
@@ -182,33 +193,50 @@ async def _fetch_recent_symptoms(
         messages = list(msg_result.scalars().all())
 
         # Decrypt messages using pgcrypto
-        symptoms: list[str] = []
+        symptoms: list[dict[str, str]] = []
+        is_urgent = False
+        
         for msg in messages:
             decrypted = await _decrypt_message(msg.id, db)  # type: ignore[arg-type]
             if decrypted:
                 entities = extract_entities(decrypted)
-                # Add symptom-like terms (drug names, ICD codes give context)
+                if entities.is_urgent:
+                    is_urgent = True
+                
+                # 1. Use ICD-10 lookup first (already available via extract_entities)
+                for symptom_name in entities.matched_symptoms:
+                    symptoms.append({
+                        "name": symptom_name,
+                        "severity": "critical" if entities.is_urgent else "moderate",
+                        "source": "icd10",
+                    })
+
+                # 2. Add symptom-like terms (drug names give context)
                 if entities.drug_names:
-                    symptoms.extend(
-                        [f"médicament: {d}" for d in entities.drug_names[:2]]
-                    )
-                # Extract free-text symptom phrases via simple heuristic
+                    for d in entities.drug_names[:2]:
+                        symptoms.append({
+                            "name": f"médicament: {d}",
+                            "severity": "moderate",
+                            "source": "chat",
+                        })
+
+                # 3. Extract free-text symptom phrases via restrictive regex + stoplist
                 symptom_phrases = _extract_symptom_phrases(decrypted)
                 symptoms.extend(symptom_phrases)
 
-        # De-duplicate and cap
+        # De-duplicate by name and cap
         seen: set[str] = set()
-        unique_symptoms: list[str] = []
+        unique_symptoms: list[dict[str, str]] = []
         for s in symptoms:
-            s_lower = s.lower()
-            if s_lower not in seen:
-                seen.add(s_lower)
+            s_name = s["name"].lower()
+            if s_name not in seen:
+                seen.add(s_name)
                 unique_symptoms.append(s)
-        return unique_symptoms[:MAX_SYMPTOMS]
+        return unique_symptoms[:MAX_SYMPTOMS], is_urgent
 
     except Exception as exc:
         logger.warning("dpa_symptoms_failed patient=%s err=%s", patient_id, exc)
-        return []
+        return [], False
 
 
 async def _decrypt_message(message_id: uuid.UUID, db: AsyncSession) -> str | None:
@@ -373,21 +401,49 @@ def _compute_confidence(symptoms: list[str], iot_data: dict[str, Any]) -> float:
 
 import re as _re
 
+import re as _re
+
 _SYMPTOM_PATTERNS = [
-    r"(?:j'ai|j'avais|je ressens|je souffre de|depuis\s+\w+)\s+([a-zA-Zéèêëàâîïôùûüç\s]{3,40})",
-    r"(?:douleur|mal|fièvre|toux|essoufflement|fatigue|nausée|vomissement|vertige)\s+(?:\w+\s){0,3}",
+    # Match: "j'ai mal à la tête depuis 5 minutes" -> name="tête", duration="5 minutes"
+    r"(?:j'ai|j'avais|je ressens|je souffre de)\s+(?:mal\s+(?:à\s+la|au|aux)\s+|des\s+)?([a-zA-Zéèêëàâîïôùûüç\s]{3,20}?)(?:\s+depuis\s+(\d+\s*(?:minutes?|heures?|jours?|semaines?|mois)))?(?=$|\s+et|\s*\.)",
+    
+    # Match: "douleur intense au ventre depuis 2 jours" -> name="ventre", duration="2 jours"
+    r"(?:douleurs?|fièvre|toux|essoufflement|fatigue|nausées?|vomissements?|vertiges?)\s+(?:intenses?\s+)?(?:au|à|dans\s+la|aux)\s+([a-zA-Zéèêëàâîïôùûüç\s]{3,20}?)(?:\s+depuis\s+(\d+\s*(?:minutes?|heures?|jours?|semaines?|mois)))?(?=$|\s+et|\s*\.)",
+    
+    # Match: "toux depuis 3 jours" -> name="toux", duration="3 jours"
+    r"(douleurs?|fièvre|toux|essoufflement|fatigue|nausées?|vomissements?|vertiges?)(?:\s+depuis\s+(\d+\s*(?:minutes?|heures?|jours?|semaines?|mois)))?",
 ]
 _SYMPTOM_RE = _re.compile("|".join(_SYMPTOM_PATTERNS), _re.IGNORECASE)
 
+_STOPLIST = {"un", "une", "le", "la", "les", "des", "du", "au", "aux", "très", "beaucoup", "peu", "minutes", "heures", "jours", "depuis", "mal"}
 
-def _extract_symptom_phrases(text: str) -> list[str]:
-    """Extract symptom phrases from a patient message using regex patterns."""
+def _extract_symptom_phrases(text: str) -> list[dict[str, str]]:
+    """Extract symptom phrases from a patient message using restrictive regex and stoplist."""
     matches = _SYMPTOM_RE.findall(text)
-    phrases = []
+    symptoms = []
+    
     for m in matches:
-        # findall returns tuples for groups — flatten and clean
-        phrase = m if isinstance(m, str) else next((g for g in m if g), "")
-        phrase = phrase.strip()
-        if phrase and len(phrase) > 3:
-            phrases.append(phrase[:60])   # cap at 60 chars
-    return phrases[:5]
+        groups = [g for g in m if g]
+        if not groups:
+            continue
+            
+        name = groups[0].strip()
+        duration = groups[1].strip() if len(groups) > 1 else None
+        
+        if len(name) < 3 or all(w in _STOPLIST for w in name.lower().split()):
+            continue
+            
+        # Map generic "mal" to "douleur"
+        if name.lower() == "mal":
+            name = "douleur"
+            
+        symptom_dict = {
+            "name": name[:60],
+            "severity": "moderate",
+            "source": "chat",
+        }
+        if duration:
+            symptom_dict["duration"] = duration[:30]
+        symptoms.append(symptom_dict)
+            
+    return symptoms[:5]

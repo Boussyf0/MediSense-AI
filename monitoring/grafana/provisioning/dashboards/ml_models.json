@@ -1,0 +1,99 @@
+{
+  "annotations": {"list": []},
+  "description": "MediSense AI — ML model serving, latency, age, drift",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "title": "MediSense — ML Models",
+  "uid": "medisense-ml",
+  "tags": ["medisense", "ml"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "templating": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Prediction latency p95 (s) by model",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (model, le) (rate(medisense_prediction_latency_seconds_bucket[5m])))",
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom"}}
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Predictions / min by risk level (no-show)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum by (risk_level) (rate(medisense_noshow_predictions_total[1m])) * 60",
+          "legendFormat": "{{risk_level}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Model artefact age (hours)",
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "medisense_model_age_seconds / 3600", "legendFormat": "{{model}}", "refId": "A"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "h",
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "orange", "value": 168},
+            {"color": "red", "value": 720}
+          ]}
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "gauge",
+      "title": "Drift PSI by feature (latest)",
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "medisense_drift_psi", "legendFormat": "{{feature}}", "refId": "A"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 0.5,
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "orange", "value": 0.1},
+            {"color": "red", "value": 0.25}
+          ]}
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Total predictions (24h)",
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(increase(medisense_noshow_predictions_total[24h]))", "refId": "A"}
+      ]
+    }
+  ]
+}

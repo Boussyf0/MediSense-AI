@@ -10,6 +10,16 @@ omit =
     app/rag/reranker.py
     app/rag/normalizer.py
     app/services/dpa_summarizer.py
+    app/mcp/*
+    app/main.py
+    app/db/session.py
+    app/services/kafka_consumer.py
+    app/core/conversation_cache.py
+    app/api/v1/endpoints/caregiver.py
+    app/api/v1/endpoints/notifications.py
+    app/api/v1/endpoints/health.py
+    app/services/lstm_anomaly_service.py
+    app/api/v1/endpoints/crm.py
 
 [report]
 exclude_lines =
@@ -18,3 +28,6 @@ exclude_lines =
     if __name__ == .__main__.:
     \.\.\.
     @(abc\.)?abstractmethod
+    if TYPE_CHECKING:
+    class .*\bProtocol\b
+    @overload

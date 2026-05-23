@@ -10,7 +10,7 @@ class MetricCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String name;
-  final num value;
+  final num? value;
   final String unit;
   final Color color;
   final String trend;
@@ -98,23 +98,35 @@ class MetricCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    CountUp(
-                      value: value,
-                      style: AppFonts.display(
-                        color: color,
-                        fontSize: 40,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.8,
-                        height: 1,
-                        shadows: [
-                          Shadow(
-                            color: color.withValues(alpha: 0.33),
-                            blurRadius: 20,
-                          ),
-                        ],
+                    if (value == null)
+                      Text(
+                        '—',
+                        style: AppFonts.display(
+                          color: color,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.8,
+                          height: 1,
+                        ),
+                      )
+                    else
+                      CountUp(
+                        value: value!,
+                        style: AppFonts.display(
+                          color: color,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.8,
+                          height: 1,
+                          shadows: [
+                            Shadow(
+                              color: color.withValues(alpha: 0.33),
+                              blurRadius: 20,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    if (unit.isNotEmpty)
+                    if (unit.isNotEmpty && value != null)
                       Padding(
                         padding: const EdgeInsets.only(left: 2, bottom: 4),
                         child: Text(

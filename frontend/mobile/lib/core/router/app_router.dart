@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../api/dio_client.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -8,6 +9,8 @@ import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/chat/presentation/pages/history_page.dart';
 import '../../features/appointments/presentation/pages/appointments_page.dart';
 import '../../features/appointments/presentation/pages/booking_page.dart';
+import '../../features/appointments/presentation/pages/doctors_directory_page.dart';
+import '../../features/appointments/data/models/doctor_model.dart';
 import '../../features/iot/presentation/pages/iot_dashboard_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/profile/presentation/pages/medication_reminders_page.dart';
@@ -17,6 +20,7 @@ const _storage = FlutterSecureStorage();
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
+  refreshListenable: sessionExpiredNotifier,
   redirect: (context, state) async {
     final token = await _storage.read(key: 'access_token');
     final onboarded = await _storage.read(key: 'onboarded');
@@ -58,7 +62,15 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: 'new',
-              builder: (_, __) => const BookingPage(),
+              builder: (_, state) => BookingPage(
+                preselectedDoctor: state.extra is DoctorModel
+                    ? state.extra as DoctorModel
+                    : null,
+              ),
+            ),
+            GoRoute(
+              path: 'doctors',
+              builder: (_, __) => const DoctorsDirectoryPage(),
             ),
           ],
         ),

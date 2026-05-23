@@ -36,6 +36,7 @@ from qdrant_client.models import (
     Fusion,
 )
 
+from app.api.v1.endpoints.metrics import rag_retrieval_latency_seconds
 from app.core.config import get_settings
 from app.rag.embedder import embed_query, EMBEDDING_DIM
 
@@ -163,7 +164,8 @@ def hybrid_search(
       - icd10_filter: boost/restrict by ICD-10 codes
     """
     client = _get_client()
-    query_vector = embed_query(query_text)
+    with rag_retrieval_latency_seconds.labels(stage="dense").time():
+        query_vector = embed_query(query_text)
 
     # Build base filter (strict only for source). ICD-10 is applied as a BOOST path,
     # not as a hard filter, so sources without icd10_codes (e.g. BDPM) can still surface.
@@ -176,7 +178,8 @@ def hybrid_search(
     # Hybrid search using Qdrant's query API with RRF fusion.
     # Dense path: embed the query and search by cosine similarity.
     # BM25 path: use the same deterministic sparse hashing as ingestion.
-    sparse_query = _build_sparse_query(query_text)
+    with rag_retrieval_latency_seconds.labels(stage="bm25").time():
+        sparse_query = _build_sparse_query(query_text)
     prefetches = [
         Prefetch(
             query=query_vector,
@@ -207,12 +210,13 @@ def hybrid_search(
             )
         )
 
-    results = client.query_points(
-        collection_name=COLLECTION_NAME,
-        prefetch=prefetches,
-        query=FusionQuery(fusion=Fusion.RRF),
-        limit=limit,
-    )
+    with rag_retrieval_latency_seconds.labels(stage="rrf").time():
+        results = client.query_points(
+            collection_name=COLLECTION_NAME,
+            prefetch=prefetches,
+            query=FusionQuery(fusion=Fusion.RRF),
+            limit=limit,
+        )
 
     return [
         {

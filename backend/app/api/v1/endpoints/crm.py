@@ -24,9 +24,20 @@ from app.core.audit import log_audit
 from app.core.config import get_settings
 from app.core.dependencies import TokenPayload, require_role, require_secretary
 from app.db.models.appointment import Appointment
+from app.db.models.device_token import DeviceToken
 from app.db.models.sms_reminder_log import SmsReminderLog
+from app.db.models.patient import Patient
 from app.db.session import AsyncSessionLocal, get_db
+from app.services.fcm_service import send_to_tokens
 from app.services.salesforce_client import send_crm_event
+from app.services.sms_reminder import (
+    _build_sms_message,
+    _get_patient_phone_number,
+    _mark_sms_sent_now,
+    _release_sms_slot,
+    _reserve_sms_slot,
+    _send_sms,
+)
 from app.schemas.crm import (
     CRMRetryRequest,
     CRMRetryResponse,
@@ -181,34 +192,113 @@ async def send_sms_reminder(
     db: AsyncSession = Depends(get_db),
     current_user: TokenPayload = Depends(require_role("doctor", "secretary", "admin")),
 ) -> SmsSendResponse:
-    appt_result = await db.execute(
-        select(Appointment).where(Appointment.appointment_uuid == appointment_uuid)
-    )
-    appt = appt_result.scalar_one_or_none()
+    """
+    Manual per-row SMS + FCM push (agenda "Envoyer" button).
+
+    Honours patient opt-out and the global max-reminder cap, but bypasses the
+    auto-dispatcher's no-show probability threshold — staff is taking an
+    explicit clinical decision to remind this patient now.
+
+    On success: SMS goes out via the configured webhook (mock if unset),
+    a push notification is delivered to every registered device of the
+    patient user, and `appointment.sms_reminders_sent` is incremented so
+    the agenda counter updates on the next refetch.
+    """
+    appt = (
+        await db.execute(
+            select(Appointment).where(Appointment.appointment_uuid == appointment_uuid)
+        )
+    ).scalar_one_or_none()
     if appt is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
 
     now = datetime.now(timezone.utc)
     today = now.date()
+    settings = get_settings()
 
-    existing = await db.execute(
-        select(SmsReminderLog).where(
-            SmsReminderLog.appointment_uuid == appointment_uuid,
-            SmsReminderLog.task_type == "sms_reminder",
-            SmsReminderLog.scheduled_date == today,
+    log = (
+        await db.execute(
+            select(SmsReminderLog).where(
+                SmsReminderLog.appointment_uuid == appointment_uuid,
+                SmsReminderLog.task_type == "sms_reminder",
+                SmsReminderLog.scheduled_date == today,
+            )
         )
-    )
-    task = existing.scalar_one_or_none()
-    if task is not None:
-        return SmsSendResponse.model_validate(task)
+    ).scalar_one_or_none()
+    if log is not None and log.status == "sent":
+        return SmsSendResponse.model_validate(log)
+    if log is None:
+        log = SmsReminderLog(
+            appointment_uuid=appointment_uuid,
+            task_type="sms_reminder",
+            status="pending",
+            scheduled_for=now,
+            scheduled_date=today,
+        )
+        db.add(log)
+        await db.flush()
 
-    task = SmsReminderLog(
-        appointment_uuid=appointment_uuid,
-        task_type="sms_reminder",
-        status="pending",
-        scheduled_for=now,
-        scheduled_date=today,
+    patient = (
+        await db.execute(
+            select(Patient).where(Patient.patient_uuid == appt.patient_uuid)
+        )
+    ).scalar_one_or_none()
+    if patient is None or not patient.is_active:
+        log.status = "failed"
+        await db.flush()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Patient inactive ou introuvable")
+    if patient.sms_opt_out:
+        log.status = "skipped"
+        await db.flush()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Patient a refusé les SMS")
+
+    reserved = await _reserve_sms_slot(db, appointment_uuid, settings.SMS_REMINDER_MAX_COUNT)
+    if reserved is None:
+        log.status = "skipped"
+        await db.flush()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Nombre maximum de rappels atteint")
+
+    phone = await _get_patient_phone_number(db, appt.patient_uuid)
+    probability = float(appt.noshow_probability or 0.0)
+    message_body = _build_sms_message(appt, probability)
+
+    sms_error: str | None = None
+    if phone:
+        try:
+            await _send_sms(
+                phone_number=phone,
+                message=message_body,
+                appointment_uuid=appointment_uuid,
+                patient_uuid=appt.patient_uuid,
+            )
+        except Exception as exc:  # provider / network failure
+            sms_error = str(exc)
+    else:
+        sms_error = "missing_phone"
+
+    tokens = (
+        await db.execute(
+            select(DeviceToken.token).where(DeviceToken.user_uuid == appt.patient_uuid)
+        )
+    ).scalars().all()
+    pushed = await send_to_tokens(
+        list(tokens),
+        title="Rappel de rendez-vous",
+        body=message_body,
+        data={"appointment_uuid": str(appointment_uuid), "kind": "appointment_reminder"},
     )
-    db.add(task)
+
+    if sms_error and pushed == 0:
+        await _release_sms_slot(db, appointment_uuid)
+        log.status = "failed"
+        await db.flush()
+        if sms_error == "missing_phone":
+            detail = "Patient sans numéro ni appareil enregistré"
+        else:
+            detail = f"Envoi échoué: {sms_error}"
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail)
+
+    await _mark_sms_sent_now(db, appointment_uuid)
+    log.status = "sent"
     await db.flush()
-    return SmsSendResponse.model_validate(task)
+    return SmsSendResponse.model_validate(log)

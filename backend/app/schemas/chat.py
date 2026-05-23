@@ -39,6 +39,8 @@ class ConversationOut(BaseModel):
     language: str
     created_at: str
     message_count: int
+    last_message_at: str | None = None
+    preview: str | None = None
 
 
 class MessageOut(BaseModel):

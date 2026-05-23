@@ -1,0 +1,19 @@
+---
+title: MediSense AI - Patient Chat with RAG
+---
+flowchart TD
+    A([Patient sends message]) --> B[chat.py POST /chat]
+    B --> C[fetch_iot_context 30d]
+    C --> D[Detect language Darija/AR/FR]
+    D --> E[Normalize to clinical French - Mistral 7B]
+    E --> F[Parallel retrieval Qdrant RRF + BM25 + MCP ANSM/ICD-11]
+    F --> G[Medical entity extraction + ICD-10 boost]
+    G --> H{safety.py pre_check}
+    H -- block low confidence --> Z1[Return safe disclaimer only]
+    H -- urgent or IoT critical --> ESC[Triage URGENT -> CRM SAMU 141 + FCM]
+    H -- ok --> I[llm.py generate stream]
+    I --> J[safety.py post_check dosage + disclaimer]
+    J --> K[Persist conversation + Redis cache 24h]
+    K --> Z([Stream response to patient])
+    ESC --> Z
+    Z1 --> Z

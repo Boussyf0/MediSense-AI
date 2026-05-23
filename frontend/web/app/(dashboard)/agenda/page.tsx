@@ -8,7 +8,7 @@ import { RiskBadge } from '@/components/risk-badge';
 import { StatusBadge } from '@/components/status-badge';
 import { DashButton } from '@/components/dash-button';
 import { DashPage } from '@/components/dashboard-shell';
-import { IconCalendar, IconSync, IconSend, IconChevron } from '@/components/icons';
+import { IconCalendar, IconSync, IconSend, IconChevron, IconDoc } from '@/components/icons';
 
 type RiskLevel = 'safe' | 'warn' | 'danger' | null;
 type SmsStatus = 'pending' | 'sent' | 'failed' | 'skipped';
@@ -17,6 +17,7 @@ type FeedbackValue = 'presented' | 'no_show';
 interface BackendAppointmentPrediction {
   appointment_uuid: string;
   patient_uuid: string;
+  patient_name?: string | null;
   scheduled_at: string;
   noshow_probability: number | null;
   risk_color: 'green' | 'orange' | 'red' | null;
@@ -34,6 +35,179 @@ interface AppointmentRow {
   no_show_level: RiskLevel;
   sms_status: SmsStatus;
   status: string;
+}
+
+// ── Patient appointment types (from GET /appointments) ────────────────────────
+interface PatientAppointmentItem {
+  appointment_uuid: string;
+  scheduled_at: string;
+  appointment_time: string;
+  appointment_type: string;
+  doctor_name: string;
+  status: string;
+  noshow_probability: number | null;
+  risk_color: 'green' | 'orange' | 'red' | null;
+}
+
+function statusLabel(s: string): string {
+  const map: Record<string, string> = {
+    SCHEDULED: 'Planifié', CONFIRMED: 'Confirmé',
+    CANCELLED: 'Annulé', COMPLETED: 'Terminé', NO_SHOW: 'Absent',
+  };
+  return map[s] ?? s.toLowerCase().replaceAll('_', ' ');
+}
+function statusColor(s: string): string {
+  if (s === 'CONFIRMED' || s === 'COMPLETED') return '#22C55E';
+  if (s === 'NO_SHOW') return '#EF4444';
+  if (s === 'CANCELLED') return '#64748B';
+  return '#A78BFA';
+}
+
+function PatientAgendaView({ date, setDate }: { date: string; setDate: (d: string) => void }) {
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<PatientAppointmentItem[]>({
+    queryKey: ['patient-appointments', date],
+    queryFn: async () => {
+      const { data } = await api.get(`/appointments?date=${date}`);
+      return Array.isArray(data) ? data : [];
+    },
+    enabled: !!date,
+  });
+
+  const upcoming = data ?? [];
+
+  return (
+    <DashPage
+      breadcrumb={`mes rendez-vous · ${formatFR(date)}`}
+      title="Mes rendez-vous"
+      subtitle={`${upcoming.length} rendez-vous · ${formatFR(date)}`}
+      actions={
+        <>
+          <label style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '7px 10px', borderRadius: 8,
+            background: 'var(--s2)', color: 'var(--t0)',
+            border: '1px solid var(--line-strong)',
+            fontFamily: 'var(--f-body)', fontSize: 12.5, cursor: 'pointer',
+          }}>
+            <IconCalendar size={13} stroke={2} />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{
+                background: 'transparent', border: 'none', outline: 'none',
+                color: 'var(--t0)', fontFamily: 'var(--f-mono)', fontSize: 12,
+                colorScheme: 'dark',
+              }}
+            />
+          </label>
+          <DashButton
+            kind="solid" small
+            icon={<IconSync size={13} stroke={2} />}
+            onClick={() => refetch()}
+            loading={isFetching && !isLoading}
+          >
+            Actualiser
+          </DashButton>
+        </>
+      }
+    >
+      <div style={{
+        background: 'var(--s1)', border: '1px solid var(--line)',
+        borderRadius: 14, overflow: 'hidden',
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: '90px 1fr 160px 130px 110px',
+          padding: '11px 18px', background: 'var(--s2)',
+          fontFamily: 'var(--f-mono)', fontSize: 9.5, color: 'var(--t3)',
+          letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500,
+          borderBottom: '1px solid var(--line)',
+        }}>
+          <div>Heure</div>
+          <div>Médecin</div>
+          <div>Type</div>
+          <div>Statut</div>
+          <div>Risque</div>
+        </div>
+
+        {isLoading && Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} style={{
+            display: 'grid', gridTemplateColumns: '90px 1fr 160px 130px 110px',
+            padding: '14px 18px', alignItems: 'center',
+            borderBottom: '1px solid var(--line)',
+          }}>
+            {[60, 140, 120, 100, 80].map((w, j) => (
+              <div key={j} style={{
+                height: 13, width: w, borderRadius: 4,
+                background: 'linear-gradient(90deg, var(--s2) 25%, var(--s3) 50%, var(--s2) 75%)',
+                backgroundSize: '400px 100%', animation: 'shimmer 1.5s infinite',
+              }} />
+            ))}
+          </div>
+        ))}
+
+        {!isLoading && isError && (
+          <div style={{ padding: 40, textAlign: 'center', color: '#EF4444', fontSize: 13 }}>
+            Erreur de chargement. Vérifiez la connexion.
+          </div>
+        )}
+
+        {!isLoading && !isError && upcoming.length === 0 && (
+          <div style={{ padding: 56, textAlign: 'center', color: 'var(--t3)', fontSize: 13 }}>
+            <div style={{ fontSize: 28, marginBottom: 12, opacity: 0.5 }}>
+              <IconDoc size={32} stroke={1.5} />
+            </div>
+            Aucun rendez-vous pour cette date
+          </div>
+        )}
+
+        {!isLoading && upcoming.map((apt, i) => {
+          const color = statusColor(apt.status);
+          const last = i === upcoming.length - 1;
+          return (
+            <div key={apt.appointment_uuid} style={{
+              display: 'grid', gridTemplateColumns: '90px 1fr 160px 130px 110px',
+              padding: '14px 18px', alignItems: 'center',
+              borderBottom: last ? 'none' : '1px solid var(--line)',
+            }}>
+              <div style={{ fontFamily: 'var(--f-display)', fontSize: 15, fontWeight: 600, color: 'var(--t0)' }}>
+                {apt.appointment_time ?? formatHour(apt.scheduled_at)}
+              </div>
+              <div>
+                <div style={{ fontSize: 13.5, color: 'var(--t0)', fontWeight: 500 }}>
+                  {apt.doctor_name}
+                </div>
+                <div style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t3)', marginTop: 2 }}>
+                  {formatFR(apt.scheduled_at.slice(0, 10))}
+                </div>
+              </div>
+              <div style={{ fontSize: 12.5, color: 'var(--t2)' }}>
+                {apt.appointment_type.replaceAll('_', ' ')}
+              </div>
+              <div>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '3px 10px', borderRadius: 99,
+                  background: `${color}18`, border: `1px solid ${color}44`,
+                  color, fontFamily: 'var(--f-mono)', fontSize: 10.5, fontWeight: 600,
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: 99, background: color }} />
+                  {statusLabel(apt.status)}
+                </span>
+              </div>
+              <div>
+                <RiskBadge
+                  level={apt.risk_color === 'green' ? 'safe' : apt.risk_color === 'orange' ? 'warn' : apt.risk_color === 'red' ? 'danger' : null}
+                  prob={apt.noshow_probability ?? 0}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </DashPage>
+  );
 }
 
 function today() {
@@ -65,11 +239,16 @@ function riskFromColor(color: BackendAppointmentPrediction['risk_color']): RiskL
   return null;
 }
 
+function patientLabel(pred: BackendAppointmentPrediction): string {
+  const name = (pred.patient_name ?? '').trim();
+  return name ? name : `Patient ${pred.patient_uuid.slice(0, 8)}`;
+}
+
 function mapPredictionToRow(pred: BackendAppointmentPrediction): AppointmentRow {
   return {
     appointment_uuid: pred.appointment_uuid,
     patient_uuid: pred.patient_uuid,
-    patient_name: `Patient ${pred.patient_uuid.slice(0, 8)}`,
+    patient_name: patientLabel(pred),
     time: formatHour(pred.scheduled_at),
     motif: pred.status.replaceAll('_', ' ').toLowerCase(),
     no_show_prob: pred.noshow_probability ?? 0,
@@ -86,6 +265,7 @@ export default function AgendaPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const isSecretary = user?.role === 'secretary';
+  const isPatient = user?.role === 'patient';
 
   const [date, setDate] = useState(today());
   const [toast, setToast] = useState<string | null>(null);
@@ -116,7 +296,10 @@ export default function AgendaPage() {
       showToast('SMS envoyé avec succès');
       queryClient.invalidateQueries({ queryKey: ['no-show'] });
     },
-    onError: () => showToast("Échec de l'envoi SMS"),
+    onError: (err: unknown) => {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      showToast(detail ? `Échec de l'envoi: ${detail}` : "Échec de l'envoi SMS");
+    },
   });
 
   const dispatchMutation = useMutation({
@@ -169,6 +352,10 @@ export default function AgendaPage() {
 
   const toCallOrText = counts.danger + counts.warn;
   const totalRdv = appointments.length;
+
+  // Patients see their own appointments — different view entirely.
+  // Placed after every hook call so the hooks order stays stable across renders.
+  if (isPatient) return <PatientAgendaView date={date} setDate={setDate} />;
 
   return (
     <DashPage
@@ -291,7 +478,7 @@ export default function AgendaPage() {
             onSms={() => smsMutation.mutate(apt.appointment_uuid)}
             smsPending={smsMutation.isPending && smsMutation.variables === apt.appointment_uuid}
             onFeedback={(outcome) => feedbackMutation.mutate({ appointmentUuid: apt.appointment_uuid, outcome })}
-            onOpen={() => router.push(`/patients/${apt.patient_uuid}/dpa`)}
+            onOpen={() => router.push(`/agenda/${apt.appointment_uuid}/brief`)}
           />
         ))}
       </div>

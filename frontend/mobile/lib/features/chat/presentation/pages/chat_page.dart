@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/chat_models.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/ai_bubble.dart';
@@ -68,6 +70,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           Expanded(
             child: state.isEmpty
                 ? _ChatEmpty(
+                    firstName: ref.watch(authProvider).user?.firstName ?? '',
                     onSuggest: (q) =>
                         ref.read(chatProvider.notifier).sendMessage(q),
                   )
@@ -135,16 +138,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline,
-                  color: AppColors.riskHigh),
+              leading: const Icon(Icons.history_rounded,
+                  color: AppColors.textSecondary),
               title: Text(
-                'Effacer',
-                style:
-                    AppFonts.body(color: AppColors.riskHigh, fontSize: 14),
+                'Historique',
+                style: AppFonts.body(
+                    color: AppColors.textSecondary, fontSize: 14),
               ),
               onTap: () {
-                ref.read(chatProvider.notifier).newConversation();
                 Navigator.pop(ctx);
+                context.push('/home/history');
               },
             ),
           ],
@@ -178,12 +181,16 @@ class _Header extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.text1, size: 20),
-                onPressed: () {},
+              const SizedBox(width: 16),
+              ClipOval(
+                child: Image.asset(
+                  'assets/branding/app_icon.png',
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.cover,
+                ),
               ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,8 +256,9 @@ class _Header extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _ChatEmpty extends StatefulWidget {
+  final String firstName;
   final void Function(String) onSuggest;
-  const _ChatEmpty({required this.onSuggest});
+  const _ChatEmpty({required this.firstName, required this.onSuggest});
 
   @override
   State<_ChatEmpty> createState() => _ChatEmptyState();
@@ -314,7 +322,7 @@ class _ChatEmptyState extends State<_ChatEmpty>
           ),
           const SizedBox(height: 20),
           Text(
-            'Bonjour Ahmed 👋',
+            widget.firstName.isNotEmpty ? 'Bonjour ${widget.firstName} 👋' : 'Bonjour 👋',
             textAlign: TextAlign.center,
             style: AppFonts.display(
               color: AppColors.textPrimary,
