@@ -3,7 +3,7 @@ Tests for US-01: health endpoint responds 200 in < 2 seconds.
 """
 import time
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, patch, MagicMock
 
 
 @pytest.mark.asyncio
@@ -51,3 +51,30 @@ async def test_health_detailed_returns_snapshot(client):
     assert {"services", "models", "kafka", "tables", "env"}.issubset(data.keys())
     assert "lstm_anomaly" in data["models"]
     assert "brokers" in data["kafka"]
+
+
+@pytest.mark.asyncio
+async def test_health_degraded_when_redis_down(client):
+    """When Redis is unreachable, health returns degraded but still 200."""
+    with patch("app.api.v1.endpoints.health.aioredis") as mock_redis:
+        mock_conn = AsyncMock()
+        mock_conn.ping.side_effect = ConnectionError("refused")
+        mock_redis.from_url = AsyncMock(return_value=mock_conn)
+        resp = await client.get("/api/v1/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "degraded"
+    assert "error" in data["services"]["redis"]
+
+
+@pytest.mark.asyncio
+async def test_health_detailed_redis_down(client):
+    """Detailed health with Redis down still returns 200."""
+    with patch("app.api.v1.endpoints.health.aioredis") as mock_redis:
+        mock_conn = AsyncMock()
+        mock_conn.ping.side_effect = ConnectionError("refused")
+        mock_redis.from_url = AsyncMock(return_value=mock_conn)
+        resp = await client.get("/api/v1/health/detailed")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["services"]["redis"].startswith("error")

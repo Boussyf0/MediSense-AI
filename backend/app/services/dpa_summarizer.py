@@ -415,7 +415,7 @@ _SYMPTOM_PATTERNS = [
 ]
 _SYMPTOM_RE = _re.compile("|".join(_SYMPTOM_PATTERNS), _re.IGNORECASE)
 
-_STOPLIST = {"un", "une", "le", "la", "les", "des", "du", "au", "aux", "très", "beaucoup", "peu", "minutes", "heures", "jours", "depuis"}
+_STOPLIST = {"un", "une", "le", "la", "les", "des", "du", "au", "aux", "très", "beaucoup", "peu", "minutes", "heures", "jours", "depuis", "mal"}
 
 def _extract_symptom_phrases(text: str) -> list[dict[str, str]]:
     """Extract symptom phrases from a patient message using restrictive regex and stoplist."""
@@ -430,7 +430,7 @@ def _extract_symptom_phrases(text: str) -> list[dict[str, str]]:
         name = groups[0].strip()
         duration = groups[1].strip() if len(groups) > 1 else None
         
-        if name.lower() in _STOPLIST or len(name) < 3:
+        if len(name) < 3 or all(w in _STOPLIST for w in name.lower().split()):
             continue
             
         # Map generic "mal" to "douleur"

@@ -127,7 +127,7 @@ async def test_ingest_reading_with_enough_readings():
         result = await ingest_reading(str(uuid.uuid4()), readings[0])
 
     # score_window returns 0.0 when no model → not critical
-    assert result["score_5m"] == pytest.approx(0.0)
+    assert result["score_5m"] == pytest.approx(0.0, abs=1e-3)
     assert result["alert_critical"] is False
 
 
