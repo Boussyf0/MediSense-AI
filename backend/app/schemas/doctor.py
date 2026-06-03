@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # ── IoT Anomaly (read-only, from BiometricAnomaly model) ────────────────────
@@ -112,8 +112,7 @@ class DPASummaryOut(BaseModel):
     created_at: datetime | None = None
     history: DPAHistory = Field(default_factory=DPAHistory)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ── Approval / Rejection (US-42) ────────────────────────────────────────────

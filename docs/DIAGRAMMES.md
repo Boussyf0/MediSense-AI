@@ -601,93 +601,252 @@ classDiagram
 ```mermaid
 erDiagram
     USERS {
-        uuid    user_uuid       PK
-        string  email           UK
-        string  hashed_password
-        string  role
-        string  first_name
-        string  last_name
-        boolean is_active
+        uuid     user_uuid        PK
+        string   email            UK
+        string   hashed_password
+        string   role             "doctor | secretary | admin | patient | caregiver"
+        string   first_name
+        string   last_name
+        string   specialty
+        boolean  is_active
         datetime created_at
         datetime updated_at
     }
 
     PATIENTS {
-        uuid    patient_uuid    PK
-        boolean consent_iot
-        boolean consent_nlp
-        boolean consent_sharing
-        int     birth_year
-        string  sex
-        string  city_code
-        string  chronic_conditions
-        boolean is_active
+        uuid     patient_uuid     PK
+        boolean  consent_iot
+        boolean  consent_nlp
+        boolean  consent_sharing
+        boolean  sms_opt_out
+        int      birth_year
+        string   sex
+        string   city_code
+        array    chronic_conditions
+        boolean  is_active
         datetime created_at
         datetime updated_at
     }
 
     PATIENTS_IDENTITY {
-        uuid    patient_uuid    PK
-        bytes   full_name_enc
-        bytes   phone_enc
-        bytes   email_enc
+        uuid     patient_uuid     PK-FK
+        bytea    full_name_enc    "pgcrypto AES-256"
+        bytea    phone_enc
+        bytea    email_enc
         datetime consent_iot_at
         datetime consent_nlp_at
         datetime consent_sharing_at
-        string  cgu_version
+        string   cgu_version
         datetime created_at
     }
 
-    CONSENT_LOGS {
-        bigint  id              PK
-        uuid    patient_uuid    FK
-        string  consent_type
-        string  action
-        string  channel
-        string  cgu_version
-        string  ip_address
-        datetime created_at
-    }
-
-    APPOINTMENTS {
-        uuid    appointment_uuid PK
-        uuid    patient_uuid     FK
-        uuid    doctor_uuid      FK
-        datetime scheduled_at
-        int     duration_minutes
-        string  status
-        float   noshow_probability
-        string  noshow_model_ver
-        string  urgency_flag
-        float   urgency_score
-        string  rag_summary
-        string  salesforce_task_id
+    PATIENT_CAREGIVERS {
+        uuid     patient_uuid     PK-FK
+        uuid     caregiver_uuid   PK-FK
+        string   status           "pending | active | revoked"
         datetime created_at
         datetime updated_at
     }
 
-    AUDIT_LOGS {
-        bigint  id              PK
-        uuid    actor_uuid
-        string  actor_role
-        string  action
-        string  resource_type
-        uuid    resource_uuid
-        string  ip_address
-        string  user_agent
+    APPOINTMENTS {
+        uuid     appointment_uuid PK
+        uuid     patient_uuid     FK
+        uuid     doctor_uuid      FK
+        datetime scheduled_at
+        int      duration_minutes
+        string   status           "PENDING | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW"
+        float    noshow_probability
+        string   noshow_model_ver
+        int      sms_reminders_sent
+        datetime last_sms_reminder_at
+        string   urgency_flag
+        float    urgency_score
+        text     rag_summary
+        string   salesforce_task_id
+        string   crm_sync_status  "PENDING | SYNCED | FAILED"
+        string   crm_correlation_id
+        int      crm_retry_count
+        text     crm_last_error
+        datetime crm_synced_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    ML_FEEDBACK {
+        int      id               PK
+        uuid     appointment_uuid FK-UK
+        boolean  was_predicted_correctly
+        string   actual_status
+        string   model_version
+        float    prediction_prob
+        string   doctor_feedback
         datetime created_at
     }
 
-    USERS            ||--o{ APPOINTMENTS    : "consulte (doctor_uuid)"
-    PATIENTS         ||--o{ APPOINTMENTS    : "planifie (patient_uuid)"
-    PATIENTS         ||--||  PATIENTS_IDENTITY : "identite chiffree AES-256"
-    PATIENTS         ||--o{ CONSENT_LOGS   : "historique consentements"
+    NOSHOW_FEEDBACK {
+        uuid     id               PK
+        uuid     appointment_uuid FK
+        uuid     recorded_by      FK
+        string   outcome
+        datetime created_at
+    }
+
+    SMS_REMINDER_LOG {
+        uuid     id               PK
+        uuid     appointment_uuid FK
+        string   task_type
+        string   status           "pending | sent | failed"
+        datetime scheduled_for
+        date     scheduled_date
+        datetime created_at
+    }
+
+    IOT_DEVICE {
+        uuid     id               PK
+        uuid     patient_uuid     FK-UK
+        boolean  paired
+        datetime last_sync
+        int      battery
+    }
+
+    BIOMETRIC_READING {
+        uuid     id               PK
+        uuid     patient_uuid     FK
+        datetime ts               "TimescaleDB hypertable"
+        int      hr
+        int      spo2
+        int      hrv
+        datetime created_at
+    }
+
+    BIOMETRIC_ANOMALIES {
+        uuid     id               PK
+        uuid     patient_id       "app-level FK"
+        string   metric_type      "SpO2 | HR | HRV | temperature"
+        float    value
+        float    threshold
+        string   unit             "% | bpm | ms | C"
+        string   severity         "mild | moderate | critical"
+        string   source
+        datetime detected_at
+    }
+
+    MEDICATION_REMINDER {
+        uuid     id               PK
+        uuid     patient_uuid     FK
+        string   name
+        string   dosage
+        time     time_of_day
+        json     days_of_week
+        boolean  enabled
+        datetime created_at
+        datetime updated_at
+    }
+
+    CONVERSATIONS {
+        uuid     id               PK
+        uuid     patient_id       FK
+        string   title
+        string   language         "default: fr"
+        datetime created_at
+        datetime updated_at
+    }
+
+    MESSAGES {
+        uuid     id               PK
+        uuid     conversation_id  FK
+        string   role             "user | assistant"
+        bytea    content_encrypted "pgcrypto"
+        jsonb    sources
+        float    confidence
+        int      tokens_used
+        datetime created_at
+    }
+
+    DPA_SUMMARIES {
+        uuid     id               PK
+        uuid     patient_id       "app-level FK"
+        uuid     doctor_id        "app-level FK"
+        int      version          "optimistic lock"
+        string   status           "PENDING | APPROVED | MODIFIED | REJECTED"
+        jsonb    payload_before   "AI-generated"
+        jsonb    payload_after    "doctor-edited"
+        text     doctor_note
+        datetime created_at
+        datetime reviewed_at
+    }
+
+    AGENT_ACTIONS {
+        uuid     id               PK
+        uuid     summary_id       FK
+        string   action_type      "prescribe | monitor | refer | book | alert"
+        jsonb    payload
+        jsonb    modified_payload
+        string   status           "pending | approved | rejected | modified"
+        datetime decided_at
+        uuid     decided_by
+    }
+
+    DEVICE_TOKEN {
+        uuid     id               PK
+        uuid     user_uuid        FK
+        string   token            UK
+        string   platform         "ios | android | web"
+        datetime created_at
+    }
+
+    AUDIT_LOGS {
+        bigint   id               PK
+        uuid     actor_uuid       "logical ref to USERS"
+        string   actor_role
+        string   action           "READ | WRITE | DELETE | EXPORT | CONSENT | LOGIN"
+        string   resource_type
+        uuid     resource_uuid
+        inet     ip_address
+        text     user_agent
+        datetime created_at
+    }
+
+    CONSENT_LOGS {
+        bigint   id               PK
+        uuid     patient_uuid     FK
+        string   consent_type     "iot | nlp | sharing"
+        string   action           "granted | revoked"
+        string   channel          "app | web | paper"
+        string   cgu_version
+        inet     ip_address
+        datetime created_at
+    }
+
+    %% ── Relations ──────────────────────────────────────────────
+    USERS                ||--o{  APPOINTMENTS       : "doctor_uuid"
+    PATIENTS             ||--o{  APPOINTMENTS       : "patient_uuid"
+    PATIENTS             ||--||  PATIENTS_IDENTITY  : "chiffrement AES-256 (schema secure)"
+    PATIENTS             ||--o{  CONSENT_LOGS       : "historique consentements"
+    PATIENTS             ||--o{  PATIENT_CAREGIVERS : "patient_uuid"
+    USERS                ||--o{  PATIENT_CAREGIVERS : "caregiver_uuid"
+    PATIENTS             ||--o|  IOT_DEVICE         : "1:1 appairage"
+    PATIENTS             ||--o{  BIOMETRIC_READING  : "lectures IoT"
+    PATIENTS             ||--o{  BIOMETRIC_ANOMALIES : "anomalies detectees"
+    PATIENTS             ||--o{  MEDICATION_REMINDER : "rappels medicaments"
+    PATIENTS             ||--o{  CONVERSATIONS      : "patient_id (CASCADE)"
+    CONVERSATIONS        ||--o{  MESSAGES           : "conversation_id (CASCADE)"
+    APPOINTMENTS         ||--o|  ML_FEEDBACK        : "1:1 retour ML"
+    APPOINTMENTS         ||--o{  NOSHOW_FEEDBACK    : "retours no-show"
+    APPOINTMENTS         ||--o{  SMS_REMINDER_LOG   : "logs SMS"
+    USERS                ||--o{  NOSHOW_FEEDBACK    : "recorded_by"
+    USERS                ||--o{  DEVICE_TOKEN       : "user_uuid (CASCADE)"
+    DPA_SUMMARIES        ||--o{  AGENT_ACTIONS      : "summary_id (CASCADE)"
 ```
 
 > **Remarques :**
-> - `PATIENTS_IDENTITY` réside dans le schéma PostgreSQL **`secure`** (séparé de `public`) — accès restreint au niveau applicatif.
+> - **19 tables** au total : 18 dans le schéma `public`, 1 (`PATIENTS_IDENTITY`) dans le schéma `secure`.
+> - `PATIENTS_IDENTITY` réside dans le schéma PostgreSQL **`secure`** (séparé de `public`) — accès restreint au niveau applicatif. Chiffrement AES-256 via pgcrypto.
 > - `AUDIT_LOGS` n'a **pas de FK** par conception (table immuable APPEND-ONLY) — `actor_uuid` référence logiquement `USERS` mais sans contrainte pour garantir l'immuabilité absolue.
 > - `CONSENT_LOGS` est également immuable — règles PostgreSQL `DO INSTEAD NOTHING` sur UPDATE et DELETE.
+> - `BIOMETRIC_ANOMALIES` et `DPA_SUMMARIES` utilisent des FK applicatives (pas de contrainte SQL) pour permettre l'insertion asynchrone depuis Kafka/agents.
+> - `BIOMETRIC_READING` est une hypertable TimescaleDB partitionnée par `ts` pour les requêtes time-series performantes.
+> - `MESSAGES.content_encrypted` est chiffré via pgcrypto — le contenu n'est jamais stocké en clair (conformité RGPD).
 
 ---
 

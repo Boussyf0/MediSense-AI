@@ -1,4 +1,3 @@
-import pytest
 from app.services.dpa_summarizer import _extract_symptom_phrases
 
 def test_extract_symptom_phrases_duration():

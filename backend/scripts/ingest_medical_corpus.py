@@ -350,23 +350,17 @@ def _compute_bm25_sparse(text: str) -> tuple[list[int], list[float]]:
     """
     Compute a deterministic sparse TF vector for BM25 indexing.
 
-    Uses hashlib.md5 (not Python's built-in hash()) so the mapping is stable
-    across runs regardless of PYTHONHASHSEED. The same token always maps to
-    the same index, which is required for correct BM25 retrieval at query time.
+    Delegates to the shared bm25_tokenizer module which provides:
+      - French medical stopword removal
+      - Unicode accent stripping (é→e, ç→c)
+      - Clinical bigram injection ("insuffisance cardiaque" → compound token)
+      - md5-based deterministic hashing (stable across processes)
 
-    Note: at query time, vectorstore.py uses the same md5 token hashing for
-    sparse query vectors so BM25 indices align with indexed chunks.
+    The same tokenizer is used at query time (vectorstore.py) to ensure
+    sparse vector alignment between indexed documents and queries.
     """
-    tokens = text.lower().split()
-    token_freq: dict[int, float] = {}
-    for token in tokens:
-        # md5 is deterministic across processes and platforms
-        idx = int(hashlib.md5(token.encode()).hexdigest(), 16) % 100_000
-        token_freq[idx] = token_freq.get(idx, 0) + 1.0
-
-    indices = list(token_freq.keys())
-    values = list(token_freq.values())
-    return indices, values
+    from app.rag.bm25_tokenizer import compute_sparse_vector
+    return compute_sparse_vector(text)
 
 
 def main():

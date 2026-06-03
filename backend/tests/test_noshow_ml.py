@@ -11,15 +11,17 @@ from app.db.models.appointment import Appointment
 from app.db.models.patient import Patient
 from app.db.models.user import User, UserRole
 from app.services.noshow_predictor import (
+    FEATURE_COLUMNS,
     FeatureValidationError,
     ModelNotReadyError,
+    build_appointment_features,
     get_risk_color,
     noshow_predictor,
 )
 
 
-def auth(role: str) -> dict[str, str]:
-    token = create_access_token(subject=str(uuid.uuid4()), role=role)
+def auth(role: str, subject: uuid.UUID | None = None) -> dict[str, str]:
+    token = create_access_token(subject=str(subject or uuid.uuid4()), role=role)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -51,6 +53,21 @@ async def seed_patient_and_doctor(test_db):
     test_db.add(doctor)
     await test_db.flush()
     return patient_uuid, doctor_uuid
+
+
+async def seed_user(test_db, role: UserRole) -> uuid.UUID:
+    user_uuid = uuid.uuid4()
+    test_db.add(User(
+        user_uuid=user_uuid,
+        email=f"{role.value}-{user_uuid}@medisense.ai",
+        hashed_password="hashed",
+        role=role,
+        first_name="Test",
+        last_name="User",
+        is_active=True,
+    ))
+    await test_db.flush()
+    return user_uuid
 
 
 def test_get_risk_color_thresholds():
@@ -140,6 +157,142 @@ def test_predict_missing_features_raises_validation_error():
             noshow_predictor.scaler,
             noshow_predictor.label_encoder,
         ) = old_state
+
+
+def test_shap_contributions_raise_on_empty_list():
+    class FakeExplainer:
+        def shap_values(self, _):
+            return []
+
+    old_explainer = noshow_predictor.explainer
+    try:
+        noshow_predictor.explainer = FakeExplainer()
+        with pytest.raises(FeatureValidationError, match="SHAP output is empty"):
+            noshow_predictor._build_shap_contributions(
+                np.zeros((1, len(FEATURE_COLUMNS)))
+            )
+    finally:
+        noshow_predictor.explainer = old_explainer
+
+
+def test_shap_contributions_handle_3d_array():
+    class FakeExplainer:
+        def shap_values(self, _):
+            return np.zeros((1, len(FEATURE_COLUMNS), 2))
+
+    old_explainer = noshow_predictor.explainer
+    try:
+        noshow_predictor.explainer = FakeExplainer()
+        result = noshow_predictor._build_shap_contributions(
+            np.zeros((1, len(FEATURE_COLUMNS)))
+        )
+        assert set(result.keys()) == set(FEATURE_COLUMNS)
+    finally:
+        noshow_predictor.explainer = old_explainer
+
+
+def test_shap_contributions_handle_list_output():
+    class FakeExplainer:
+        def shap_values(self, _):
+            return [np.zeros((1, len(FEATURE_COLUMNS)))]
+
+    old_explainer = noshow_predictor.explainer
+    try:
+        noshow_predictor.explainer = FakeExplainer()
+        result = noshow_predictor._build_shap_contributions(
+            np.zeros((1, len(FEATURE_COLUMNS)))
+        )
+        assert set(result.keys()) == set(FEATURE_COLUMNS)
+    finally:
+        noshow_predictor.explainer = old_explainer
+
+
+def test_shap_contributions_raise_on_unexpected_shape():
+    class FakeExplainer:
+        def shap_values(self, _):
+            return np.zeros((len(FEATURE_COLUMNS),))
+
+    old_explainer = noshow_predictor.explainer
+    try:
+        noshow_predictor.explainer = FakeExplainer()
+        with pytest.raises(FeatureValidationError, match="Unexpected SHAP output shape"):
+            noshow_predictor._build_shap_contributions(
+                np.zeros((1, len(FEATURE_COLUMNS)))
+            )
+    finally:
+        noshow_predictor.explainer = old_explainer
+
+
+def test_predict_wraps_value_error():
+    class FakeModel:
+        def predict_proba(self, _):
+            return np.array([[0.4, 0.6]])
+
+    class FakeScaler:
+        def transform(self, _):
+            return np.zeros((1, len(FEATURE_COLUMNS)))
+
+    class FailingEncoder:
+        def transform(self, _):
+            raise ValueError("bad label")
+
+    class FakeExplainer:
+        def shap_values(self, _):
+            return np.zeros((1, len(FEATURE_COLUMNS)))
+
+    old_state = (
+        noshow_predictor.model,
+        noshow_predictor.explainer,
+        noshow_predictor.scaler,
+        noshow_predictor.label_encoder,
+    )
+    try:
+        noshow_predictor.model = FakeModel()
+        noshow_predictor.scaler = FakeScaler()
+        noshow_predictor.label_encoder = FailingEncoder()
+        noshow_predictor.explainer = FakeExplainer()
+        features = {column: 1 for column in FEATURE_COLUMNS}
+        features["sex"] = "M"
+        with pytest.raises(FeatureValidationError, match="bad label"):
+            noshow_predictor.predict(features)
+    finally:
+        (
+            noshow_predictor.model,
+            noshow_predictor.explainer,
+            noshow_predictor.scaler,
+            noshow_predictor.label_encoder,
+        ) = old_state
+
+
+def test_build_appointment_features_normalizes_sex():
+    patient_uuid = uuid.uuid4()
+    patient = Patient(
+        patient_uuid=patient_uuid,
+        consent_iot=False,
+        consent_nlp=False,
+        consent_sharing=False,
+        sms_opt_out=False,
+        birth_year=1990,
+        sex="X",
+        city_code="40000",
+        chronic_conditions=[],
+    )
+    appointment = Appointment(
+        appointment_uuid=uuid.uuid4(),
+        patient_uuid=patient_uuid,
+        doctor_uuid=uuid.uuid4(),
+        scheduled_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+    )
+
+    features = build_appointment_features(
+        patient=patient,
+        appointment=appointment,
+        previous_noshows=0,
+        now=datetime(2026, 6, 1, 8, 0, tzinfo=timezone.utc),
+    )
+    assert features["sex"] == "M"
 
 
 @pytest.mark.asyncio
@@ -669,7 +822,7 @@ async def test_noshow_feedback_happy(client, test_db):
         doctor_uuid=doctor_uuid,
         scheduled_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
         duration_minutes=20,
-        status="COMPLETED",
+        status="PENDING",
     ))
     await test_db.flush()
 
@@ -685,6 +838,104 @@ async def test_noshow_feedback_happy(client, test_db):
     assert data["outcome"] == "presented"
     assert "id" in data
     assert "created_at" in data
+    assert data["updated_predictions"] == 0
+
+    # Verify status was updated to COMPLETED
+    await test_db.refresh(
+        await test_db.get(Appointment, appointment_uuid)
+    )
+    appt = await test_db.get(Appointment, appointment_uuid)
+    assert appt.status == "COMPLETED"
+
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_no_show_updates_status(client, test_db):
+    """Feedback 'no_show' sets appointment status to NO_SHOW."""
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+    appointment_uuid = uuid.uuid4()
+    test_db.add(Appointment(
+        appointment_uuid=appointment_uuid,
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+    ))
+    await test_db.flush()
+
+    secretary_uuid = await seed_user(test_db, UserRole.SECRETARY)
+    response = await client.post(
+        f"/api/v1/predictions/no-show/{appointment_uuid}/feedback",
+        json={"outcome": "no_show"},
+        headers=auth("secretary", secretary_uuid),
+    )
+    assert response.status_code == 200
+    assert response.json()["outcome"] == "no_show"
+
+    appt = await test_db.get(Appointment, appointment_uuid)
+    assert appt.status == "NO_SHOW"
+
+
+@pytest.mark.asyncio
+async def test_noshow_feedback_repredicts_future_appointments(client, test_db):
+    """ML loop: marking no_show recalculates future appointment predictions."""
+    from datetime import timedelta
+
+    patient_uuid, doctor_uuid = await seed_patient_and_doctor(test_db)
+
+    # Past appointment (the one being evaluated)
+    past_uuid = uuid.uuid4()
+    test_db.add(Appointment(
+        appointment_uuid=past_uuid,
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime(2026, 6, 1, 9, 0, tzinfo=timezone.utc),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.30,
+    ))
+
+    # Future appointment (should get re-predicted)
+    future_uuid = uuid.uuid4()
+    test_db.add(Appointment(
+        appointment_uuid=future_uuid,
+        patient_uuid=patient_uuid,
+        doctor_uuid=doctor_uuid,
+        scheduled_at=datetime.now(timezone.utc) + timedelta(days=7),
+        duration_minutes=20,
+        status="PENDING",
+        noshow_probability=0.20,
+    ))
+    await test_db.flush()
+
+    mock_prediction = {
+        "noshow_probability": 0.55,
+        "risk_color": "red",
+        "shap_contributions": {},
+        "model_version": "v-test-loop",
+    }
+    secretary_uuid = await seed_user(test_db, UserRole.SECRETARY)
+    with patch(
+        "app.api.v1.endpoints.agenda.NoShowPredictor"
+    ) as MockPredictor:
+        mock_instance = MagicMock()
+        mock_instance.predict.return_value = mock_prediction
+        MockPredictor.return_value = mock_instance
+
+        response = await client.post(
+            f"/api/v1/predictions/no-show/{past_uuid}/feedback",
+            json={"outcome": "no_show"},
+            headers=auth("secretary", secretary_uuid),
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["updated_predictions"] == 1
+
+    # Verify future appointment probability was updated
+    future_appt = await test_db.get(Appointment, future_uuid)
+    assert future_appt.noshow_probability == pytest.approx(0.55)
+    assert future_appt.noshow_model_ver == "v-test-loop"
 
 
 @pytest.mark.asyncio

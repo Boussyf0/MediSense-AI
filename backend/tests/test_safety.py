@@ -9,16 +9,13 @@ Covers:
   - Standard disclaimer appending
   - Adversarial query gate (red-team cases)
 """
-import pytest
 from app.rag.safety import (
     pre_generation_check,
     post_generation_check,
     URGENCY_MESSAGE,
     LOW_CONFIDENCE_MESSAGE,
     DOSAGE_DISCLAIMER,
-    DOSAGE_ADVERSARIAL_RESPONSE,
     STANDARD_DISCLAIMER,
-    CONFIDENCE_THRESHOLD,
 )
 from app.rag.medical_entities import ExtractedEntities
 
@@ -165,3 +162,56 @@ class TestPostGenerationCheck:
         result = post_generation_check(response, [STANDARD_DISCLAIMER])
         assert DOSAGE_DISCLAIMER not in result
         assert STANDARD_DISCLAIMER in result
+
+    def test_allergy_conflict_appended(self):
+        """Post-gen check with patient_allergies injects allergy warning."""
+        response = "Prenez de l'ibuprofène pour la douleur."
+        result = post_generation_check(
+            response,
+            [STANDARD_DISCLAIMER],
+            patient_allergies=["ibuprofène"],
+        )
+        assert "ALERTE ALLERGIE" in result
+        assert "ibuprofène" in result
+
+    def test_no_allergy_conflict_when_drug_absent(self):
+        """No conflict when response doesn't mention the allergy drug."""
+        response = "Buvez beaucoup d'eau et reposez-vous."
+        result = post_generation_check(
+            response,
+            [STANDARD_DISCLAIMER],
+            patient_allergies=["pénicilline"],
+        )
+        assert "ALERTE ALLERGIE" not in result
+
+
+class TestAllergyConflict:
+    def test_no_allergies_returns_none(self):
+        from app.rag.safety import check_allergy_conflict
+        assert check_allergy_conflict("some text", []) is None
+
+    def test_conflict_detected(self):
+        from app.rag.safety import check_allergy_conflict
+        result = check_allergy_conflict(
+            "Prenez du paracetamol 500mg",
+            ["paracetamol", "aspirine"],
+        )
+        assert result is not None
+        assert "paracetamol" in result
+        assert "ALERTE ALLERGIE" in result
+
+    def test_no_conflict(self):
+        from app.rag.safety import check_allergy_conflict
+        result = check_allergy_conflict(
+            "Reposez-vous bien",
+            ["pénicilline"],
+        )
+        assert result is None
+
+    def test_case_insensitive(self):
+        from app.rag.safety import check_allergy_conflict
+        result = check_allergy_conflict(
+            "Prenez de l'IBUPROFÈNE",
+            ["ibuprofène"],
+        )
+        assert result is not None

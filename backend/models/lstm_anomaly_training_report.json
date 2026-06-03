@@ -1,9 +1,11 @@
 {
   "experiment": "LSTM-Anomaly-Detection-Sprint7",
-  "mlflow_run_id": "553d63c26e064e219edf42323331a08e",
+  "mlflow_run_id": "e1024bae937a4c2ca4e6dd504ee4eb5f",
   "test_metrics": {
-    "auc": 0.9999707318215343,
-    "f1": 0.9911894273127754
+    "auc": 0.997418410041841,
+    "f1": 0.9920318725099602,
+    "brier": 0.0023922678287556544,
+    "ece": 0.0036843840548672884
   },
   "config": {
     "seq_len": 120,

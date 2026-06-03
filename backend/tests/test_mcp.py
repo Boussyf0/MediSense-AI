@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 from app.mcp.ansm_server import search_drug, _format_drug
 from app.mcp.icd11_server import search_disease, _format_disease
-from app.mcp.client import fetch_mcp_context, CircuitBreaker
+from app.mcp.client import fetch_mcp_context
 
 
 class TestANSMServer:

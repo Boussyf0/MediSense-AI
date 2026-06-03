@@ -43,7 +43,7 @@ class ConnectionManager:
             from app.api.v1.endpoints.metrics import ws_active_connections
             ws_active_connections.labels(role=role).set(len(self._connections.get(role, [])))
         except Exception:
-            pass
+            logger.debug("WS gauge metric update failed", exc_info=True)
 
     async def broadcast(self, role: str, payload: dict[str, Any]) -> int:
         """

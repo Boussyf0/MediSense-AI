@@ -1,14 +1,13 @@
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import TokenPayload, require_patient, require_caregiver
 from app.db.session import get_db
 from app.db.models.user import User, UserRole
-from app.db.models.patient import Patient
 from app.db.models.caregiver import PatientCaregiver
 from app.schemas.caregiver import CaregiverInvite, CaregiverPatientOut
 from app.core.security import hash_password

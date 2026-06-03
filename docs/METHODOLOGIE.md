@@ -222,10 +222,10 @@ flowchart TB
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-06 | Consentement granulaire : 3 opt-ins séparés (IoT / NLP / Partage) | 5 | Must | ⏳ |
-| US-07 | Export données patient : `GET /patient/data/export` JSON complet (Art.15) | 5 | Should | ⏳ |
-| US-08 | Droit à l'effacement : `DELETE /patient/{uuid}` + cascade Qdrant (Art.17) | 8 | Must | ⏳ |
-| US-46 | Endpoint audit logs paginé : `GET /admin/audit-logs` (Art.30) | 3 | Should | ⏳ |
+| US-06 | Consentement granulaire : 3 opt-ins séparés (IoT / NLP / Partage) | 5 | Must | ✅ Done |
+| US-07 | Export données patient : `GET /patient/data/export` JSON complet (Art.15) | 5 | Should | ✅ Done |
+| US-08 | Droit à l'effacement : `DELETE /patient/{uuid}` + cascade Qdrant (Art.17) | 8 | Must | ✅ Done |
+| US-46 | Endpoint audit logs paginé : `GET /admin/audit-logs` (Art.30) | 3 | Should | ✅ Done |
 | **Total** | | **21 pts** | | |
 
 #### Sprint 3 — RAG Pipeline & LLM `15 Avr – 28 Avr 2026` `✅ TERMINÉ`
@@ -238,84 +238,84 @@ flowchart TB
 | US-12 | Hybrid Dense+BM25+RRF, safety layer code-level, red-team 10 cas | 5 | Should | ✅ Done |
 | **Total** | | **34 pts** | | |
 
-#### Sprint 4 — Agents IA & DPA `11 Mai – 24 Mai 2026` `⏳ À venir`
+#### Sprint 4 — Agents IA & DPA `11 Mai – 24 Mai 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-13 | Contexte IoT injecté dans le chat patient (anomalies → RAG) | 8 | Should | ⏳ |
-| US-14 | Orchestrateur multi-agents (triage → RDV → CRM) | 13 | Should | ⏳ |
-| US-15 | Mémoire de conversation Redis TTL 24h (multi-session) | 3 | Could | ⏳ |
-| US-41 | Vue DPA médecin : résumé 3 colonnes (Symptômes / IoT / Actions) | 8 | Should | ⏳ |
-| US-42 | Human-in-the-Loop : médecin valide/modifie le résumé IA | 5 | Could | ⏳ |
+| US-13 | Contexte IoT injecté dans le chat patient (anomalies → RAG) | 8 | Should | ✅ Done |
+| US-14 | Orchestrateur multi-agents (triage → RDV → CRM) | 13 | Should | ✅ Done |
+| US-15 | Mémoire de conversation Redis TTL 24h (multi-session) | 3 | Could | ✅ Done |
+| US-41 | Vue DPA médecin : résumé 3 colonnes (Symptômes / IoT / Actions) | 8 | Should | ✅ Done |
+| US-42 | Human-in-the-Loop : médecin valide/modifie le résumé IA | 5 | Could | ✅ Done |
 | **Total** | | **37 pts** | | |
 
-#### Sprint 5 — ML Prédictif No-Show `25 Mai – 07 Jun 2026` `⏳ À venir`
+#### Sprint 5 — ML Prédictif No-Show `25 Mai – 07 Jun 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-17 | Feature engineering : 8 features patient (distance, météo, historique...) | 5 | Must | ⏳ |
-| US-18 | Entraîner XGBoost vs LightGBM vs CatBoost. F1 cible > 0.80 | 13 | Must | ⏳ |
-| US-19 | Agenda code couleur : 🔴 > 70% / 🟠 40-70% / 🟢 < 40% | 5 | Should | ⏳ |
-| US-20 | Endpoint `POST /predict/noshow` réponse < 200ms | 3 | Should | ⏳ |
-| US-22 | SMOTE sur données déséquilibrées (no-show < 20% des RDV) | 5 | Could | ⏳ |
+| US-17 | Feature engineering : 8 features patient (distance, météo, historique...) | 5 | Must | ✅ Done |
+| US-18 | Entraîner XGBoost vs LightGBM vs CatBoost. F1 cible > 0.80 | 13 | Must | ✅ Done |
+| US-19 | Agenda code couleur : 🔴 > 70% / 🟠 40-70% / 🟢 < 40% | 5 | Should | ✅ Done |
+| US-20 | Endpoint `POST /predict/noshow` réponse < 200ms | 3 | Should | ✅ Done |
+| US-22 | SMOTE sur données déséquilibrées (no-show < 20% des RDV) | 5 | Could | ✅ Done |
 | **Total** | | **31 pts** | | |
 
-#### Sprint 6 — Salesforce & MLOps `08 Jun – 21 Jun 2026` `⏳ À venir`
+#### Sprint 6 — Salesforce & MLOps `08 Jun – 21 Jun 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-24 | Webhook Salesforce Apex : tâche secrétaire créée automatiquement | 8 | Should | ⏳ |
-| US-33 | MLflow Model Registry : versioning + métriques + artefacts SHAP | 5 | Should | ⏳ |
-| US-37 | GitHub Actions CI/CD : build → test → push image → deploy | 8 | Should | ⏳ |
-| US-38 | OWASP ZAP scan automatisé (rapport vulnérabilités) | 5 | Could | ⏳ |
-| US-43 | Interface secrétaire : gestion tâches Salesforce (confirmer, clôturer) | 3 | Could | ⏳ |
+| US-24 | Webhook Salesforce Apex : tâche secrétaire créée automatiquement | 8 | Should | ✅ Done |
+| US-33 | MLflow Model Registry : versioning + métriques + artefacts SHAP | 5 | Should | ✅ Done |
+| US-37 | GitHub Actions CI/CD : build → test → push image → deploy | 8 | Should | ✅ Done |
+| US-38 | OWASP ZAP scan automatisé (rapport vulnérabilités) | 5 | Could | ✅ Done |
+| US-43 | Interface secrétaire : gestion tâches Salesforce (confirmer, clôturer) | 3 | Could | ✅ Done |
 | **Total** | | **29 pts** | | |
 
-#### Sprint 7 — IoT Pipeline & LSTM `22 Jun – 05 Juil 2026` `⏳ À venir`
+#### Sprint 7 — IoT Pipeline & LSTM `22 Jun – 05 Juil 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-25 | Ingestion Kafka biométriques : 10 msg/s en débit continu | 8 | Must | ⏳ |
-| US-26 | TimescaleDB hypertable : partitionnement par jour, compression auto | 5 | Should | ⏳ |
-| US-27 | LSTM Bidirectionnel PyTorch : AUC-ROC > 0.85 sur données synthétiques | 13 | Must | ⏳ |
-| US-28 | Détection sur 2 fenêtres glissantes : 5min (critique) + 60min (tendance) | 8 | Should | ⏳ |
-| US-29 | Push notification au réveil (détection accéléromètre) | 5 | Should | ⏳ |
+| US-25 | Ingestion Kafka biométriques : 10 msg/s en débit continu | 8 | Must | ✅ Done |
+| US-26 | TimescaleDB hypertable : partitionnement par jour, compression auto | 5 | Should | ✅ Done |
+| US-27 | LSTM Bidirectionnel PyTorch : AUC-ROC > 0.85 sur données synthétiques | 13 | Must | ✅ Done |
+| US-28 | Détection sur 2 fenêtres glissantes : 5min (critique) + 60min (tendance) | 8 | Should | ✅ Done |
+| US-29 | Push notification au réveil (détection accéléromètre) | 5 | Should | ✅ Done |
 | **Total** | | **39 pts** | | |
 
-#### Sprint 8 — Intégration & Production `06 Juil – 19 Juil 2026` `⏳ À venir`
+#### Sprint 8 — Intégration & Production `06 Juil – 19 Juil 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-30 | Mode dégradé Kafka : buffer local + reprise automatique à reconnexion | 8 | Could | ⏳ |
-| US-34 | DAG Airflow : réentraînement hebdomadaire automatique | 8 | Could | ⏳ |
-| US-35 | Evidently AI : détection dérive données (PSI + feature importance shift) | 5 | Could | ⏳ |
-| US-36 | Auto-rollback : si F1 chute > 10% en prod → restauration version N-1 | 5 | Could | ⏳ |
+| US-30 | Mode dégradé Kafka : buffer local + reprise automatique à reconnexion | 8 | Could | ✅ Done |
+| US-34 | DAG Airflow : réentraînement hebdomadaire automatique | 8 | Could | ✅ Done |
+| US-35 | Evidently AI : détection dérive données (PSI + feature importance shift) | 5 | Could | ✅ Done |
+| US-36 | Auto-rollback : si F1 chute > 10% en prod → restauration version N-1 | 5 | Could | ✅ Done |
 | **Total** | | **26 pts** | | |
 
-#### Sprint 9 — Application Mobile Patient (Flutter) `20 Juil – 02 Aoû 2026` `⏳ À venir`
+#### Sprint 9 — Application Mobile Patient (Flutter) `20 Juil – 02 Aoû 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-47 | Flutter — Onboarding 3 slides + auth JWT + consentement RGPD UI (opt-in IoT/NLP/Partage) | 5 | Must | ⏳ |
-| US-48 | Flutter — Chatbot triage Darija/FR/AR avec input vocal (STT) + contexte IoT pré-chargé | 8 | Must | ⏳ |
-| US-49 | Flutter — Dashboard IoT personnel : courbes FC/SpO2/HRV sur 7/30/90 jours (charts animés) | 8 | Should | ⏳ |
-| US-50 | Flutter — Prise de RDV en ligne avec calendrier temps réel + sync Salesforce | 5 | Should | ⏳ |
-| US-55 | Flutter — Résultats d'analyses avec interprétation LLM simplifiée (Mistral 7B) | 5 | Should | ⏳ |
-| US-56 | FCM push notifications : rappels automatiques J-3, J-1, H-2 (Firebase Cloud Messaging) | 5 | Should | ⏳ |
-| US-59 | Flutter — Ordonnances numériques + rappels médicaments (heure + dosage) | 3 | Could | ⏳ |
+| US-47 | Flutter — Onboarding 3 slides + auth JWT + consentement RGPD UI (opt-in IoT/NLP/Partage) | 5 | Must | ✅ Done |
+| US-48 | Flutter — Chatbot triage Darija/FR/AR avec input vocal (STT) + contexte IoT pré-chargé | 8 | Must | ✅ Done |
+| US-49 | Flutter — Dashboard IoT personnel : courbes FC/SpO2/HRV sur 7/30/90 jours (charts animés) | 8 | Should | ✅ Done |
+| US-50 | Flutter — Prise de RDV en ligne avec calendrier temps réel + sync Salesforce | 5 | Should | ✅ Done |
+| US-55 | Flutter — Résultats d'analyses avec interprétation LLM simplifiée (Mistral 7B) | 5 | Should | ✅ Done |
+| US-56 | FCM push notifications : rappels automatiques J-3, J-1, H-2 (Firebase Cloud Messaging) | 5 | Should | ✅ Done |
+| US-59 | Flutter — Ordonnances numériques + rappels médicaments (heure + dosage) | 3 | Could | ✅ Done |
 | **Total** | | **39 pts** | | |
 
-#### Sprint 10 — Dashboard Médecin (Next.js) + Monitoring (Grafana) `03 Aoû – 16 Aoû 2026` `⏳ À venir`
+#### Sprint 10 — Dashboard Médecin (Next.js) + Monitoring (Grafana) `03 Aoû – 16 Aoû 2026` `✅ TERMINÉ`
 
 | ID | User Story | Story Points | Priorité | Statut |
 |----|-----------|:---:|:---:|:---:|
-| US-51 | Next.js — Fondation dashboard médecin : auth, routing, layout sidebar, AuthGuard RBAC | 5 | Must | ⏳ |
-| US-52 | DPA UI — Vue 3 colonnes : IoT anomaly graphs \| NLP symptoms verbatim \| RAG suggestions IA | 8 | Should | ⏳ |
-| US-53 | Smart Agenda UI — code couleur no-show 🟢 <20% / 🟠 20–40% / 🔴 >40% + créneaux remplacement | 5 | Should | ⏳ |
-| US-54 | WebSocket alertes IoT temps réel + modal popup + bouton "Appeler patient" (Twilio VOIP) | 8 | Should | ⏳ |
-| US-57 | Grafana — 3 dashboards provisionnés : System Health / ML Performance / Business KPIs | 5 | Should | ⏳ |
-| US-60 | Admin UI — audit logs viewer paginé + filtres + user management (Next.js pages admin) | 5 | Should | ⏳ |
-| US-58 | Salesforce Apex Trigger code (côté CRM) + payload types partagés | 3 | Could | ⏳ |
+| US-51 | Next.js — Fondation dashboard médecin : auth, routing, layout sidebar, AuthGuard RBAC | 5 | Must | ✅ Done |
+| US-52 | DPA UI — Vue 3 colonnes : IoT anomaly graphs \| NLP symptoms verbatim \| RAG suggestions IA | 8 | Should | ✅ Done |
+| US-53 | Smart Agenda UI — code couleur no-show 🟢 <20% / 🟠 20–40% / 🔴 >40% + créneaux remplacement | 5 | Should | ✅ Done |
+| US-54 | WebSocket alertes IoT temps réel + modal popup + bouton "Appeler patient" (Twilio VOIP) | 8 | Should | ✅ Done |
+| US-57 | Grafana — 3 dashboards provisionnés : System Health / ML Performance / Business KPIs | 5 | Should | ✅ Done |
+| US-60 | Admin UI — audit logs viewer paginé + filtres + user management (Next.js pages admin) | 5 | Should | ✅ Done |
+| US-58 | Salesforce Apex Trigger code (côté CRM) + payload types partagés | 3 | Could | ✅ Done |
 | **Total** | | **39 pts** | | |
 
 ---
@@ -331,39 +331,39 @@ flowchart TB
             T1["Infrastructure Docker<br/>Auth JWT + RBAC<br/>Schéma RGPD<br/>Swagger UI<br/>34 pts"]
         end
 
-        subgraph S2["Sprint 2<br/>13 Avr – 26 Avr<br/>⏳ En cours"]
+        subgraph S2["Sprint 2<br/>13 Avr – 26 Avr<br/>✅ TERMINÉ"]
             T2["Consentement granulaire<br/>Export RGPD<br/>Droit à l'effacement<br/>Audit logs endpoint<br/>21 pts"]
         end
 
-        subgraph S3["Sprint 3<br/>27 Avr – 10 Mai<br/>⏳ À venir"]
+        subgraph S3["Sprint 3<br/>27 Avr – 10 Mai<br/>✅ TERMINÉ"]
             T3["LLM Ollama/Groq<br/>84k chunks Qdrant<br/>Chatbot FR/AR/Darija<br/>Cross-encoder<br/>34 pts"]
         end
 
-        subgraph S4["Sprint 4<br/>11 Mai – 24 Mai<br/>⏳ À venir"]
+        subgraph S4["Sprint 4<br/>11 Mai – 24 Mai<br/>✅ TERMINÉ"]
             T4["Contexte IoT chat<br/>Orchestrat. agents<br/>Mémoire Redis<br/>DPA 3 colonnes<br/>Human-in-Loop<br/>37 pts"]
         end
 
-        subgraph S5["Sprint 5<br/>25 Mai – 07 Jun<br/>⏳ À venir"]
+        subgraph S5["Sprint 5<br/>25 Mai – 07 Jun<br/>✅ TERMINÉ"]
             T5["Feature engineering<br/>XGBoost vs LGB<br/>Agenda couleur<br/>Predict endpoint<br/>SMOTE<br/>31 pts"]
         end
 
-        subgraph S6["Sprint 6<br/>08 Jun – 21 Jun<br/>⏳ À venir"]
+        subgraph S6["Sprint 6<br/>08 Jun – 21 Jun<br/>✅ TERMINÉ"]
             T6["Salesforce webhook<br/>MLflow Registry<br/>CI/CD Actions<br/>OWASP ZAP<br/>29 pts"]
         end
 
-        subgraph S7["Sprint 7<br/>22 Jun – 05 Juil<br/>⏳ À venir"]
+        subgraph S7["Sprint 7<br/>22 Jun – 05 Juil<br/>✅ TERMINÉ"]
             T7["Kafka ingestion<br/>TimescaleDB<br/>LSTM AUC > 0.85<br/>2 fenêtres détect.<br/>Push notif.<br/>39 pts"]
         end
 
-        subgraph S8["Sprint 8<br/>06 Juil – 19 Juil<br/>⏳ À venir"]
+        subgraph S8["Sprint 8<br/>06 Juil – 19 Juil<br/>✅ TERMINÉ"]
             T8["Mode dégradé Kafka<br/>Airflow DAG<br/>Evidently drift<br/>Auto-rollback<br/>26 pts"]
         end
 
-        subgraph S9["Sprint 9<br/>20 Juil – 02 Aoû<br/>⏳ À venir"]
+        subgraph S9["Sprint 9<br/>20 Juil – 02 Aoû<br/>✅ TERMINÉ"]
             T9["Flutter app patient<br/>Onboarding + Auth<br/>Chatbot vocal<br/>IoT dashboard<br/>FCM push notif.<br/>39 pts"]
         end
 
-        subgraph S10["Sprint 10<br/>03 Aoû – 16 Aoû<br/>⏳ À venir"]
+        subgraph S10["Sprint 10<br/>03 Aoû – 16 Aoû<br/>✅ TERMINÉ"]
             T10["Next.js dashboard<br/>DPA 3 colonnes UI<br/>Smart Agenda UI<br/>WebSocket + Twilio<br/>Grafana dashboards<br/>39 pts"]
         end
 
@@ -389,29 +389,29 @@ gantt
     Sprint 1 — Infrastructure & Auth          :done,    s1, 2026-03-30, 2026-04-12
 
     section RGPD
-    Sprint 2 — Consentement & Effacement      :active,  s2, 2026-04-13, 2026-04-26
+    Sprint 2 — Consentement & Effacement      :done,    s2, 2026-04-13, 2026-04-26
 
     section IA Conversationnelle
-    Sprint 3 — RAG Pipeline & Mistral 7B      :         s3, 2026-04-27, 2026-05-10
-    Sprint 4 — Agents IA & DPA Médecin        :         s4, 2026-05-11, 2026-05-24
+    Sprint 3 — RAG Pipeline & Mistral 7B      :done,    s3, 2026-04-27, 2026-05-10
+    Sprint 4 — Agents IA & DPA Médecin        :done,    s4, 2026-05-11, 2026-05-24
 
     section ML Prédictif
-    Sprint 5 — No-Show XGBoost                :         s5, 2026-05-25, 2026-06-07
+    Sprint 5 — No-Show XGBoost                :done,    s5, 2026-05-25, 2026-06-07
 
     section MLOps & CRM
-    Sprint 6 — Salesforce & MLflow & CI/CD    :         s6, 2026-06-08, 2026-06-21
+    Sprint 6 — Salesforce & MLflow & CI/CD    :done,    s6, 2026-06-08, 2026-06-21
 
     section IoT & Deep Learning
-    Sprint 7 — Kafka & LSTM Anomalie          :         s7, 2026-06-22, 2026-07-05
+    Sprint 7 — Kafka & LSTM Anomalie          :done,    s7, 2026-06-22, 2026-07-05
 
     section Production
-    Sprint 8 — Intégration & Résilience       :         s8, 2026-07-06, 2026-07-19
+    Sprint 8 — Intégration & Résilience       :done,    s8, 2026-07-06, 2026-07-19
 
     section Frontend Mobile
-    Sprint 9 — Flutter App Patient            :         s9, 2026-07-20, 2026-08-02
+    Sprint 9 — Flutter App Patient            :done,    s9, 2026-07-20, 2026-08-02
 
     section Frontend Web & Monitoring
-    Sprint 10 — Dashboard Médecin + Grafana   :         s10, 2026-08-03, 2026-08-16
+    Sprint 10 — Dashboard Médecin + Grafana   :done,    s10, 2026-08-03, 2026-08-16
 
     section Rapport PFE
     Rédaction rapport & soutenance            :crit,    rpt, 2026-08-17, 2026-08-31

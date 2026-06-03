@@ -25,8 +25,11 @@ OPTIMISTIC LOCKING (US-42):
   We use SQLAlchemy's synchronize_session=False and check rowcount manually.
 """
 import asyncio
+import logging
 import uuid
 from datetime import datetime, timedelta, timezone
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func as sa_func, text, update, select, desc
@@ -38,7 +41,6 @@ from app.core.dependencies import TokenPayload, require_doctor
 from app.db.session import get_db
 from app.db.models.appointment import Appointment
 from app.db.models.biometric_reading import BiometricReading
-from app.db.models.conversation import Conversation
 from app.db.models.dpa_summary import DPASummary, AgentAction
 from app.db.models.patient import Patient
 from app.db.models.user import User
@@ -525,7 +527,7 @@ def _parse_actions(raw: list) -> list[RecommendedAction]:
             try:
                 actions.append(RecommendedAction(**a))
             except Exception:
-                pass
+                logger.warning("Skipping malformed action: %s", a, exc_info=True)
     return actions
 
 
@@ -546,6 +548,7 @@ def _parse_agent_actions(raw: list) -> list[AgentActionOut]:
                 )
             )
         except Exception:
+            logger.warning("Skipping malformed agent action", exc_info=True)
             continue
     return out
 
@@ -689,6 +692,7 @@ async def _build_anomaly_flag(patient_uuid: uuid.UUID) -> AnomalyFlag:
     try:
         scores = await get_recent_scores(str(patient_uuid))
     except Exception:  # pragma: no cover — Redis outage, degraded mode
+        logger.warning("Redis unavailable for anomaly flag", exc_info=True)
         return AnomalyFlag()
 
     return AnomalyFlag(
@@ -721,6 +725,7 @@ async def _build_recent_symptoms(
         )
         rows = result.all()
     except Exception:  # pragma: no cover — pgcrypto extension missing in some envs
+        logger.warning("pgcrypto decrypt failed for patient symptoms", exc_info=True)
         return []
 
     return [

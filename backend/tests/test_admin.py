@@ -269,7 +269,7 @@ async def test_rerank_eval_happy(client, monkeypatch):
         {"id": "c3", "score": 0.70, "text": "Aspirine est utilise contre la douleur et la fievre"},
     ]
 
-    def fake_hybrid_search(query_text, limit):
+    def fake_hybrid_search(**kwargs):
         return fake_chunks
 
     def fake_eval(query, chunks):
@@ -290,9 +290,25 @@ async def test_rerank_eval_happy(client, monkeypatch):
     def fake_rerank(query, chunks, top_k):
         return [FakeReranked(c, 0.99 - 0.1 * i) for i, c in enumerate(chunks)]
 
+    from dataclasses import dataclass
+
+    @dataclass
+    class FakeEntities:
+        icd10_codes: list = None
+        drug_names: list = None
+        symptoms: list = None
+        conditions: list = None
+
+        def __post_init__(self):
+            self.icd10_codes = self.icd10_codes or []
+            self.drug_names = self.drug_names or []
+            self.symptoms = self.symptoms or []
+            self.conditions = self.conditions or []
+
     monkeypatch.setattr("app.rag.vectorstore.hybrid_search", fake_hybrid_search)
     monkeypatch.setattr("app.rag.reranker.evaluate_rrf_vs_crossencoder", fake_eval)
     monkeypatch.setattr("app.rag.reranker.rerank", fake_rerank)
+    monkeypatch.setattr("app.rag.medical_entities.extract_entities", lambda q: FakeEntities())
 
     response = await client.post(
         "/api/v1/admin/rerank-eval",

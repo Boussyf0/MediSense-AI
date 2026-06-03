@@ -1,19 +1,27 @@
 """
-Qdrant vector store with Hybrid Search (Dense + BM25 + RRF).
+Qdrant vector store with Hybrid Search (Dense + BM25 + RRF + type boost).
 
 Collection schema:
   - Dense vectors: 768-dim (multilingual-e5-base), Cosine distance
   - Sparse vectors: BM25 via Qdrant's built-in sparse indexing
   - Payload: source, type, name, icd10_codes, language, section, text
 
-Why Qdrant hybrid search?
-  Dense search captures semantic similarity ("headache" ~ "cephalee").
-  BM25 captures exact keyword matches ("ibuprofene 400mg").
-  Reciprocal Rank Fusion (RRF) merges both ranked lists — near cross-encoder
-  accuracy at ~15ms instead of ~200ms.
+Retrieval strategy (up to 5 RRF prefetch paths):
+  1. Dense unfiltered (limit=30) — broad semantic recall
+  2. BM25 clinical (limit=30) — keyword matches, guidelines excluded
+  3. Disease-type boost (always, limit=10) — focused disease chunk injection
+  4. Drug-type boost (conditional, limit=10) — only when drug entities detected
+  5. ICD-10 boost (conditional, limit=15) — code-specific retrieval
+
+BM25 excludes guidelines because HAS/SMR chunks share drug/disease vocabulary
+and generate keyword false positives that flood the RRF candidate pool.
+
+Why type boosts?
+  Without them, HAS/SMR guideline chunks dominate the candidate pool
+  (BM25 false positives + dense semantic overlap). The disease boost is
+  unconditional because symptom queries are the primary use case. The drug
+  boost is conditional to avoid diluting the disease boost on symptom queries.
 """
-import hashlib
-import uuid
 from typing import Any
 
 from qdrant_client import QdrantClient, models
@@ -23,14 +31,11 @@ from qdrant_client.models import (
     SparseVectorParams,
     SparseIndexParams,
     PointStruct,
-    NamedVector,
-    NamedSparseVector,
     SparseVector,
     Filter,
     FieldCondition,
     MatchValue,
     MatchAny,
-    SearchParams,
     Prefetch,
     FusionQuery,
     Fusion,
@@ -39,12 +44,15 @@ from qdrant_client.models import (
 from app.api.v1.endpoints.metrics import rag_retrieval_latency_seconds
 from app.core.config import get_settings
 from app.rag.embedder import embed_query, EMBEDDING_DIM
+from app.rag.bm25_tokenizer import build_sparse_query
 
 COLLECTION_NAME = "medisense_medical"
 
-# RRF top-k per sub-query before fusion
-_PREFETCH_LIMIT = 20
-_ICD10_BOOST_PREFETCH_LIMIT = 12
+# RRF prefetch limits — base paths provide broad recall; type boosts inject
+# small focused sets. BM25 excludes guidelines to prevent HAS/SMR noise.
+_PREFETCH_LIMIT = 30           # dense (unfiltered) + BM25 (guideline-excluded)
+_TYPE_BOOST_LIMIT = 10         # disease/drug boost — small focused injection
+_ICD10_BOOST_LIMIT = 15        # ICD-10 boost — code-specific retrieval
 
 
 def _get_client() -> QdrantClient:
@@ -133,19 +141,12 @@ def upsert_points(
 
 
 def _build_sparse_query(text: str) -> SparseVector | None:
-    """Build sparse query vector using the same deterministic hashing as ingestion."""
-    token_freq: dict[int, float] = {}
-    for token in text.lower().split():
-        idx = int(hashlib.md5(token.encode()).hexdigest(), 16) % 100_000
-        token_freq[idx] = token_freq.get(idx, 0.0) + 1.0
+    """Build sparse query vector using the shared BM25 tokenizer.
 
-    if not token_freq:
-        return None
-
-    return SparseVector(
-        indices=list(token_freq.keys()),
-        values=list(token_freq.values()),
-    )
+    Uses stopword removal, accent stripping, and clinical bigrams
+    to focus BM25 matching on meaningful medical terms.
+    """
+    return build_sparse_query(text)
 
 
 def hybrid_search(
@@ -153,6 +154,7 @@ def hybrid_search(
     limit: int = 5,
     source_filter: str | None = None,
     icd10_filter: list[str] | None = None,
+    has_drug_entity: bool = False,
 ) -> list[dict[str, Any]]:
     """
     Hybrid search: Dense (semantic) + BM25 (keyword) merged via RRF.
@@ -162,6 +164,7 @@ def hybrid_search(
     Optional filters:
       - source_filter: restrict to a single source ("ansm", "icd10", "has", "pubmed")
       - icd10_filter: boost/restrict by ICD-10 codes
+      - has_drug_entity: when True, adds a drug-type boost prefetch
     """
     client = _get_client()
     with rag_retrieval_latency_seconds.labels(stage="dense").time():
@@ -176,10 +179,11 @@ def hybrid_search(
     search_filter = Filter(must=base_conditions) if base_conditions else None
 
     # Hybrid search using Qdrant's query API with RRF fusion.
-    # Dense path: embed the query and search by cosine similarity.
-    # BM25 path: use the same deterministic sparse hashing as ingestion.
+    # Dense path: unfiltered for broad recall.
+    # BM25 path: excludes guidelines to prevent HAS/SMR keyword false positives.
     with rag_retrieval_latency_seconds.labels(stage="bm25").time():
         sparse_query = _build_sparse_query(query_text)
+
     prefetches = [
         Prefetch(
             query=query_vector,
@@ -189,12 +193,43 @@ def hybrid_search(
         ),
     ]
     if sparse_query is not None:
+        exclude_guideline = FieldCondition(key="type", match=MatchValue(value="guideline"))
+        bm25_filter = (
+            Filter(must=base_conditions, must_not=exclude_guideline)
+            if base_conditions
+            else Filter(must_not=exclude_guideline)
+        )
         prefetches.append(
             Prefetch(
                 query=sparse_query,
                 using="bm25",
                 limit=_PREFETCH_LIMIT,
-                filter=search_filter,
+                filter=bm25_filter,
+            )
+        )
+
+    # Disease-type boost: always active — ensures disease/condition chunks are
+    # represented even when HAS/SMR guideline chunks dominate the base paths.
+    disease_conditions = [*base_conditions, FieldCondition(key="type", match=MatchValue(value="disease"))]
+    prefetches.append(
+        Prefetch(
+            query=query_vector,
+            using="dense",
+            limit=_TYPE_BOOST_LIMIT,
+            filter=Filter(must=disease_conditions),
+        )
+    )
+
+    # Drug-type boost: conditional — only when entity extraction detects drug
+    # names.  Unconditional drug boost dilutes disease boost on symptom queries.
+    if has_drug_entity:
+        drug_conditions = [*base_conditions, FieldCondition(key="type", match=MatchValue(value="drug"))]
+        prefetches.append(
+            Prefetch(
+                query=query_vector,
+                using="dense",
+                limit=_TYPE_BOOST_LIMIT,
+                filter=Filter(must=drug_conditions),
             )
         )
 
@@ -205,7 +240,7 @@ def hybrid_search(
             Prefetch(
                 query=query_vector,
                 using="dense",
-                limit=_ICD10_BOOST_PREFETCH_LIMIT,
+                limit=_ICD10_BOOST_LIMIT,
                 filter=Filter(must=icd10_conditions),
             )
         )

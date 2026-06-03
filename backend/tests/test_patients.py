@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import create_access_token
 from app.db.models.conversation import Conversation
-from app.db.models.patient import Patient, PatientIdentity
+from app.db.models.patient import Patient
 from app.db.models.audit_log import AuditLog, ConsentLog
 
 

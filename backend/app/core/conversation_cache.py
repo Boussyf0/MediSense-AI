@@ -196,6 +196,7 @@ async def get_turn_count(conversation_id: str) -> int:
         await redis.aclose()
         return count
     except Exception:  # pragma: no cover
+        logger.warning("Redis LLEN failed for conversation turn count", exc_info=True)
         return 0
 
 

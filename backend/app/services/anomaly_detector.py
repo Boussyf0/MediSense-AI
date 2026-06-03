@@ -186,7 +186,7 @@ async def ingest_reading(patient_uuid: str, reading: dict) -> dict[str, Any]:
         if trend_elevated:
             iot_anomalies_detected_total.labels(severity="trend", metric_type="lstm_60m").inc()
     except Exception:
-        pass
+        logger.debug("Prometheus counter update failed", exc_info=True)
 
     narrative: str | None = None
     if alert_critical or trend_elevated:
@@ -284,6 +284,7 @@ async def get_recent_scores(patient_uuid: str) -> dict[str, Any]:
         readings5  = [json.loads(r) for r in raw5]
         readings60 = [json.loads(r) for r in raw60]
     except Exception:
+        logger.warning("Redis unavailable for anomaly scores", exc_info=True)
         readings5 = readings60 = []
 
     if len(readings5) >= MIN_READINGS_FOR_SCORE:
@@ -308,6 +309,7 @@ async def get_recent_scores(patient_uuid: str) -> dict[str, Any]:
                 window_readings=readings5,
             )
         except Exception:  # pragma: no cover — defensive
+            logger.warning("Narrative build failed", exc_info=True)
             narrative = None
 
     return {

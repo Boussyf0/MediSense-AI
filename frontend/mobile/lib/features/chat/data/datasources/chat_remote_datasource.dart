@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 class ChatRemoteDatasource {
@@ -36,7 +37,9 @@ class ChatRemoteDatasource {
           if (jsonStr == '[DONE]') return;
           try {
             yield jsonDecode(jsonStr) as Map<String, dynamic>;
-          } catch (_) {}
+          } catch (e) {
+            developer.log('SSE JSON decode error: $e', name: 'ChatSSE');
+          }
         }
       }
     }

@@ -6,10 +6,13 @@ Fallback: ICD-10 static data from Qdrant if API is unavailable.
 
 Returns: disease code, title, definition, inclusions, exclusions.
 """
+import logging
 import httpx
 from typing import Any
 
 from app.core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 ICD11_API_BASE = "https://id.who.int/icd"
 ICD11_SEARCH_URL = f"{ICD11_API_BASE}/entity/search"
@@ -43,7 +46,8 @@ async def _get_access_token(timeout: float = 3.0) -> str | None:
             )
             resp.raise_for_status()
             return resp.json().get("access_token")
-        except Exception:
+        except (httpx.HTTPError, KeyError) as exc:
+            logger.warning("ICD-11 token fetch failed: %s", exc)
             return None
 
 
@@ -89,7 +93,8 @@ async def search_disease(query: str, lang: str = "fr", timeout: float = 3.0) -> 
 
         except (httpx.TimeoutException, httpx.HTTPStatusError):
             return None
-        except Exception:
+        except (KeyError, ValueError) as exc:
+            logger.warning("ICD-11 search parse error: %s", exc)
             return None
 
 

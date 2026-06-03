@@ -10,7 +10,7 @@ Endpoints:
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from jose import JWTError
@@ -37,7 +37,12 @@ settings = get_settings()
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(request: LoginRequest, http_request: Request, db: AsyncSession = Depends(get_db)):
+async def login(
+    request: LoginRequest,
+    http_request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
     """
     Authenticate a user and return JWT tokens.
 
@@ -45,6 +50,8 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
       - Same error message for wrong email AND wrong password
         (prevents user enumeration attacks)
       - Timing: bcrypt.verify is slow by design — prevents brute force
+      - Refresh token is set as httpOnly cookie (not in response body)
+        to prevent XSS-based token theft
     """
     # Look up user by email
     result = await db.execute(select(User).where(User.email == request.email))
@@ -84,13 +91,10 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
         subject=str(user.user_uuid),
         role=user.role.value,
     )
-    refresh_token, refresh_jti = create_refresh_token(
+    refresh_token, _refresh_jti = create_refresh_token(
         subject=str(user.user_uuid),
         role=user.role.value,
     )
-
-    # TODO Sprint 2: store refresh_jti in DB for rotation tracking
-    # TODO Sprint 2: set refresh_token in httpOnly cookie (more secure than body)
 
     actor_payload = TokenPayload(sub=str(user.user_uuid), role=user.role.value, jti="", type="access")
     await log_audit(
@@ -102,6 +106,17 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
         resource_uuid=user.user_uuid,
     )
 
+    # Set refresh token as httpOnly cookie — invisible to JavaScript (XSS-safe)
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=settings.APP_ENV != "development",
+        samesite="strict",
+        path="/api/v1/auth",
+        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 3600,
+    )
+
     return TokenResponse(
         access_token=access_token,
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
@@ -109,20 +124,36 @@ async def login(request: LoginRequest, http_request: Request, db: AsyncSession =
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh_token(request: RefreshRequest):
+async def refresh_token(
+    http_request: Request,
+    body: RefreshRequest | None = None,
+):
     """
     Exchange a valid refresh token for a new access token.
+
+    The refresh token is read from the httpOnly cookie (web clients) or
+    from the request body (mobile clients — cookies don't apply natively).
 
     Why not just extend the access token's lifetime?
       - Short-lived access tokens limit damage if one is stolen
       - Refresh tokens can be revoked (stored in Redis blacklist)
     """
+    # Cookie-first (web), body fallback (mobile)
+    token = http_request.cookies.get("refresh_token")
+    if not token and body:
+        token = body.refresh_token
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No refresh token provided",
+        )
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired refresh token",
     )
     try:
-        payload = decode_token(request.refresh_token)
+        payload = decode_token(token)
     except JWTError:
         raise credentials_exception
 
@@ -148,6 +179,7 @@ async def refresh_token(request: RefreshRequest):
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
     current_user: Annotated[TokenPayload, Depends(get_current_user)],
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -155,10 +187,17 @@ async def logout(
 
     The token remains cryptographically valid but will be rejected on next use.
     Redis TTL = token's remaining lifetime → no manual cleanup needed.
+    Also clears the httpOnly refresh_token cookie for web clients.
     """
     # Calculate remaining TTL for the access token
     remaining_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     await blacklist_token(current_user.jti, remaining_seconds)
+
+    # Clear the httpOnly refresh cookie
+    response.delete_cookie(
+        key="refresh_token",
+        path="/api/v1/auth",
+    )
 
     if current_user.role == "patient":
         patient_uuid = uuid.UUID(current_user.sub)

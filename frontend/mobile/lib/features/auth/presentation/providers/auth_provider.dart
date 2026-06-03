@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -57,7 +58,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final user = await _ds.me();
       state = state.copyWith(user: user);
-    } catch (_) {}
+    } catch (e) {
+      // Non-blocking — session may have expired; login screen will handle it.
+      debugPrint('loadUser failed: $e');
+    }
   }
 }
 

@@ -7,12 +7,10 @@ Unit tests for anomaly detection services.
 import json
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.db.models.biometric_reading import BiometricReading
 from app.db.models.patient import Patient
 
 
@@ -169,6 +167,99 @@ async def test_get_recent_scores_with_redis():
     assert result["readings_5m"] == 0
 
 
+@pytest.mark.asyncio
+async def test_ingest_reading_critical_anomaly(test_db):
+    """When a critical anomaly is scored, it broadcasts via WebSocket and attempts FCM push."""
+    from app.services.anomaly_detector import ingest_reading
+    from app.db.models.device_token import DeviceToken
+    from app.db.models.user import User, UserRole
+
+    patient_uuid = uuid.uuid4()
+    readings = [{"hr": 140, "spo2": 85, "hrv": 12, "temperature": 38.5}] * 8
+    # 5m window has 8 readings (< 10 -> score 0.95), 60m has 16 readings (>= 10 -> score 0.75)
+    redis_mock = _make_redis_mock(readings_5m=readings, readings_60m=readings * 2)
+
+    # Seed User first to avoid FK constraint error
+    user = User(
+        user_uuid=patient_uuid,
+        email=f"patient-{patient_uuid}@example.com",
+        hashed_password="mocked-hash",
+        role=UserRole.PATIENT,
+        first_name="Test",
+        last_name="Patient",
+        is_active=True
+    )
+    test_db.add(user)
+    await test_db.flush()
+
+    # Seed a DeviceToken to cover the FCM push lines
+    test_db.add(DeviceToken(
+        token="test-token-123",
+        user_uuid=patient_uuid,
+        platform="android",
+    ))
+    await test_db.flush()
+
+    # Mock score_window to return 0.95 (critical) for 5m, and 0.75 for 60m
+    def mock_score(window):
+        return 0.95 if len(window) < 10 else 0.75
+
+    mock_broadcast = AsyncMock(return_value=1)
+    mock_send_to_tokens = AsyncMock()
+    
+    # Mock AsyncSessionLocal to yield the test_db session
+    ctx = AsyncMock()
+    ctx.__aenter__ = AsyncMock(return_value=test_db)
+    ctx.__aexit__ = AsyncMock(return_value=False)
+    mock_session_local = MagicMock(return_value=ctx)
+
+    with patch("app.services.anomaly_detector._get_redis", new_callable=AsyncMock, return_value=redis_mock), \
+         patch("app.services.anomaly_detector.score_window", side_effect=mock_score), \
+         patch("app.core.ws_manager.manager.broadcast", new=mock_broadcast), \
+         patch("app.services.fcm_service.send_to_tokens", new=mock_send_to_tokens), \
+         patch("app.db.session.AsyncSessionLocal", new=mock_session_local):
+        
+        result = await ingest_reading(str(patient_uuid), readings[0])
+
+    assert result["score_5m"] == 0.95
+    assert result["score_60m"] == 0.75
+    assert result["alert_critical"] is True
+    assert result["trend_elevated"] is True
+    mock_broadcast.assert_called_once()
+    mock_send_to_tokens.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_get_recent_scores_with_enough_readings():
+    """get_recent_scores returns scored windows when enough readings exist."""
+    from app.services.anomaly_detector import get_recent_scores
+
+    patient_uuid = str(uuid.uuid4())
+    readings = [{"hr": 72, "spo2": 98, "hrv": 42, "temperature": 36.6}] * 8
+    
+    async def mock_zrange(key, start, end):
+        if "60m" in key:
+            return [json.dumps(r).encode() for r in readings] * 2  # 16 readings
+        return [json.dumps(r).encode() for r in readings]  # 8 readings
+
+    redis_mock = AsyncMock()
+    redis_mock.zrange = mock_zrange
+
+    def mock_score(window):
+        return 0.95 if len(window) < 10 else 0.75
+
+    with patch("app.services.anomaly_detector._get_redis", new_callable=AsyncMock, return_value=redis_mock), \
+         patch("app.services.anomaly_detector.score_window", side_effect=mock_score):
+        result = await get_recent_scores(patient_uuid)
+
+    assert result["patient_uuid"] == patient_uuid
+    assert result["score_5m"] == 0.95
+    assert result["score_60m"] == 0.75
+    assert result["alert_critical"] is True
+    assert result["trend_elevated"] is True
+    assert result["narrative"] is not None
+
+
 # ── narrative builder ─────────────────────────────────────────────────────
 
 def _ts_at(hour: int) -> float:
@@ -217,13 +308,84 @@ def test_narrative_trend_tail_when_60m_elevated():
     assert "tendance" in text.lower() or "heure" in text.lower()
 
 
+def test_narrative_morning_bradycardia():
+    """Bradycardia (HR ≤ 45) detected in the morning."""
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 42, "spo2": 97, "hrv": 50}
+    window = [{"hr": 42}, {"hr": 43}, {"hr": 41}, {"hr": 44}, {"hr": 42}]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=None, window_readings=window, now_ts=_ts_at(8),
+    )
+    assert "Bradycardie" in text
+    assert "42 bpm" in text
+    assert "matin" in text
+
+
+def test_narrative_low_hrv():
+    """Very low HRV (≤ 15ms) generates HRV-specific headline."""
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 72, "spo2": 97, "hrv": 12}
+    window = [{"hr": 71}, {"hr": 72}, {"hr": 73}]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=None, window_readings=window, now_ts=_ts_at(10),
+    )
+    assert "Variabilité" in text
+    assert "12 ms" in text
+
+
+def test_narrative_generic_headline():
+    """When no specific pattern matches, generic headline is used."""
+    from app.services.anomaly_detector import build_anomaly_narrative
+
+    reading = {"hr": 95, "spo2": 96, "hrv": 25}
+    window = [{"hr": 90}, {"hr": 95}, {"hr": 93}]
+    text = build_anomaly_narrative(
+        reading=reading, score_60m=None, window_readings=window, now_ts=_ts_at(15),
+    )
+    assert "atypiques" in text
+    assert "après-midi" in text
+
+
+def test_activity_proxy_too_few_readings():
+    """Fewer than 3 HR readings → None (no classification)."""
+    from app.services.anomaly_detector import _activity_proxy
+    assert _activity_proxy([{"hr": 70}, {"hr": 72}]) is None
+
+
+def test_activity_proxy_ambiguous():
+    """Neither resting nor exercising → None."""
+    from app.services.anomaly_detector import _activity_proxy
+    readings = [{"hr": 85}, {"hr": 90}, {"hr": 95}, {"hr": 88}]
+    assert _activity_proxy(readings) is None
+
+
+def test_activity_proxy_resting():
+    """Low spread, low mean → resting."""
+    from app.services.anomaly_detector import _activity_proxy
+    readings = [{"hr": 62}, {"hr": 64}, {"hr": 63}, {"hr": 65}, {"hr": 63}]
+    assert _activity_proxy(readings) == "au repos"
+
+
+def test_time_of_day_fr_afternoon():
+    """Hour 15 → 'cet après-midi'."""
+    from app.services.anomaly_detector import _time_of_day_fr
+    assert _time_of_day_fr(15) == "cet après-midi"
+
+
+def test_time_of_day_fr_morning():
+    """Hour 8 → 'ce matin'."""
+    from app.services.anomaly_detector import _time_of_day_fr
+    assert _time_of_day_fr(8) == "ce matin"
+
+
 # ── kafka_consumer ────────────────────────────────────────────────────────
 
 @pytest.mark.asyncio
 async def test_persist_reading_inserts_row(test_db):
     """_persist_reading should insert a BiometricReading row via the test DB session."""
     import uuid as _uuid
-    from app.db.models.patient import Patient
     from app.services.kafka_consumer import _persist_reading
 
     patient_uuid = _uuid.uuid4()
@@ -289,3 +451,165 @@ async def test_drain_buffer_empty_file_noop(tmp_path):
     with patch.object(settings, "KAFKA_BUFFER_DIR", str(tmp_path / "nonexistent")):
         with patch("app.services.kafka_consumer.settings", settings):
             await _drain_buffer()  # should not raise
+
+
+@pytest.mark.asyncio
+async def test_kafka_consumer_loop_calls_ingest_reading():
+    """Test that _kafka_consumer_loop calls ingest_reading upon receiving a message."""
+    import sys
+    from app.services.kafka_consumer import _kafka_consumer_loop
+    from app.core.config import get_settings
+    
+    settings = get_settings()
+    
+    class MockMsg:
+        def __init__(self, value):
+            self.value = value
+
+    class MockConsumerIter:
+        def __init__(self, msgs):
+            self.msgs = msgs
+        def __aiter__(self):
+            return self
+        async def __anext__(self):
+            if not self.msgs:
+                raise StopAsyncIteration
+            return self.msgs.pop(0)
+
+    patient_uuid = str(uuid.uuid4())
+    payload = {
+        "device_id": "SAMSUNG-WATCH-ABC123",
+        "patient_uuid": patient_uuid,
+        "hr": 75, "spo2": 98, "hrv": 45,
+        "temperature": 36.6,
+        "timestamp": 1700000000
+    }
+    
+    mock_consumer = MagicMock()
+    mock_consumer.start = AsyncMock()
+    mock_consumer.stop = AsyncMock()
+    mock_consumer.assignment = MagicMock(return_value=[])
+    mock_consumer.end_offsets = AsyncMock(return_value={})
+    mock_consumer.__aiter__ = MagicMock(return_value=MockConsumerIter([MockMsg(payload)]))
+    
+    mock_consumer_cls = MagicMock(return_value=mock_consumer)
+    
+    mock_persist = AsyncMock()
+    mock_ingest = AsyncMock()
+
+    # Save original modules
+    orig_aiokafka = sys.modules.get("aiokafka")
+    orig_aiokafka_errors = sys.modules.get("aiokafka.errors")
+    
+    # Mock modules
+    mock_aiokafka = MagicMock()
+    mock_aiokafka.AIOKafkaConsumer = mock_consumer_cls
+    mock_aiokafka_errors = MagicMock()
+    mock_aiokafka_errors.KafkaConnectionError = Exception
+    
+    sys.modules["aiokafka"] = mock_aiokafka
+    sys.modules["aiokafka.errors"] = mock_aiokafka_errors
+
+    try:
+        with patch.object(settings, "KAFKA_BROKERS", "localhost:9092"), \
+             patch("app.services.kafka_consumer.settings", settings), \
+             patch("app.services.kafka_consumer._persist_reading", new=mock_persist), \
+             patch("app.services.anomaly_detector.ingest_reading", new=mock_ingest):
+            
+            await _kafka_consumer_loop()
+    finally:
+        # Restore original modules
+        if orig_aiokafka is None:
+            sys.modules.pop("aiokafka", None)
+        else:
+            sys.modules["aiokafka"] = orig_aiokafka
+            
+        if orig_aiokafka_errors is None:
+            sys.modules.pop("aiokafka.errors", None)
+        else:
+            sys.modules["aiokafka.errors"] = orig_aiokafka_errors
+        
+    mock_persist.assert_called_once_with(payload)
+    mock_ingest.assert_called_once_with(patient_uuid, payload)
+
+
+@pytest.mark.asyncio
+async def test_kafka_consumer_loop_buffers_on_error(tmp_path):
+    """Test that _kafka_consumer_loop buffers payloads if persist or ingest throws an error."""
+    import sys
+    from app.services.kafka_consumer import _kafka_consumer_loop
+    from app.core.config import get_settings
+    
+    settings = get_settings()
+    buf_dir = tmp_path / "kafka-buffer"
+    
+    class MockMsg:
+        def __init__(self, value):
+            self.value = value
+
+    class MockConsumerIter:
+        def __init__(self, msgs):
+            self.msgs = msgs
+        def __aiter__(self):
+            return self
+        async def __anext__(self):
+            if not self.msgs:
+                raise StopAsyncIteration
+            return self.msgs.pop(0)
+
+    patient_uuid = str(uuid.uuid4())
+    payload = {
+        "device_id": "SAMSUNG-WATCH-ABC123",
+        "patient_uuid": patient_uuid,
+        "hr": 75, "spo2": 98, "hrv": 45,
+        "temperature": 36.6,
+        "timestamp": 1700000000
+    }
+    
+    mock_consumer = MagicMock()
+    mock_consumer.start = AsyncMock()
+    mock_consumer.stop = AsyncMock()
+    mock_consumer.assignment = MagicMock(return_value=[])
+    mock_consumer.end_offsets = AsyncMock(return_value={})
+    mock_consumer.__aiter__ = MagicMock(return_value=MockConsumerIter([MockMsg(payload)]))
+    
+    mock_consumer_cls = MagicMock(return_value=mock_consumer)
+    
+    mock_persist = AsyncMock(side_effect=ValueError("DB insertion error"))
+
+    # Save original modules
+    orig_aiokafka = sys.modules.get("aiokafka")
+    orig_aiokafka_errors = sys.modules.get("aiokafka.errors")
+    
+    # Mock modules
+    mock_aiokafka = MagicMock()
+    mock_aiokafka.AIOKafkaConsumer = mock_consumer_cls
+    mock_aiokafka_errors = MagicMock()
+    mock_aiokafka_errors.KafkaConnectionError = Exception
+    
+    sys.modules["aiokafka"] = mock_aiokafka
+    sys.modules["aiokafka.errors"] = mock_aiokafka_errors
+    
+    try:
+        with patch.object(settings, "KAFKA_BROKERS", "localhost:9092"), \
+             patch.object(settings, "KAFKA_BUFFER_DIR", str(buf_dir)), \
+             patch("app.services.kafka_consumer.settings", settings), \
+             patch("app.services.kafka_consumer._persist_reading", new=mock_persist):
+            
+            await _kafka_consumer_loop()
+    finally:
+        # Restore original modules
+        if orig_aiokafka is None:
+            sys.modules.pop("aiokafka", None)
+        else:
+            sys.modules["aiokafka"] = orig_aiokafka
+            
+        if orig_aiokafka_errors is None:
+            sys.modules.pop("aiokafka.errors", None)
+        else:
+            sys.modules["aiokafka.errors"] = orig_aiokafka_errors
+        
+    mock_persist.assert_called_once_with(payload)
+    lines = (buf_dir / "iot_buffer.ndjson").read_text().strip().splitlines()
+    assert len(lines) == 1
+    assert json.loads(lines[0])["patient_uuid"] == patient_uuid

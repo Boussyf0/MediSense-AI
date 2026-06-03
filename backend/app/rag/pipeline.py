@@ -6,8 +6,9 @@ Steps:
   [1] Language detection (langdetect + Darija stopwords)
   [2] Query normalization (Darija/AR → clinical French via Mistral)
   [3] Parallel retrieval:
-      [3a] Qdrant dense + BM25 hybrid (RRF)
+      [3a] Qdrant dense + BM25 hybrid (RRF) — top-20 candidates
       [3b] MCP servers (ANSM + ICD-11) with circuit breaker
+      [3c] Cross-encoder reranking (mmarco) — top-20 → top-5 (US-12)
   [4] Medical entity extraction + ICD-10 payload boost
   [5] Safety pre-check (confidence gate, urgency detection, IoT critical override)
   [6] LLM generation (Mistral 7B, streaming or blocking)
@@ -25,6 +26,7 @@ from app.rag.language import detect_language
 from app.rag.normalizer import normalize_to_french
 from app.rag.medical_entities import extract_entities
 from app.rag.vectorstore import hybrid_search
+from app.rag.reranker import rerank
 from app.rag.safety import pre_generation_check, post_generation_check
 from app.rag.llm import generate, generate_stream
 from app.rag.iot_context import fetch_iot_context, IoTContext
@@ -116,7 +118,7 @@ async def run(
     # [3] Parallel: Qdrant retrieval + MCP fetch
     t0 = time.perf_counter()
     qdrant_task = asyncio.create_task(
-        _safe_hybrid_search(query_fr, entities.icd10_codes)
+        _safe_hybrid_search(query_fr, entities.icd10_codes, bool(entities.drug_names))
     )
     mcp_task = asyncio.create_task(
         fetch_mcp_context(
@@ -127,6 +129,12 @@ async def run(
 
     chunks, mcp_data = await asyncio.gather(qdrant_task, mcp_task)
     timings_ms["retrieval_and_mcp"] = (time.perf_counter() - t0) * 1000
+
+    # [3c] Type diversification + cross-encoder reranking (US-12)
+    chunks = _diversify_by_type(chunks)
+    t0 = time.perf_counter()
+    chunks = _safe_rerank(query_fr, chunks, top_k=5)
+    timings_ms["rerank"] = (time.perf_counter() - t0) * 1000
 
     # [5] Safety pre-check
     t0 = time.perf_counter()
@@ -257,7 +265,7 @@ async def run_stream(
     # [3] Parallel retrieval
     t0 = time.perf_counter()
     qdrant_task = asyncio.create_task(
-        _safe_hybrid_search(query_fr, entities.icd10_codes)
+        _safe_hybrid_search(query_fr, entities.icd10_codes, bool(entities.drug_names))
     )
     mcp_task = asyncio.create_task(
         fetch_mcp_context(
@@ -267,6 +275,12 @@ async def run_stream(
     )
     chunks, mcp_data = await asyncio.gather(qdrant_task, mcp_task)
     timings_ms["retrieval_and_mcp"] = (time.perf_counter() - t0) * 1000
+
+    # [3c] Type diversification + cross-encoder reranking (US-12)
+    chunks = _diversify_by_type(chunks)
+    t0 = time.perf_counter()
+    chunks = _safe_rerank(query_fr, chunks, top_k=5)
+    timings_ms["rerank"] = (time.perf_counter() - t0) * 1000
 
     # [5] Safety pre-check
     t0 = time.perf_counter()
@@ -327,13 +341,52 @@ async def run_stream(
     }
 
 
-async def _safe_hybrid_search(query_fr: str, icd10_codes: list[str]) -> list[dict]:
-    """Qdrant hybrid search with fallback on error."""
+async def _safe_hybrid_search(
+    query_fr: str,
+    icd10_codes: list[str],
+    has_drug_entity: bool = False,
+) -> list[dict]:
+    """Qdrant hybrid search — fetches top-20 candidates for cross-encoder reranking."""
     try:
         return hybrid_search(
             query_text=query_fr,
-            limit=5,
+            limit=20,
             icd10_filter=icd10_codes if icd10_codes else None,
+            has_drug_entity=has_drug_entity,
         )
     except Exception:
         return []
+
+
+_MAX_GUIDELINE_CHUNKS = 3
+
+
+def _diversify_by_type(chunks: list[dict]) -> list[dict]:
+    """Cap guideline chunks to prevent HAS/SMR noise from dominating the CE pool.
+
+    Without this, symptom queries return ~16/20 guideline chunks from the base
+    dense + BM25 paths, leaving the CE with too few disease/drug candidates.
+    Capping guidelines at 5/20 (25%) forces the remaining slots to be filled by
+    disease and drug chunks that the CE can properly rank.
+    """
+    guideline_count = 0
+    result = []
+    for chunk in chunks:
+        if chunk.get("type") == "guideline":
+            guideline_count += 1
+            if guideline_count > _MAX_GUIDELINE_CHUNKS:
+                continue
+        result.append(chunk)
+    return result
+
+
+def _safe_rerank(query_fr: str, chunks: list[dict], top_k: int = 5) -> list[dict]:
+    """Cross-encoder reranking with graceful fallback to RRF order on failure."""
+    if not chunks:
+        return chunks
+    try:
+        ranked = rerank(query_fr, chunks, top_k=top_k)
+        return [r.chunk for r in ranked]
+    except Exception:
+        logger.warning("cross-encoder rerank failed, falling back to RRF order")
+        return chunks[:top_k]

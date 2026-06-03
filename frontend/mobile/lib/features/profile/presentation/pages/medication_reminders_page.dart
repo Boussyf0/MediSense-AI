@@ -215,7 +215,9 @@ class _MedicationRemindersPageState
                   time: r.time,
                   daysOfWeek: r.daysOfWeek,
                 );
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('Create reminder failed: $e');
+              }
             },
           ),
         ),

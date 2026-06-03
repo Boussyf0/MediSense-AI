@@ -215,7 +215,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
       AIRFLOW_ADMIN_USER: admin
-      AIRFLOW_ADMIN_PASSWORD: medisense2026
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_PASSWORD:-changeme}
       MEDISENSE_BACKEND_DIR: /opt/medisense/backend
       MLFLOW_PROMOTION_F1_THRESHOLD: "0.80"
       MLFLOW_PROMOTION_AUC_THRESHOLD: "0.87"
@@ -233,7 +233,7 @@ services:
     command: >
       bash -c "
         airflow db migrate &&
-        airflow users create --username admin --password medisense2026
+        airflow users create --username admin --password $${AIRFLOW_ADMIN_PASSWORD:-changeme}
           --firstname MediSense --lastname Admin --role Admin --email admin@medisense.ma || true &&
         airflow webserver &
         airflow scheduler

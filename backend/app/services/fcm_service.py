@@ -72,7 +72,7 @@ async def send_to_token(token: str, title: str, body: str, data: dict[str, Any] 
             from app.api.v1.endpoints.metrics import fcm_sends_total
             fcm_sends_total.labels(outcome="mock").inc()
         except Exception:
-            pass
+            logger.debug("FCM metric counter update failed", exc_info=True)
         return True
 
     try:  # pragma: no cover - real network path

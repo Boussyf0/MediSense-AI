@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_model.dart';
 
@@ -29,7 +30,10 @@ class AuthRemoteDatasource {
   Future<void> logout() async {
     try {
       await _dio.post('/auth/logout');
-    } catch (_) {}
+    } catch (e) {
+      // Network failure during logout is non-blocking — token is cleared below.
+      debugPrint('Logout request failed: $e');
+    }
     await _storage.deleteAll();
   }
 

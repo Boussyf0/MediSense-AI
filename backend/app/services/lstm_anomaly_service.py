@@ -123,9 +123,9 @@ def _run_inference(model, device, vitals: list[dict]) -> float:  # pragma: no co
         raw.insert(0, raw[0] if raw else [70, 98, 40, 36.6])
 
     arr = np.array(raw, dtype=np.float32)
-    mean = arr.mean(axis=0, keepdims=True)
-    std  = arr.std(axis=0, keepdims=True) + 1e-8
-    arr  = (arr - mean) / std
+    global_means = np.array([70.0, 97.0, 45.0, 36.6], dtype=np.float32)
+    global_stds  = np.array([10.0, 2.0, 15.0, 0.5], dtype=np.float32)
+    arr  = (arr - global_means) / global_stds
 
     x = torch.tensor(arr).unsqueeze(0).to(device)
     with torch.no_grad():

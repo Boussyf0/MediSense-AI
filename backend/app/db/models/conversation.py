@@ -21,10 +21,8 @@ from sqlalchemy import (
     Integer,
     ForeignKey,
     DateTime,
-    Text,
     LargeBinary,
     func,
-    text,
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship

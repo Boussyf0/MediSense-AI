@@ -1,19 +1,29 @@
+import logging
 import uuid
 from datetime import date as DateType, datetime, time, timezone
 from typing import List, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import TokenPayload, require_any_staff, require_role, require_secretary
 from app.db.models.appointment import Appointment
+from app.db.models.patient import Patient
 from app.db.models.user import User
 from app.db.models.noshow_feedback import NoShowFeedback
 from app.db.session import get_db
-from app.services.noshow_predictor import get_risk_color
+from app.services.noshow_predictor import (
+    NoShowPredictor,
+    ModelNotReadyError,
+    FeatureValidationError,
+    build_appointment_features,
+    get_risk_color,
+)
 from app.services.sms_reminder import dispatch_smart_sms_reminders
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/predictions", tags=["ml"])
 
@@ -166,8 +176,70 @@ class NoShowFeedbackResponse(BaseModel):
     appointment_uuid: uuid.UUID
     outcome: str
     created_at: datetime
+    updated_predictions: int = 0
 
     model_config = {"from_attributes": True}
+
+
+async def _repredict_patient_future_appointments(
+    db: AsyncSession,
+    patient_uuid: uuid.UUID,
+    previous_noshows: int,
+) -> int:
+    """Re-run no-show predictions for all future pending appointments of a patient.
+
+    Returns the number of appointments whose probability was updated.
+    """
+    now = datetime.now(timezone.utc)
+
+    # Fetch future non-terminal appointments for this patient
+    result = await db.execute(
+        select(Appointment).where(
+            Appointment.patient_uuid == patient_uuid,
+            Appointment.scheduled_at > now,
+            Appointment.status.in_(["PENDING", "CONFIRMED"]),
+        )
+    )
+    future_appointments = result.scalars().all()
+    if not future_appointments:
+        return 0
+
+    # Fetch patient demographics for feature building
+    patient_row = await db.execute(
+        select(Patient).where(Patient.patient_uuid == patient_uuid)
+    )
+    patient = patient_row.scalar_one_or_none()
+    if patient is None:
+        return 0
+
+    try:
+        predictor = NoShowPredictor()
+    except Exception:
+        logger.warning("noshow_predictor_unavailable — skipping re-prediction")
+        return 0
+
+    updated = 0
+    for appt in future_appointments:
+        try:
+            features = build_appointment_features(
+                patient=patient,
+                appointment=appt,
+                previous_noshows=previous_noshows,
+                now=now,
+            )
+            prediction = predictor.predict(features)
+            appt.noshow_probability = prediction["noshow_probability"]
+            appt.noshow_model_ver = prediction.get("model_version")
+            updated += 1
+        except (ModelNotReadyError, FeatureValidationError) as exc:
+            logger.warning(
+                "noshow_repredict_skip appt=%s reason=%s", appt.appointment_uuid, exc
+            )
+
+    if updated:
+        await db.flush()
+
+    return updated
 
 
 @router.post(
@@ -187,6 +259,10 @@ async def submit_noshow_feedback(
     if appt is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
 
+    # 1. Update appointment status based on feedback
+    appt.status = "COMPLETED" if body.outcome == "presented" else "NO_SHOW"
+
+    # 2. Save feedback record
     feedback = NoShowFeedback(
         appointment_uuid=appointment_uuid,
         outcome=body.outcome,
@@ -194,4 +270,26 @@ async def submit_noshow_feedback(
     )
     db.add(feedback)
     await db.flush()
-    return NoShowFeedbackResponse.model_validate(feedback)
+
+    # 3. Count total no-shows for this patient (ML feature: previous_noshows)
+    count_result = await db.execute(
+        select(func.count()).select_from(Appointment).where(
+            Appointment.patient_uuid == appt.patient_uuid,
+            Appointment.status == "NO_SHOW",
+        )
+    )
+    total_noshows = count_result.scalar() or 0
+
+    # 4. Re-predict future appointments for this patient with updated history
+    updated_count = await _repredict_patient_future_appointments(
+        db, appt.patient_uuid, total_noshows
+    )
+
+    logger.info(
+        "feedback_ml_loop patient=%s outcome=%s noshows=%d repredicted=%d",
+        appt.patient_uuid, body.outcome, total_noshows, updated_count,
+    )
+
+    resp = NoShowFeedbackResponse.model_validate(feedback)
+    resp.updated_predictions = updated_count
+    return resp

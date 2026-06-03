@@ -13,7 +13,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError
 from pydantic import BaseModel
 
-from app.core.security import decode_token, is_token_blacklisted, check_permission
+from app.core.security import decode_token, is_token_blacklisted
 
 # HTTPBearer extracts the token from "Authorization: Bearer <token>" header
 bearer_scheme = HTTPBearer()

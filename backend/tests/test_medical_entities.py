@@ -8,7 +8,6 @@ Covers:
   - Multiple entities in one query
   - No matches
 """
-import pytest
 from app.rag.medical_entities import extract_entities
 
 

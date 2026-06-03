@@ -8,7 +8,6 @@ Verifies:
   - Idempotent: second call upserts device and replaces readings
 """
 import uuid
-from datetime import datetime, timezone
 
 import pytest
 from sqlalchemy import select

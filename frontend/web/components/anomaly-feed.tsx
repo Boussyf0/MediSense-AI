@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAlerts } from './AlertsProvider';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -10,6 +10,11 @@ function relativeTime(ts: number): string {
   if (diffS < 3600) return `il y a ${Math.floor(diffS / 60)} min`;
   if (diffS < 86400) return `il y a ${Math.floor(diffS / 3600)} h`;
   return `il y a ${Math.floor(diffS / 86400)} j`;
+}
+
+function maskPhone(phone: string): string {
+  if (phone.length < 6) return phone;
+  return phone.slice(0, 4) + ' ••• ' + phone.slice(-3);
 }
 
 interface VitalChipProps {
@@ -33,6 +38,209 @@ function VitalChip({ label, value, color }: VitalChipProps) {
   );
 }
 
+// ─── call patient modal ─────────────────────────────────────────────────────
+
+type CallStatus = 'idle' | 'ringing' | 'connected' | 'ended' | 'failed';
+
+interface CallPatientModalProps {
+  patientUuid: string;
+  narrative: string;
+  onClose: () => void;
+}
+
+function CallPatientModal({ patientUuid, narrative, onClose }: CallPatientModalProps) {
+  const [status, setStatus] = useState<CallStatus>('idle');
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const phone = '+212 6•• ••• ' + patientUuid.slice(-3);
+
+  const startCall = useCallback(() => {
+    setStatus('ringing');
+    setElapsed(0);
+    // Simulate ring → connect after 2s
+    setTimeout(() => {
+      setStatus('connected');
+      timerRef.current = setInterval(() => setElapsed((t) => t + 1), 1000);
+    }, 2000);
+  }, []);
+
+  const endCall = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setStatus('ended');
+  }, []);
+
+  useEffect(() => {
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, []);
+
+  const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+
+  const statusLabel: Record<CallStatus, string> = {
+    idle: 'Pret',
+    ringing: 'Appel en cours...',
+    connected: 'En ligne',
+    ended: 'Appel termine',
+    failed: 'Echec',
+  };
+
+  const statusColor: Record<CallStatus, string> = {
+    idle: 'var(--t3)',
+    ringing: '#FBBF24',
+    connected: '#34D399',
+    ended: 'var(--t4)',
+    failed: '#EF4444',
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 300,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+    }} onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 320, background: 'var(--s1)',
+          border: '1px solid var(--line)', borderRadius: 16,
+          overflow: 'hidden',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: '18px 16px 14px',
+          background: 'rgba(15,22,35,0.6)',
+          borderBottom: '1px solid var(--line)',
+          textAlign: 'center',
+        }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: '50%',
+            background: 'rgba(52,211,153,0.12)',
+            border: '1px solid rgba(52,211,153,0.3)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 10,
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="#34D399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          <div style={{
+            fontFamily: 'var(--f-display)', fontSize: 14, fontWeight: 600,
+            color: 'var(--t0)', marginBottom: 4,
+          }}>
+            Appeler le patient
+          </div>
+          <div style={{
+            fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t4)',
+            letterSpacing: '0.1em',
+          }}>
+            {patientUuid.slice(0, 8)}...
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '16px 16px 12px' }}>
+          {/* Phone number */}
+          <div style={{
+            background: 'var(--s2)', border: '1px solid var(--line)',
+            borderRadius: 10, padding: '10px 14px', marginBottom: 12,
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="var(--t3)" strokeWidth="2" strokeLinecap="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+            <span style={{
+              fontFamily: 'var(--f-mono)', fontSize: 14, color: 'var(--t1)',
+              letterSpacing: '0.06em',
+            }}>
+              {phone}
+            </span>
+          </div>
+
+          {/* Alert context */}
+          <div style={{
+            fontFamily: 'var(--f-body)', fontSize: 12, color: 'var(--t3)',
+            lineHeight: 1.5, marginBottom: 14,
+            padding: '8px 10px', background: 'rgba(239,68,68,0.06)',
+            borderRadius: 8, border: '1px solid rgba(239,68,68,0.12)',
+          }}>
+            {narrative}
+          </div>
+
+          {/* Status */}
+          <div style={{
+            textAlign: 'center', marginBottom: 14,
+          }}>
+            <span style={{
+              fontFamily: 'var(--f-mono)', fontSize: 10,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: statusColor[status],
+            }}>
+              {statusLabel[status]}
+            </span>
+            {status === 'connected' && (
+              <div style={{
+                fontFamily: 'var(--f-mono)', fontSize: 20, fontWeight: 600,
+                color: '#34D399', marginTop: 4,
+              }}>
+                {formatTime(elapsed)}
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {(status === 'idle' || status === 'ended') && (
+              <button
+                onClick={startCall}
+                style={{
+                  flex: 1, padding: '10px 0', borderRadius: 10,
+                  background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)',
+                  color: '#34D399', fontFamily: 'var(--f-mono)', fontSize: 11,
+                  fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  cursor: 'pointer', transition: 'background 0.15s',
+                }}
+              >
+                Appeler
+              </button>
+            )}
+            {(status === 'ringing' || status === 'connected') && (
+              <button
+                onClick={endCall}
+                style={{
+                  flex: 1, padding: '10px 0', borderRadius: 10,
+                  background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
+                  color: '#EF4444', fontFamily: 'var(--f-mono)', fontSize: 11,
+                  fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  cursor: 'pointer', transition: 'background 0.15s',
+                }}
+              >
+                Raccrocher
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              style={{
+                flex: 1, padding: '10px 0', borderRadius: 10,
+                background: 'var(--s2)', border: '1px solid var(--line)',
+                color: 'var(--t3)', fontFamily: 'var(--f-mono)', fontSize: 11,
+                fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                cursor: 'pointer', transition: 'background 0.15s',
+              }}
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── drawer ──────────────────────────────────────────────────────────────────
 
 interface AnomalyFeedProps {
@@ -43,6 +251,7 @@ interface AnomalyFeedProps {
 export function AnomalyFeed({ open, onClose }: AnomalyFeedProps) {
   const { alerts, markAllRead, dismiss } = useAlerts();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const [callTarget, setCallTarget] = useState<{ patientUuid: string; narrative: string } | null>(null);
 
   // Mark all read when drawer opens
   useEffect(() => {
@@ -247,6 +456,31 @@ export function AnomalyFeed({ open, onClose }: AnomalyFeedProps) {
                       }}>
                         {relativeTime(a.receivedAt)}
                       </span>
+                      {a.patient_uuid && (
+                        <button
+                          onClick={() => setCallTarget({
+                            patientUuid: String(a.patient_uuid),
+                            narrative: a.narrative ?? 'Anomalie detectee',
+                          })}
+                          aria-label="Appeler le patient"
+                          title="Appeler le patient"
+                          style={{
+                            background: 'rgba(52,211,153,0.1)',
+                            border: '1px solid rgba(52,211,153,0.25)',
+                            borderRadius: 5,
+                            color: '#34D399', cursor: 'pointer',
+                            padding: '2px 4px', lineHeight: 1,
+                            transition: 'background 0.15s, border-color 0.15s',
+                          }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(52,211,153,0.2)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(52,211,153,0.5)'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(52,211,153,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(52,211,153,0.25)'; }}
+                        >
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                          </svg>
+                        </button>
+                      )}
                       <button
                         onClick={() => dismiss(a.id)}
                         aria-label="Rejeter cette alerte"
@@ -327,6 +561,15 @@ export function AnomalyFeed({ open, onClose }: AnomalyFeedProps) {
           Mis à jour en temps réel · WebSocket
         </div>
       </div>
+
+      {/* Call Patient Modal */}
+      {callTarget && (
+        <CallPatientModal
+          patientUuid={callTarget.patientUuid}
+          narrative={callTarget.narrative}
+          onClose={() => setCallTarget(null)}
+        />
+      )}
     </>
   );
 }
