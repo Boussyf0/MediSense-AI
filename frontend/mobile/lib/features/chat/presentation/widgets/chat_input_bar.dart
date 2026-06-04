@@ -135,6 +135,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         enabled: widget.enabled,
                         maxLines: 4,
                         minLines: 1,
+                        maxLength: 2000,
+                        buildCounter: (_, {required currentLength, required isFocused, required maxLength}) => null,
                         style: AppFonts.body(
                           color: AppColors.textPrimary,
                           fontSize: 14,

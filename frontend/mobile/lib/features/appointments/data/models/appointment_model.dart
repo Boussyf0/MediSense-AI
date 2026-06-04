@@ -125,7 +125,9 @@ class AppointmentModel {
     if (rawScheduled != null) {
       try {
         scheduledAt = DateTime.parse(rawScheduled);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Appointment scheduled_at parse failed: $e');
+      }
     }
     return AppointmentModel(
       id: j['appointment_uuid'] as String? ?? j['id'] as String? ?? '',

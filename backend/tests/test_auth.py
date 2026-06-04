@@ -158,6 +158,73 @@ async def test_refresh_with_access_token_rejected(client):
 
 
 @pytest.mark.asyncio
+async def test_login_sets_httponly_refresh_cookie(client, test_db):
+    """Login must set refresh_token as httpOnly cookie."""
+    plain = "ValidPass123!"
+    user = User(
+        user_uuid=uuid.uuid4(),
+        email=f"cookie-{uuid.uuid4().hex[:8]}@test.com",
+        hashed_password=hash_password(plain),
+        role=UserRole.DOCTOR,
+        is_active=True,
+    )
+    test_db.add(user)
+    await test_db.flush()
+
+    response = await client.post("/api/v1/auth/login", json={
+        "email": user.email,
+        "password": plain,
+    })
+    assert response.status_code == 200
+    cookie_header = response.headers.get("set-cookie", "")
+    assert "refresh_token=" in cookie_header
+    assert "httponly" in cookie_header.lower()
+    assert "path=/api/v1/auth" in cookie_header.lower()
+
+
+@pytest.mark.asyncio
+async def test_refresh_via_cookie(client, test_db):
+    """Refresh endpoint must accept refresh_token from cookie."""
+    plain = "ValidPass123!"
+    user = User(
+        user_uuid=uuid.uuid4(),
+        email=f"refresh-cookie-{uuid.uuid4().hex[:8]}@test.com",
+        hashed_password=hash_password(plain),
+        role=UserRole.DOCTOR,
+        is_active=True,
+    )
+    test_db.add(user)
+    await test_db.flush()
+
+    # Login to get the cookie
+    login_resp = await client.post("/api/v1/auth/login", json={
+        "email": user.email,
+        "password": plain,
+    })
+    assert login_resp.status_code == 200
+
+    # Extract refresh_token from Set-Cookie header
+    cookie_header = login_resp.headers.get("set-cookie", "")
+    refresh_value = cookie_header.split("refresh_token=")[1].split(";")[0]
+
+    # Use cookie to refresh (no body)
+    refresh_resp = await client.post(
+        "/api/v1/auth/refresh",
+        cookies={"refresh_token": refresh_value},
+    )
+    assert refresh_resp.status_code == 200
+    assert "access_token" in refresh_resp.json()
+
+
+@pytest.mark.asyncio
+async def test_refresh_no_token_returns_401(client):
+    """Refresh with neither cookie nor body must return 401."""
+    response = await client.post("/api/v1/auth/refresh")
+    assert response.status_code == 401
+    assert "No refresh token" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
 async def test_logout_patient_clears_conversation_cache(client, test_db):
     patient_id = str(uuid.uuid4())
     patient = Patient(

@@ -3,7 +3,7 @@ Tests for US-01: health endpoint responds 200 in < 2 seconds.
 """
 import time
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 
 
 @pytest.mark.asyncio

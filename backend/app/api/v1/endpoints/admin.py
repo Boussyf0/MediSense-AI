@@ -126,7 +126,6 @@ async def get_audit_logs(
 
 # ── US-12 — Cross-Encoder Re-ranking Evaluation ─────────
 
-from pydantic import BaseModel, Field
 
 
 class RerankEvalRequest(BaseModel):
@@ -169,8 +168,15 @@ async def evaluate_reranking(
 ):
     from app.rag.vectorstore import hybrid_search
     from app.rag.reranker import evaluate_rrf_vs_crossencoder, rerank
+    from app.rag.medical_entities import extract_entities
 
-    chunks = hybrid_search(query_text=body.query, limit=body.top_k)
+    entities = extract_entities(body.query)
+    chunks = hybrid_search(
+        query_text=body.query,
+        limit=body.top_k,
+        icd10_filter=entities.icd10_codes or None,
+        has_drug_entity=bool(entities.drug_names),
+    )
 
     if not chunks:
         return RerankEvalResponse(
@@ -257,7 +263,7 @@ class RerankSuiteRequest(BaseModel):
         default=None,
         description="Custom query list. If null, the curated 20-query suite is used.",
     )
-    top_k: int = Field(default=10, ge=5, le=20)
+    top_k: int = Field(default=15, ge=5, le=50)
 
 
 class RerankSuiteRow(BaseModel):
@@ -286,7 +292,7 @@ class RerankSuiteResponse(BaseModel):
     ce_latency_ms: RerankSuiteAggregate
     rows: list[RerankSuiteRow]
     recommendation: str
-    verdict: str  # "rrf_ok" | "ce_conditional" | "ce_required"
+    verdict: str  # "rrf_ok" | "ce_active" | "ce_critical"
 
 
 def _aggregate(values: list[float]) -> RerankSuiteAggregate:
@@ -305,34 +311,35 @@ def _aggregate(values: list[float]) -> RerankSuiteAggregate:
 
 
 def _build_verdict(rho_mean: float, overlap_mean: float) -> tuple[str, str]:
-    """Data-driven verdict — no hand-waving.
+    """Data-driven verdict — CE is active in the pipeline hot path.
 
     Thresholds match the soutenance assessment grid:
-      rho >= 0.5  AND overlap >= 0.66 → RRF alone is fine
-      rho >= 0.2  OR  overlap >= 0.50 → CE conditional (urgent/critical queries)
-      otherwise → CE in hot path is required
+      rho >= 0.5  AND overlap >= 0.66 → RRF and CE agree — CE is safety net
+      rho >= 0.2  OR  overlap >= 0.50 → moderate divergence — CE adds value
+      otherwise → high divergence — CE is critical for clinical safety
     """
     if rho_mean >= 0.5 and overlap_mean >= 0.66:
         return (
             "rrf_ok",
-            f"RRF est suffisant en production. ρ moyen={rho_mean:.2f}, "
-            f"overlap top-3={overlap_mean*3:.1f}/3. Économie de latence: ~50× "
-            "vs cross-encoder.",
+            f"CE actif — RRF et CE convergent (ρ={rho_mean:.2f}, overlap "
+            f"top-3={overlap_mean*3:.1f}/3). Le cross-encoder agit comme filet "
+            "de sécurité supplémentaire.",
         )
     if rho_mean >= 0.2 or overlap_mean >= 0.50:
         return (
-            "ce_conditional",
-            f"RRF perd en qualité (ρ={rho_mean:.2f}, overlap top-3="
-            f"{overlap_mean*3:.1f}/3). Recommandation: activer le cross-encoder "
-            "uniquement sur les requêtes contenant des termes d'urgence "
-            "ou de symptômes critiques (~30% du trafic).",
+            "ce_active",
+            f"CE actif dans le hot path — divergence modérée avec RRF "
+            f"(ρ={rho_mean:.2f}, overlap top-3={overlap_mean*3:.1f}/3). "
+            "Le cross-encoder corrige l'ordre de classement sur les "
+            "requêtes complexes.",
         )
     return (
-        "ce_required",
-        f"Qualité RRF insuffisante: ρ={rho_mean:.2f}, overlap top-3="
-        f"{overlap_mean*3:.1f}/3. Le cross-encoder doit être placé dans le "
-        "hot path — la perte de latence (~500ms) est acceptable au regard du "
-        "risque clinique.",
+        "ce_critical",
+        f"CE actif dans le hot path — divergence forte avec RRF "
+        f"(ρ={rho_mean:.2f}, overlap top-3={overlap_mean*3:.1f}/3). "
+        "Le cross-encoder corrige activement l'ordre de classement "
+        "sur la majorité des requêtes cliniques. La latence additionnelle "
+        "(~500-1000ms) est justifiée par le risque clinique.",
     )
 
 
@@ -352,12 +359,19 @@ async def evaluate_reranking_suite(
 ):
     from app.rag.vectorstore import hybrid_search
     from app.rag.reranker import evaluate_rrf_vs_crossencoder
+    from app.rag.medical_entities import extract_entities
 
     queries = body.queries or DEFAULT_QUERY_SUITE
     rows: list[RerankSuiteRow] = []
 
     for q in queries:
-        chunks = hybrid_search(query_text=q, limit=body.top_k)
+        entities = extract_entities(q)
+        chunks = hybrid_search(
+            query_text=q,
+            limit=body.top_k,
+            icd10_filter=entities.icd10_codes or None,
+            has_drug_entity=bool(entities.drug_names),
+        )
         if not chunks:
             continue
         t0 = time.perf_counter()

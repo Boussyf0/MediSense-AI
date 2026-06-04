@@ -253,6 +253,7 @@ async def _decrypt_message(message_id: uuid.UUID, db: AsyncSession) -> str | Non
         row = result.fetchone()
         return str(row[0]) if row and row[0] else None
     except Exception:
+        logger.warning("pgcrypto decrypt failed for DPA message", exc_info=True)
         return None
 
 
@@ -401,7 +402,6 @@ def _compute_confidence(symptoms: list[str], iot_data: dict[str, Any]) -> float:
 
 import re as _re
 
-import re as _re
 
 _SYMPTOM_PATTERNS = [
     # Match: "j'ai mal à la tête depuis 5 minutes" -> name="tête", duration="5 minutes"

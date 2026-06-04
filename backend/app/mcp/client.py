@@ -12,7 +12,10 @@ Circuit breaker states:
   HALF-OPEN — after cooldown, allow one probe request
 """
 import asyncio
+import logging
 import time
+
+logger = logging.getLogger(__name__)
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -100,6 +103,7 @@ async def fetch_mcp_context(
             else:
                 _ansm_breaker.record_failure()
         except Exception:
+            logger.warning("ANSM drug lookup failed for '%s'", drug_name, exc_info=True)
             _ansm_breaker.record_failure()
 
     async def _fetch_disease():
@@ -113,6 +117,7 @@ async def fetch_mcp_context(
             else:
                 _icd11_breaker.record_failure()
         except Exception:
+            logger.warning("ICD-11 disease lookup failed", exc_info=True)
             _icd11_breaker.record_failure()
 
     # Run both in parallel — total timeout = max(individual timeouts)

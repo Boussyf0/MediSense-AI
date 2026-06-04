@@ -11,8 +11,11 @@ Design constraints:
   - All data access is recorded in audit_logs (RGPD Art. 30).
 """
 import asyncio
+import logging
 import uuid
 from datetime import datetime, timezone
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
@@ -25,6 +28,7 @@ from app.core.config import get_settings
 from app.core.dependencies import TokenPayload, require_role, require_secretary
 from app.db.models.appointment import Appointment
 from app.db.models.device_token import DeviceToken
+from app.db.models.user import User
 from app.db.models.sms_reminder_log import SmsReminderLog
 from app.db.models.patient import Patient
 from app.db.session import AsyncSessionLocal, get_db
@@ -77,8 +81,26 @@ async def list_crm_tasks(
             detail="CRM database unavailable — run: alembic upgrade head",
         ) from exc
 
+    # Resolve patient names from the users table
+    patient_names: dict[uuid.UUID, str] = {}
+    patient_ids = {r.patient_uuid for r in rows}
+    if patient_ids:
+        name_rows = await db.execute(
+            select(User.user_uuid, User.first_name, User.last_name, User.email)
+            .where(User.user_uuid.in_(patient_ids))
+        )
+        for user_uuid, first_name, last_name, email in name_rows.all():
+            label = " ".join(p for p in [first_name, last_name] if p) or email
+            patient_names[user_uuid] = label
+
+    items = []
+    for r in rows:
+        task = CRMTaskOut.model_validate(r)
+        task.patient_name = patient_names.get(r.patient_uuid)
+        items.append(task)
+
     await log_audit(db, current_user, request, action="READ", resource_type="crm_task")
-    return CRMTaskListResponse(total=total, items=[CRMTaskOut.model_validate(r) for r in rows])
+    return CRMTaskListResponse(total=total, items=items)
 
 
 @router.patch("/tasks/{appointment_uuid}", response_model=CRMTaskOut)
@@ -157,6 +179,7 @@ async def retry_crm_task(
                 )
                 await bg_db.commit()
             except Exception:
+                logger.error("CRM retry failed", exc_info=True)
                 await bg_db.rollback()
 
     asyncio.create_task(_do_retry())

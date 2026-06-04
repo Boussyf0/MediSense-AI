@@ -48,7 +48,8 @@ class _AuthInterceptor extends Interceptor {
       err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
       final retry = await _refreshDio.fetch(err.requestOptions);
       return handler.resolve(retry);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Token refresh failed: $e');
       await _storage.deleteAll();
       sessionExpiredNotifier.value++;
       handler.next(err);

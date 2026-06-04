@@ -13,8 +13,11 @@ Why this matters vs ANSM France:
   - Some drugs available in France are not registered in Morocco and vice-versa
   - Reimbursement rules are AMO/CNOPS/CNSS, not CPAM
 """
+import logging
 import httpx
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # medicament.ma — official Moroccan drug registry (DMP/Ministère de la Santé)
 MEDICAMENT_MA_URL = "https://medicament.ma/index.php"
@@ -48,7 +51,8 @@ async def search_drug(name: str, timeout: float = _TIMEOUT) -> dict[str, Any] | 
 
         except (httpx.TimeoutException, httpx.HTTPStatusError, httpx.ConnectError):
             return None
-        except Exception:
+        except (KeyError, ValueError) as exc:
+            logger.warning("Drug search parse error for '%s': %s", name, exc)
             return None
 
 
@@ -103,8 +107,8 @@ def _parse_search_result(html: str, query: str) -> dict[str, Any] | None:
             if len(row) >= 3 and any(c.strip() for c in row):
                 return _format_drug(row, query)
 
-    except Exception:
-        pass
+    except (ValueError, IndexError) as exc:
+        logger.warning("Drug HTML parse error: %s", exc)
 
     return None
 

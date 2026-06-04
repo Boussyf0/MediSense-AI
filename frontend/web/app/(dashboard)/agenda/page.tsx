@@ -266,8 +266,10 @@ export default function AgendaPage() {
   const { user } = useAuthStore();
   const isSecretary = user?.role === 'secretary';
   const isPatient = user?.role === 'patient';
+  const isDoctor = user?.role === 'doctor';
 
   const [date, setDate] = useState(today());
+  const [selectedDoctorUuid, setSelectedDoctorUuid] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const [feedbackByAppointment, setFeedbackByAppointment] = useState<Record<string, FeedbackValue>>({});
 
@@ -276,15 +278,28 @@ export default function AgendaPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // Fetch doctors list for secretary role
+  const { data: doctors } = useQuery<Array<{ user_uuid: string; display_name: string; specialty: string | null }>>({
+    queryKey: ['doctors-list'],
+    queryFn: async () => {
+      const { data } = await api.get('/doctors');
+      return data as Array<{ user_uuid: string; display_name: string; specialty: string | null }>;
+    },
+    enabled: isSecretary,
+  });
+
+  // Doctor UUID: own UUID for doctors, selected UUID for secretary
+  const doctorUuid = isDoctor ? user?.uuid : selectedDoctorUuid;
+
   const { data, isLoading, isError, refetch, isFetching } = useQuery<BackendAppointmentPrediction[]>({
-    queryKey: ['no-show', date, user?.uuid],
+    queryKey: ['no-show', date, doctorUuid],
     queryFn: async () => {
       const params = new URLSearchParams({ date });
-      if (user?.uuid) params.set('doctor_uuid', user.uuid);
+      if (doctorUuid) params.set('doctor_uuid', doctorUuid);
       const { data } = await api.get(`/predictions/no-show/batch?${params}`);
       return Array.isArray(data) ? data : [];
     },
-    enabled: !!date && !!user?.uuid,
+    enabled: !!date && !!doctorUuid,
   });
 
   const smsMutation = useMutation({
@@ -304,11 +319,11 @@ export default function AgendaPage() {
 
   const dispatchMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.uuid) throw new Error('doctor_uuid manquant');
+      if (!doctorUuid) throw new Error('doctor_uuid manquant');
       const { data } = await api.post(
         '/predictions/no-show/reminders/dispatch',
         null,
-        { params: { doctor_uuid: user.uuid, date } },
+        { params: { doctor_uuid: doctorUuid, date } },
       );
       return data;
     },
@@ -364,6 +379,25 @@ export default function AgendaPage() {
       subtitle={`Prédiction no-show · ${totalRdv} rendez-vous`}
       actions={
         <>
+          {isSecretary && (
+            <select
+              value={selectedDoctorUuid}
+              onChange={(e) => setSelectedDoctorUuid(e.target.value)}
+              style={{
+                background: 'var(--s2)', border: '1px solid var(--line-strong)',
+                borderRadius: 8, padding: '7px 10px', minWidth: 200,
+                fontFamily: 'var(--f-body)', fontSize: 12.5, color: 'var(--t0)',
+                cursor: 'pointer', outline: 'none',
+              }}
+            >
+              <option value="">-- Choisir un medecin --</option>
+              {(doctors ?? []).map((d) => (
+                <option key={d.user_uuid} value={d.user_uuid}>
+                  {d.display_name}{d.specialty ? ` (${d.specialty})` : ''}
+                </option>
+              ))}
+            </select>
+          )}
           <label style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '7px 10px', borderRadius: 8,
@@ -399,7 +433,7 @@ export default function AgendaPage() {
               icon={<IconSend size={13} stroke={2} />}
               onClick={() => dispatchMutation.mutate()}
               loading={dispatchMutation.isPending}
-              disabled={toCallOrText === 0 || !user?.uuid}
+              disabled={toCallOrText === 0 || !doctorUuid}
             >
               SMS de rappel ({toCallOrText})
             </DashButton>
@@ -420,7 +454,7 @@ export default function AgendaPage() {
         </div>
       )}
 
-      {!user?.uuid && (
+      {!doctorUuid && !isSecretary && (
         <div style={{ marginBottom: 16, color: '#EF4444', fontSize: 13 }}>
           Utilisateur non chargé — reconnectez-vous.
         </div>
@@ -461,7 +495,13 @@ export default function AgendaPage() {
           </div>
         )}
 
-        {!isLoading && !isError && appointments.length === 0 && (
+        {!isLoading && !isError && !doctorUuid && isSecretary && (
+          <div style={{ padding: 56, textAlign: 'center', color: 'var(--t3)', fontSize: 13 }}>
+            Selectionnez un medecin pour afficher l&apos;agenda.
+          </div>
+        )}
+
+        {!isLoading && !isError && !!doctorUuid && appointments.length === 0 && (
           <div style={{ padding: 56, textAlign: 'center', color: 'var(--t3)', fontSize: 13 }}>
             <div style={{ fontSize: 28, marginBottom: 12, opacity: 0.6 }}>—</div>
             Aucun rendez-vous pour cette date

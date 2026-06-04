@@ -8,7 +8,6 @@ Covers:
   - Darija Arabizi (Latin script) detection
   - Edge cases: empty, mixed, short
 """
-import pytest
 from app.rag.language import detect_language, FRENCH, ARABIC, DARIJA
 
 

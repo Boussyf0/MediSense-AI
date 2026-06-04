@@ -14,10 +14,13 @@ Why not use langdetect alone?
   - Darija written in Latin script (Arabizi) is detected as random languages
   - We need a hybrid: langdetect for FR/AR base + stopword heuristic for Darija
 """
+import logging
 import re
 import unicodedata
 from pathlib import Path
 from functools import lru_cache
+
+logger = logging.getLogger(__name__)
 
 from langdetect import detect, DetectorFactory
 
@@ -136,6 +139,6 @@ def detect_language(text: str) -> str:
         if detected == "fr":
             return FRENCH
     except Exception:
-        pass
+        logger.debug("langdetect failed, defaulting to French", exc_info=True)
 
     return FRENCH

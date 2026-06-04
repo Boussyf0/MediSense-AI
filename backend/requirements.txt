@@ -5,6 +5,7 @@ uvicorn[standard]==0.34.0
 # ── Database ──────────────────────────────────────────────
 sqlalchemy==2.0.36          # ORM (async support via asyncpg)
 asyncpg==0.30.0             # async PostgreSQL driver (faster than psycopg2 for async)
+greenlet==3.1.1             # required for SQLAlchemy async execution under Python 3.12
 alembic==1.14.0             # DB migrations
 psycopg2-binary==2.9.10     # needed by alembic for sync operations
 

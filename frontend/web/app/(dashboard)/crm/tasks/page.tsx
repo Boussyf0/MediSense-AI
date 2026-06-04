@@ -10,21 +10,23 @@ import { IconSync } from '@/components/icons';
 type TaskStatus = 'PENDING' | 'SENT' | 'FAILED' | 'SKIPPED' | 'CB_OPEN';
 
 interface CRMTask {
-  uuid: string;
+  appointment_uuid: string;
   patient_uuid: string;
-  patient_name: string;
+  patient_name: string | null;
+  salesforce_task_id: string | null;
+  crm_sync_status: TaskStatus;
+  crm_correlation_id: string | null;
+  crm_retry_count: number;
+  crm_last_error: string | null;
+  crm_synced_at: string | null;
   scheduled_at: string;
-  status: TaskStatus;
-  error_message?: string;
-  retry_count: number;
-  salesforce_id?: string | null;
+  status: string;
+  urgency_flag: string | null;
 }
 
 interface TasksResponse {
-  tasks: CRMTask[];
+  items: CRMTask[];
   total: number;
-  cb_open: boolean;
-  cb_reopens_in?: number;
 }
 
 type FilterKey = 'all' | 'sent' | 'pending' | 'failed' | 'cb' | 'skipped';
@@ -74,14 +76,14 @@ export default function CRMTasksPage() {
     queryKey: ['crm-tasks'],
     queryFn: async () => {
       const { data } = await api.get('/crm/tasks');
-      return data;
+      return data as TasksResponse;
     },
     refetchInterval: 15000,
   });
 
   const retryMutation = useMutation({
-    mutationFn: async (taskUuid: string) => {
-      const { data } = await api.post(`/crm/tasks/${taskUuid}/retry`);
+    mutationFn: async (appointmentUuid: string) => {
+      const { data } = await api.post(`/crm/tasks/${appointmentUuid}/retry`, { force: false });
       return data;
     },
     onSuccess: () => {
@@ -92,9 +94,8 @@ export default function CRMTasksPage() {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (data?.cb_reopens_in) setCountdown(data.cb_reopens_in);
-  }, [data?.cb_reopens_in]);
+    // CB reopens_in not provided by backend — countdown stays at 0
+  }, [data]);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -102,11 +103,11 @@ export default function CRMTasksPage() {
     return () => clearInterval(id);
   }, [countdown]);
 
-  const tasks = data?.tasks ?? [];
-  const filtered = filter === 'all' ? tasks : tasks.filter((t) => t.status === FILTER_TO_STATUS[filter]);
+  const tasks = data?.items ?? [];
+  const filtered = filter === 'all' ? tasks : tasks.filter((t) => t.crm_sync_status === FILTER_TO_STATUS[filter]);
 
   const countBy = (s: TaskStatus | 'all') =>
-    s === 'all' ? tasks.length : tasks.filter((t) => t.status === s).length;
+    s === 'all' ? tasks.length : tasks.filter((t) => t.crm_sync_status === s).length;
 
   const filters: { key: FilterKey; label: string; count: number }[] = [
     { key: 'all',     label: 'Tous',       count: countBy('all') },
@@ -117,7 +118,7 @@ export default function CRMTasksPage() {
     { key: 'skipped', label: 'Ignorés',    count: countBy('SKIPPED') },
   ];
 
-  const cbOpen = (data?.cb_open ?? false) || countBy('CB_OPEN') > 0;
+  const cbOpen = countBy('CB_OPEN') > 0;
 
   return (
     <>
@@ -265,10 +266,10 @@ export default function CRMTasksPage() {
           {!isLoading && filtered.map((t, i) => {
             const date = new Date(t.scheduled_at);
             const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-            const canRetry = t.status === 'FAILED' || t.status === 'CB_OPEN';
-            const isRetrying = retryMutation.isPending && retryMutation.variables === t.uuid;
+            const canRetry = t.crm_sync_status === 'FAILED' || t.crm_sync_status === 'CB_OPEN';
+            const isRetrying = retryMutation.isPending && retryMutation.variables === t.appointment_uuid;
             return (
-              <div key={t.uuid} style={{
+              <div key={t.appointment_uuid} style={{
                 display: 'grid', gridTemplateColumns: '70px 1fr 1fr 120px 1fr 90px 110px',
                 padding: '13px 18px', alignItems: 'center',
                 borderBottom: i < filtered.length - 1 ? '1px solid var(--line)' : 'none',
@@ -279,42 +280,44 @@ export default function CRMTasksPage() {
               >
                 <div style={{ fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--t1)' }}>{timeStr}</div>
                 <div>
-                  <div style={{ fontSize: 13, color: 'var(--t0)', fontWeight: 500 }}>{t.patient_name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--t0)', fontWeight: 500 }}>
+                    {t.patient_name ?? `Patient ${t.patient_uuid.slice(0, 8)}`}
+                  </div>
                   <div style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t3)' }}>
                     uid · {t.patient_uuid.slice(0, 8)}
                   </div>
                 </div>
                 <div style={{
                   fontFamily: 'var(--f-mono)', fontSize: 11,
-                  color: t.salesforce_id ? 'var(--t1)' : 'var(--t4)',
+                  color: t.salesforce_task_id ? 'var(--t1)' : 'var(--t4)',
                 }}>
-                  {t.salesforce_id ? `sf · ${t.salesforce_id}` : '— '}
+                  {t.salesforce_task_id ? `sf · ${t.salesforce_task_id}` : '— '}
                 </div>
                 <div>
                   <StatusBadge
-                    tone={STATUS_TONE_MAP[t.status]}
-                    label={STATUS_LABEL[t.status]}
-                    pulse={t.status === 'PENDING' || t.status === 'CB_OPEN'}
+                    tone={STATUS_TONE_MAP[t.crm_sync_status]}
+                    label={STATUS_LABEL[t.crm_sync_status]}
+                    pulse={t.crm_sync_status === 'PENDING' || t.crm_sync_status === 'CB_OPEN'}
                   />
                 </div>
                 <div style={{
                   fontSize: 11.5,
-                  color: t.error_message ? '#FCA5A5' : 'var(--t4)',
-                  fontFamily: t.error_message ? 'var(--f-mono)' : 'inherit',
+                  color: t.crm_last_error ? '#FCA5A5' : 'var(--t4)',
+                  fontFamily: t.crm_last_error ? 'var(--f-mono)' : 'inherit',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
-                  {t.error_message || '—'}
+                  {t.crm_last_error || '—'}
                 </div>
                 <div style={{
                   fontFamily: 'var(--f-mono)', fontSize: 11,
-                  color: t.retry_count >= 3 ? '#F59E0B' : 'var(--t2)',
+                  color: t.crm_retry_count >= 3 ? '#F59E0B' : 'var(--t2)',
                 }}>
-                  {t.retry_count}/5
+                  {t.crm_retry_count}/5
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   {canRetry && (
                     <button
-                      onClick={() => retryMutation.mutate(t.uuid)}
+                      onClick={() => retryMutation.mutate(t.appointment_uuid)}
                       disabled={isRetrying}
                       style={{
                         padding: '5px 10px', borderRadius: 6,
@@ -340,7 +343,7 @@ export default function CRMTasksPage() {
                       Retry
                     </button>
                   )}
-                  {t.status === 'PENDING' && (
+                  {t.crm_sync_status === 'PENDING' && (
                     <span style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t3)' }}>en file…</span>
                   )}
                 </div>

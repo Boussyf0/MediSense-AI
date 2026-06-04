@@ -19,13 +19,10 @@ WHY OPTIMISTIC LOCKING TESTS MATTER:
   the second must get HTTP 409.  This test validates that guarantee.
 """
 import uuid
-import json
 import pytest
-import pytest_asyncio
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch, MagicMock
 
-from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -536,6 +533,72 @@ class TestDPASummarizer:
         iot_data = {"latest_anomalies": [{"metric": "SpO2"}], "trend": "declining"}
         conf = _compute_confidence(symptoms, iot_data)
         assert conf >= 0.9   # max capped at 0.95
+
+    def test_generate_recommendations_spo2_anomaly(self):
+        """SpO2 anomaly → monitor action with SpO2 metric."""
+        from app.services.dpa_summarizer import _generate_recommendations
+        iot_data = {
+            "latest_anomalies": [
+                {"metric": "SpO2", "value": 91.0, "unit": "%", "severity": "moderate"}
+            ],
+            "trend": "stable",
+        }
+        actions = _generate_recommendations([], iot_data)
+        spo2_actions = [a for a in actions if a.get("metric") == "SpO2"]
+        assert len(spo2_actions) == 1
+        assert spo2_actions[0]["action"] == "monitor"
+
+    def test_generate_recommendations_hr_anomaly(self):
+        """HR anomaly → monitor action with heart rate metric."""
+        from app.services.dpa_summarizer import _generate_recommendations
+        iot_data = {
+            "latest_anomalies": [
+                {"metric": "HR", "value": 120, "unit": "bpm", "severity": "moderate"}
+            ],
+            "trend": "stable",
+        }
+        actions = _generate_recommendations([], iot_data)
+        hr_actions = [a for a in actions if a.get("metric") == "fréquence cardiaque"]
+        assert len(hr_actions) == 1
+        assert "120" in hr_actions[0]["reasoning"]
+
+    def test_generate_recommendations_fever_symptom(self):
+        """Fever symptom → refer to general medicine."""
+        from app.services.dpa_summarizer import _generate_recommendations
+        symptoms = ["fièvre 38.5°C", "toux sèche"]
+        iot_data = {"latest_anomalies": [], "trend": "stable"}
+        actions = _generate_recommendations(symptoms, iot_data)
+        refer_actions = [a for a in actions if a.get("specialist") == "médecine générale"]
+        assert len(refer_actions) >= 1
+
+    def test_generate_recommendations_medication_symptom(self):
+        """Medication mention → prescribe action."""
+        from app.services.dpa_summarizer import _generate_recommendations
+        symptoms = ["médicament: paracetamol", "douleur"]
+        iot_data = {"latest_anomalies": [], "trend": "stable"}
+        actions = _generate_recommendations(symptoms, iot_data)
+        prescribe_actions = [a for a in actions if a["action"] == "prescribe"]
+        assert len(prescribe_actions) == 1
+
+    def test_extract_symptom_phrases_simple(self):
+        """Extract symptom phrases from patient text."""
+        from app.services.dpa_summarizer import _extract_symptom_phrases
+        symptoms = _extract_symptom_phrases("j'ai mal à la tête depuis 2 jours")
+        assert len(symptoms) >= 1
+        assert any("tête" in s["name"] for s in symptoms)
+
+    def test_extract_symptom_phrases_named_symptoms(self):
+        """Explicit symptom names extracted."""
+        from app.services.dpa_summarizer import _extract_symptom_phrases
+        symptoms = _extract_symptom_phrases("toux depuis 3 jours")
+        assert len(symptoms) >= 1
+        assert any("toux" in s["name"] for s in symptoms)
+
+    def test_extract_symptom_phrases_empty(self):
+        """No symptoms in generic text."""
+        from app.services.dpa_summarizer import _extract_symptom_phrases
+        symptoms = _extract_symptom_phrases("bonjour comment allez-vous")
+        assert len(symptoms) == 0
 
 
 # ── US-42: Per-action decision ────────────────────────────────────────────────

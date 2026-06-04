@@ -177,7 +177,8 @@ async def _ollama_health() -> bool:
             resp.raise_for_status()
             models = resp.json().get("models", [])
             return len(models) > 0
-    except Exception:
+    except (httpx.HTTPError, OSError):
+        logger.warning("Ollama health check failed", exc_info=True)
         return False
 
 
@@ -262,7 +263,8 @@ async def _groq_health() -> bool:
                 headers={"Authorization": f"Bearer {settings.GROQ_API_KEY}"},
             )
             return resp.status_code == 200
-    except Exception:
+    except (httpx.HTTPError, OSError):
+        logger.warning("Groq health check failed", exc_info=True)
         return False
 
 

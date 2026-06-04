@@ -44,6 +44,27 @@ interface AIAction {
   sourcePayload?: Record<string, unknown>;
 }
 
+interface PastAppointment {
+  appointment_uuid: string;
+  scheduled_at: string;
+  status: string;
+  urgency_flag?: string;
+  rag_summary?: string;
+}
+
+interface PastSummary {
+  summary_id: string;
+  created_at?: string;
+  status: string;
+  actions_count: number;
+  top_action?: string;
+}
+
+interface DPAHistory {
+  past_appointments: PastAppointment[];
+  previous_summaries: PastSummary[];
+}
+
 interface DPAData {
   summary_id: string;
   patient: {
@@ -71,6 +92,7 @@ interface DPAData {
   iotTrend?: 'stable' | 'declining' | 'improving' | 'unknown' | string;
   actions: AIAction[];
   ragSummary?: string;
+  history: DPAHistory;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -272,6 +294,26 @@ function normalizeDPAData(input: unknown, fallbackPatientUuid: string): DPAData 
     ? trendRaw
     : 'unknown';
 
+  const historyRaw = isRecord(raw.history) ? raw.history : {};
+  const pastAppointments: PastAppointment[] = (Array.isArray(historyRaw.past_appointments) ? historyRaw.past_appointments : [])
+    .filter(isRecord)
+    .map((a) => ({
+      appointment_uuid: toStringValue(a.appointment_uuid),
+      scheduled_at: toStringValue(a.scheduled_at),
+      status: toStringValue(a.status, 'unknown'),
+      urgency_flag: toStringValue(a.urgency_flag) || undefined,
+      rag_summary: toStringValue(a.rag_summary) || undefined,
+    }));
+  const previousSummaries: PastSummary[] = (Array.isArray(historyRaw.previous_summaries) ? historyRaw.previous_summaries : [])
+    .filter(isRecord)
+    .map((s) => ({
+      summary_id: toStringValue(s.summary_id),
+      created_at: toStringValue(s.created_at) || undefined,
+      status: toStringValue(s.status, 'pending'),
+      actions_count: toNumberValue(s.actions_count, 0),
+      top_action: toStringValue(s.top_action) || undefined,
+    }));
+
   return {
     summary_id: summaryId,
     patient: {
@@ -299,6 +341,10 @@ function normalizeDPAData(input: unknown, fallbackPatientUuid: string): DPAData 
     iotTrend,
     actions,
     ragSummary: toStringValue(raw.ragSummary) || undefined,
+    history: {
+      past_appointments: pastAppointments,
+      previous_summaries: previousSummaries,
+    },
   };
 }
 
@@ -748,6 +794,7 @@ export default function DPAPage({ params }: { params: Promise<{ uuid: string }> 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [toast, setToast] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -1102,6 +1149,176 @@ export default function DPAPage({ params }: { params: Promise<{ uuid: string }> 
             )}
           </DpaCol>
         </div>
+
+        {/* Clinical history — collapsible */}
+        {(data.history.past_appointments.length > 0 || data.history.previous_summaries.length > 0) && (
+          <div style={{
+            marginTop: 16,
+            background: 'var(--s1)', border: '1px solid var(--line)', borderRadius: 12,
+            overflow: 'hidden',
+          }}>
+            <button
+              onClick={() => setHistoryOpen((o) => !o)}
+              style={{
+                width: '100%', padding: '12px 14px',
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: 'var(--t1)',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span style={{
+                fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--t2)',
+                letterSpacing: '0.14em', textTransform: 'uppercase', flex: 1, textAlign: 'left',
+              }}>
+                Historique clinique
+                <span style={{ color: 'var(--t4)', marginLeft: 6 }}>
+                  ({data.history.past_appointments.length} RDV · {data.history.previous_summaries.length} DPA)
+                </span>
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="var(--t4)" strokeWidth="2" strokeLinecap="round"
+                style={{ transform: historyOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            {historyOpen && (
+              <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* Past appointments */}
+                {data.history.past_appointments.length > 0 && (
+                  <div>
+                    <div style={{
+                      fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+                      letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6,
+                    }}>
+                      Derniers rendez-vous
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {data.history.past_appointments.map((appt) => (
+                        <div
+                          key={appt.appointment_uuid}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            padding: '8px 10px',
+                            background: 'var(--s2)', border: '1px solid var(--line)', borderRadius: 8,
+                          }}
+                        >
+                          <div style={{
+                            width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                            background: appt.status === 'completed' ? '#34D399'
+                              : appt.status === 'no_show' ? '#EF4444'
+                              : '#FBBF24',
+                          }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{
+                                fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--t1)',
+                              }}>
+                                {new Date(appt.scheduled_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </span>
+                              <span style={{
+                                fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+                                padding: '1px 5px', borderRadius: 4,
+                                background: 'var(--s1)', border: '1px solid var(--line)',
+                                textTransform: 'uppercase', letterSpacing: '0.06em',
+                              }}>
+                                {appt.status}
+                              </span>
+                              {appt.urgency_flag && appt.urgency_flag !== 'none' && (
+                                <span style={{
+                                  fontFamily: 'var(--f-mono)', fontSize: 9, color: '#EF4444',
+                                  textTransform: 'uppercase',
+                                }}>
+                                  {appt.urgency_flag}
+                                </span>
+                              )}
+                            </div>
+                            {appt.rag_summary && (
+                              <div style={{
+                                fontFamily: 'var(--f-body)', fontSize: 11, color: 'var(--t3)',
+                                marginTop: 3, lineHeight: 1.4,
+                                overflow: 'hidden', textOverflow: 'ellipsis',
+                                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                              }}>
+                                {appt.rag_summary}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Previous DPA summaries */}
+                {data.history.previous_summaries.length > 0 && (
+                  <div>
+                    <div style={{
+                      fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+                      letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 6,
+                    }}>
+                      DPA anterieurs
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {data.history.previous_summaries.map((s) => (
+                        <div
+                          key={s.summary_id}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            padding: '8px 10px',
+                            background: 'var(--s2)', border: '1px solid var(--line)', borderRadius: 8,
+                          }}
+                        >
+                          <div style={{
+                            width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                            background: s.status === 'approved' ? '#34D399'
+                              : s.status === 'rejected' ? '#EF4444'
+                              : '#FBBF24',
+                          }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{
+                                fontFamily: 'var(--f-mono)', fontSize: 11, color: 'var(--t1)',
+                              }}>
+                                {s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date inconnue'}
+                              </span>
+                              <span style={{
+                                fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+                                padding: '1px 5px', borderRadius: 4,
+                                background: 'var(--s1)', border: '1px solid var(--line)',
+                                textTransform: 'uppercase', letterSpacing: '0.06em',
+                              }}>
+                                {s.status}
+                              </span>
+                              <span style={{
+                                fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--t4)',
+                              }}>
+                                {s.actions_count} action{s.actions_count !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            {s.top_action && (
+                              <div style={{
+                                fontFamily: 'var(--f-body)', fontSize: 11, color: 'var(--t3)',
+                                marginTop: 3, lineHeight: 1.4,
+                              }}>
+                                {s.top_action}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Doctor note */}
         <div style={{

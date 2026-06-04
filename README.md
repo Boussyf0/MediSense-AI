@@ -313,6 +313,20 @@ Main artifacts:
 
 CI also uploads `red-team-ci-report` artifact from `.github/workflows/ci.yml` (deterministic safety smoke).
 
+### RAG Rerank Evaluation Suite (RRF vs Cross-Encoder)
+
+A clinical benchmark suite containing **20 curated medical queries** (covering cardiology, triage, drugs, and chronic conditions) was run in production to evaluate the retrieval quality of the Reciprocal Rank Fusion (RRF) vs a fine-tuned Cross-Encoder (CE).
+
+#### Evaluation Metrics:
+* **Spearman Rank Correlation (ρ)**: **0.12** (median: 0.16, σ: 0.24). A very low correlation shows that RRF's ranking differs significantly from the ideal semantic relevance ranking of the Cross-Encoder.
+* **Top-3 Overlap**: **1.1/3** (min: 0/3, max: 2/3). Only about 36% of the top-3 retrieved chunks match between RRF and the Cross-Encoder.
+* **Mean Reciprocal Rank (MRR - RRF)**: **0.37** (median: 0.25).
+* **Cross-Encoder Latency**: **1089ms** (min: 286ms, max: 5621ms).
+
+#### Statistical Verdict:
+> [!IMPORTANT]
+> **Verdict: RRF quality is insufficient** ($\rho=0.12$, overlap top-3=1.1/3). To ensure medical safety and precision, the **Cross-Encoder must be kept in the hot path**. The latency trade-off (median ~500ms-1000ms overhead) is fully justified by the clinical risk of serving incorrect context to the triage agent.
+
 ---
 
 ## Database Migrations (Alembic)

@@ -1,16 +1,25 @@
 """
-Cross-encoder re-ranker — evaluation mode (not in the hot path).
+Cross-encoder re-ranker — in the hot path for clinical safety.
 
 Model: cross-encoder/mmarco-mMiniLMv2-L12-H384-v1 (multilingual MS MARCO)
 
-Why eval-only and not in the chat hot path?
-  - Cross-encoder on CPU: ~150-200ms for 20 pairs → kills latency budget
-  - Qdrant RRF (Dense + BM25) gives ~85-90% of cross-encoder quality at ~15ms
-  - We use the cross-encoder as a quality benchmark to validate RRF accuracy
-  - In production with GPU, the cross-encoder could be activated in the hot path
+Architecture:
+  1. Pipeline retrieves top-20 candidates via Qdrant RRF (Dense + BM25)
+  2. Cross-encoder scores all 20 (query, passage) pairs jointly
+  3. Top-5 by CE score are passed to the LLM for generation
 
-This satisfies US-12: "Cross-encoder re-ranking sur top-20 chunks" by providing
-the implementation + an evaluation endpoint that compares RRF vs cross-encoder.
+Why CE in the hot path (not eval-only)?
+  - Rerank evaluation (sprint 3) showed ρ=0.09 between RRF and CE rankings
+  - 8/20 clinical queries had NEGATIVE correlation under RRF alone
+  - Safety-critical queries (embolie pulmonaire, céphalée intense) were misranked
+  - The ~500-1000ms latency overhead is acceptable for clinical safety
+
+This satisfies US-12: "Cross-encoder re-ranking sur top-20 chunks" by placing
+the CE in the hot path with graceful fallback to RRF order on failure.
+
+Graceful degradation:
+  If the cross-encoder fails (model load error, OOM), the pipeline falls
+  back to RRF ordering — see _safe_rerank() in pipeline.py.
 """
 from functools import lru_cache
 from dataclasses import dataclass

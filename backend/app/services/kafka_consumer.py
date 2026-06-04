@@ -113,8 +113,12 @@ async def _kafka_consumer_loop() -> None:  # pragma: no cover
         async for msg in consumer:
             try:
                 await _persist_reading(msg.value)
+                patient_uuid = msg.value.get("patient_uuid")
+                if patient_uuid:
+                    from app.services.anomaly_detector import ingest_reading
+                    await ingest_reading(patient_uuid, msg.value)
             except Exception as exc:
-                logger.error("Failed to persist IoT reading: %s", exc)
+                logger.error("Failed to process IoT reading: %s", exc)
                 await _buffer_payload(msg.value)
 
             # Report consumer lag per (topic, partition):
@@ -130,7 +134,7 @@ async def _kafka_consumer_loop() -> None:  # pragma: no cover
                         partition=str(tp.partition),
                     ).set(max(0, end_off - pos))
             except Exception:
-                pass
+                logger.debug("Kafka consumer lag metric update failed", exc_info=True)
 
             drain_counter += 1
             if drain_counter % 300 == 0:  # drain every ~5 min at 1 msg/s
@@ -142,7 +146,7 @@ async def _kafka_consumer_loop() -> None:  # pragma: no cover
         try:
             await consumer.stop()
         except Exception:
-            pass
+            logger.warning("Error stopping Kafka consumer", exc_info=True)
 
 
 async def start_kafka_consumer() -> None:  # pragma: no cover

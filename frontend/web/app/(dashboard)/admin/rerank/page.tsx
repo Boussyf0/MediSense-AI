@@ -48,7 +48,7 @@ interface RerankSuiteResponse {
   ce_latency_ms: SuiteAggregate;
   rows: SuiteRow[];
   recommendation: string;
-  verdict: 'rrf_ok' | 'ce_conditional' | 'ce_required';
+  verdict: 'rrf_ok' | 'ce_active' | 'ce_critical';
 }
 
 const DEFAULT_QUERY = 'douleurs thoraciques essoufflement insuffisance cardiaque';
@@ -130,12 +130,12 @@ function SuiteMetricCard({
 function SuiteResults({ suite }: { suite: RerankSuiteResponse }) {
   const verdictColor =
     suite.verdict === 'rrf_ok' ? '#22C55E'
-    : suite.verdict === 'ce_conditional' ? '#F59E0B'
-    : '#EF4444';
+    : suite.verdict === 'ce_active' ? '#38BDF8'
+    : '#22C55E';
   const verdictLabel =
     suite.verdict === 'rrf_ok' ? 'RRF SUFFISANT'
-    : suite.verdict === 'ce_conditional' ? 'CE CONDITIONNEL'
-    : 'CE REQUIS';
+    : suite.verdict === 'ce_active' ? 'CE ACTIF'
+    : 'CE CRITIQUE';
 
   // Sort rows by rank_correlation ascending so worst queries surface first
   const sortedRows = [...suite.rows].sort((a, b) => a.rank_correlation - b.rank_correlation);
@@ -252,7 +252,9 @@ function SuiteResults({ suite }: { suite: RerankSuiteResponse }) {
       }}>
         <div style={{ color: verdictColor, flexShrink: 0, marginTop: 2 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>
+            {suite.verdict === 'rrf_ok' || suite.verdict === 'ce_critical'
+              ? <><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></>
+              : <><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></>}
           </svg>
         </div>
         <div style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1.55 }}>
@@ -312,6 +314,8 @@ export default function AdminRerankPage() {
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <input
+            aria-label="Requête médicale de test"
+            placeholder="Ex: douleurs thoraciques essoufflement"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             style={{
@@ -322,6 +326,7 @@ export default function AdminRerankPage() {
             }}
           />
           <select
+            aria-label="Nombre de résultats (top-k)"
             value={topK}
             onChange={(e) => setTopK(e.target.value)}
             style={{
@@ -423,7 +428,7 @@ export default function AdminRerankPage() {
               color="#A78BFA"
             />
             <RankColumn
-              title="Cross-Encoder · BAAI/bge-reranker"
+              title="Cross-Encoder · mmarco-mMiniLMv2"
               sub={`précis · ${result.ce_latency_ms}ms/req`}
               items={result.ce_items}
               color="#38BDF8"
@@ -442,10 +447,10 @@ export default function AdminRerankPage() {
               </svg>
             </div>
             <div style={{ fontSize: 12, color: 'var(--t1)', lineHeight: 1.55 }}>
-              <strong style={{ color: 'var(--t0)' }}>Recommandation :</strong> sur cette requête,
-              RRF maintient {Math.round(result.top3_overlap * 3)}/3 des résultats du cross-encoder dans le top-3 pour une latence
-              {' '}{Math.max(1, Math.round(result.ce_latency_ms / 10))}× inférieure. Garder RRF en production ·
-              CE uniquement pour l&apos;admin tooling.
+              <strong style={{ color: 'var(--t0)' }}>Analyse :</strong> sur cette requête,
+              RRF et CE partagent {Math.round(result.top3_overlap * 3)}/3 résultats dans le top-3.
+              Le cross-encoder (actif dans le hot path) ajoute {result.ce_latency_ms}ms de latence
+              pour corriger l&apos;ordre de classement.
             </div>
           </div>
         </>

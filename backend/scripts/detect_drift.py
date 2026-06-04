@@ -49,18 +49,27 @@ def _load_from_db(weeks_back_start: int, weeks_back_end: int) -> pd.DataFrame:
     try:
         query = f"""
             SELECT
-                extract(hour  FROM scheduled_at)::int AS hour_of_day,
-                extract(dow   FROM scheduled_at)::int AS day_of_week,
-                extract(month FROM scheduled_at)::int AS month,
-                COALESCE(lead_time_days, 0)           AS lead_time_days,
-                COALESCE(patient_noshow_count_12m, 0) AS patient_noshow_count_12m,
-                COALESCE(patient_appointment_count_12m, 1) AS patient_appointment_count_12m,
-                30                                    AS patient_age,
-                CASE WHEN status = 'NO_SHOW' THEN 1 ELSE 0 END AS is_noshow
-            FROM appointments
-            WHERE scheduled_at >= NOW() - INTERVAL '{weeks_back_start} weeks'
-              AND scheduled_at <  NOW() - INTERVAL '{weeks_back_end} weeks'
-              AND status IN ('COMPLETED', 'NO_SHOW')
+                extract(hour  FROM a.scheduled_at)::int AS hour_of_day,
+                extract(dow   FROM a.scheduled_at)::int AS day_of_week,
+                extract(month FROM a.scheduled_at)::int AS month,
+                GREATEST(0, extract(day FROM a.scheduled_at - a.created_at)::int) AS lead_time_days,
+                COALESCE((
+                    SELECT count(*) FROM public.appointments prev
+                    WHERE prev.patient_uuid = a.patient_uuid
+                      AND prev.status = 'NO_SHOW'
+                      AND prev.scheduled_at < a.scheduled_at
+                ), 0) AS patient_noshow_count_12m,
+                COALESCE((
+                    SELECT count(*) FROM public.appointments prev
+                    WHERE prev.patient_uuid = a.patient_uuid
+                      AND prev.scheduled_at < a.scheduled_at
+                ), 1) AS patient_appointment_count_12m,
+                COALESCE(extract(year FROM age(a.scheduled_at, make_date(p.birth_year, 1, 1)))::int, 35) AS patient_age,
+                CASE WHEN a.status = 'NO_SHOW' THEN 1 ELSE 0 END AS is_noshow
+            FROM public.appointments a
+            LEFT JOIN public.patients p ON p.patient_uuid = a.patient_uuid
+            WHERE a.scheduled_at >= NOW() - INTERVAL '{weeks_back_start} weeks'
+              AND a.scheduled_at <  NOW() - INTERVAL '{weeks_back_end} weeks'
         """
         df = pd.read_sql(query, conn)
     finally:
@@ -106,7 +115,7 @@ def run_drift_detection(psi_threshold: float, dry_run: bool) -> dict:
         cur_df = _synthetic_dataframe(500,  seed=99, drift=True)
     else:
         try:
-            ref_df = _load_from_db(weeks_back_start=8, weeks_back_end=4)
+            ref_df = _load_from_db(weeks_back_start=12, weeks_back_end=1)
             cur_df = _load_from_db(weeks_back_start=1, weeks_back_end=0)
         except Exception as exc:
             print(f"DB load failed ({exc}) — using synthetic fallback")
@@ -140,17 +149,14 @@ def run_drift_detection(psi_threshold: float, dry_run: bool) -> dict:
 
     # Evidently HTML report
     try:
-        from evidently import ColumnMapping
-        from evidently.report import Report
-        from evidently.metric_preset import DataDriftPreset
+        from evidently import Report
+        from evidently.presets import DataDriftPreset
 
         report = Report(metrics=[DataDriftPreset()])
-        column_mapping = ColumnMapping(target="is_noshow", numerical_features=FEATURES)
-        report.run(reference_data=ref_df[FEATURES + ["is_noshow"]],
-                   current_data=cur_df[FEATURES + ["is_noshow"]],
-                   column_mapping=column_mapping)
+        snapshot = report.run(reference_data=ref_df[FEATURES + ["is_noshow"]],
+                              current_data=cur_df[FEATURES + ["is_noshow"]])
         html_path = RESULT_DIR / f"drift_report_{today}.html"
-        report.save_html(str(html_path))
+        snapshot.save_html(str(html_path))
         print(f"Evidently report saved: {html_path}")
     except ImportError:
         print("evidently not installed — skipping HTML report")

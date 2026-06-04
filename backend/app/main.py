@@ -60,7 +60,8 @@ async def lifespan(app: FastAPI):
         from app.api.v1.endpoints.metrics import seed_metrics, model_age_seconds
         seed_metrics()
         from pathlib import Path
-        import os, time as _t
+        import os
+        import time as _t
         lstm_path = Path(settings.LSTM_MODEL_PATH)
         if lstm_path.exists():
             age = _t.time() - os.path.getmtime(lstm_path)

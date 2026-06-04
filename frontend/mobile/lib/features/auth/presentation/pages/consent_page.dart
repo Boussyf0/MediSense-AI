@@ -26,7 +26,9 @@ class _ConsentPageState extends ConsumerState<ConsentPage> {
             consentNlp: allOff ? false : _nlp,
             consentSharing: allOff ? false : _sharing,
           );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Consent update failed: $e');
+    }
     await _storage.write(key: 'consent_given', value: 'true');
     if (!mounted) return;
     setState(() => _loading = false);

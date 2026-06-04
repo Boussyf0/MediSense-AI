@@ -9,7 +9,6 @@ Used for:
 This is a rule-based extractor (not ML). For a PFE scope, keyword matching
 on a curated symptom→ICD-10 map is sufficient and deterministic.
 """
-import re
 from dataclasses import dataclass
 
 # Symptom → ICD-10 code mapping (most common clinical scenarios)

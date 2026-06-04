@@ -8,7 +8,6 @@ Why separate schemas from ORM models?
 """
 from uuid import UUID
 from pydantic import BaseModel, EmailStr, field_validator
-import re
 
 
 class LoginRequest(BaseModel):

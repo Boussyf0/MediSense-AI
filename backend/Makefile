@@ -10,13 +10,13 @@ help:
 	@echo "make install-hooks Install pre-push git hook (run once per clone)"
 
 test:
-	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=xml --cov-fail-under=80
+	KMP_DUPLICATE_LIB_OK=TRUE OMP_NUM_THREADS=1 POSTGRES_HOST=localhost REDIS_HOST=localhost python -m pytest --cov=app --cov-config=.coveragerc --cov-report=xml --cov-fail-under=80 --tb=short
 
 cov:
-	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=term-missing --cov-fail-under=80
+	KMP_DUPLICATE_LIB_OK=TRUE OMP_NUM_THREADS=1 POSTGRES_HOST=localhost REDIS_HOST=localhost python -m pytest --cov=app --cov-config=.coveragerc --cov-report=term-missing --cov-fail-under=80 --tb=short
 
 cov-html:
-	POSTGRES_HOST=localhost REDIS_HOST=localhost pytest -q --cov=app --cov-report=html --cov-fail-under=80
+	KMP_DUPLICATE_LIB_OK=TRUE OMP_NUM_THREADS=1 POSTGRES_HOST=localhost REDIS_HOST=localhost python -m pytest --cov=app --cov-config=.coveragerc --cov-report=html --cov-fail-under=80 --tb=short
 	@open htmlcov/index.html 2>/dev/null || echo "Open htmlcov/index.html in your browser"
 
 lint:

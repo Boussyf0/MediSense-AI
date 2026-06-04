@@ -15,6 +15,7 @@ class CRMTaskOut(BaseModel):
     """Single appointment CRM task — returned by GET and PATCH."""
     appointment_uuid: uuid.UUID
     patient_uuid: uuid.UUID
+    patient_name: str | None = None
     salesforce_task_id: str | None
     crm_sync_status: str
     crm_correlation_id: str | None

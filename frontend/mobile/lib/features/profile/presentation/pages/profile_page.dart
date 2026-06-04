@@ -46,7 +46,9 @@ final _upcomingAppointmentCountProvider =
       }
       try {
         if (DateTime.parse(scheduled).isAfter(now)) count++;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Appointment date parse failed: $e');
+      }
     }
     return count;
   } on DioException {

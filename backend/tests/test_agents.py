@@ -22,9 +22,8 @@ WHY MOCK REDIS AND DB?
 import asyncio
 import json
 import pytest
-import pytest_asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 # ── Triage Agent ──────────────────────────────────────────────────────────────
 
@@ -570,7 +569,6 @@ class TestIoTContext:
         """has_critical must be True when any anomaly severity == 'critical'."""
         from app.rag.iot_context import fetch_iot_context
         from app.db.models.biometric_anomaly import BiometricAnomaly
-        from datetime import datetime, timezone
 
         mock_anomaly = BiometricAnomaly()
         mock_anomaly.metric_type = "SpO2"

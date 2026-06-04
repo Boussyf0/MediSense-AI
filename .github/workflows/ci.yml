@@ -166,3 +166,37 @@ jobs:
           build-args: PIP_REQUIREMENTS=requirements-ci.txt
           push: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
           tags: ${{ steps.meta.outputs.tags }}
+
+  test-mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: cd frontend/mobile && flutter pub get
+
+      - name: Run Flutter tests
+        run: cd frontend/mobile && flutter test
+
+  test-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: cd frontend/web && npm ci
+
+      - name: Run web tests
+        run: cd frontend/web && npm test

@@ -85,3 +85,16 @@ async def test_connection_manager_prunes_dead_sockets():
     assert mgr.connection_count("doctor") == 1
     assert good in mgr._connections["doctor"]
     assert bad not in mgr._connections["doctor"]
+
+
+@pytest.mark.asyncio
+async def test_connection_manager_counts_and_metric_failure(monkeypatch):
+    from app.core.ws_manager import ConnectionManager
+    import app.api.v1.endpoints.metrics as metrics
+
+    mgr = ConnectionManager()
+    monkeypatch.delattr(metrics, "ws_active_connections", raising=False)
+
+    mgr._publish_gauge("doctor")
+    assert await mgr.broadcast("doctor", {"ping": "pong"}) == 0
+    assert mgr.connection_count() == 0
