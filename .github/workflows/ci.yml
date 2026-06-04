@@ -198,5 +198,21 @@ jobs:
       - name: Install dependencies
         run: cd frontend/web && npm ci
 
+      - name: Debug environment
+        run: |
+          cd frontend/web
+          echo "=== Node/npm versions ==="
+          node -v && npm -v
+          echo "=== CWD ==="
+          pwd
+          echo "=== lib/ contents ==="
+          ls -la lib/
+          echo "=== vitest.config.ts ==="
+          cat vitest.config.ts
+          echo "=== Vite version ==="
+          node -e "console.log(require('vite/package.json').version)"
+          echo "=== Vitest version ==="
+          node -e "console.log(require('vitest/package.json').version)"
+
       - name: Run web tests
         run: cd frontend/web && npm test
