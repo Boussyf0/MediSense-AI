@@ -16,8 +16,9 @@ eggs/
 .eggs/
 lib/
 lib64/
-# Flutter source is under frontend/mobile/lib/ — un-ignore it
+# Frontend source is under frontend/*/lib/ — un-ignore it
 !frontend/mobile/lib/
+!frontend/web/lib/
 parts/
 sdist/
 var/
