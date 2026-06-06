@@ -1,11 +1,14 @@
 # Fly.io app config — MediSense backend (FastAPI).
 # Free-tier-friendly subset: single shared-CPU 1x machine in CDG, scaled to
 # zero when idle so the project stays inside the free hobby allowance.
-app = "medisense-backend"
+app = "medisense-ai"
 primary_region = "cdg"
 
 [build]
-  dockerfile = "backend/Dockerfile"
+  # Build context is this directory (backend/), so the Dockerfile and its
+  # COPY paths (requirements*.txt, app/) resolve correctly. Deploy with
+  # `cd backend && fly deploy` — never from the repo root.
+  dockerfile = "Dockerfile"
 
 [env]
   APP_ENV = "production"
