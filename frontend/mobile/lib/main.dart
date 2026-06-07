@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,7 +9,8 @@ import 'services/fcm_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env.development');
+  // Release builds talk to the deployed backend; debug/profile use local dev.
+  await dotenv.load(fileName: kReleaseMode ? '.env.production' : '.env.development');
   await initializeDateFormatting('fr_FR', null);
   // Best-effort: silently no-ops in dev if Firebase isn't configured.
   await FcmService.instance.init();
