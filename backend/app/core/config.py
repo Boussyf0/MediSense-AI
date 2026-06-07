@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.1-8b-instant"
 
+    # Hosted embeddings + reranking (Jina) — keeps heavy models off the API box
+    JINA_API_KEY: str = ""
+
     # SMS reminders (Sprint 5)
     # If SMS_WEBHOOK_URL is empty, reminders are sent in mock mode (dev/demo).
     SMS_WEBHOOK_URL: str = ""

@@ -21,25 +21,22 @@ Graceful degradation:
   If the cross-encoder fails (model load error, OOM), the pipeline falls
   back to RRF ordering — see _safe_rerank() in pipeline.py.
 """
-from functools import lru_cache
 from dataclasses import dataclass
 
-from sentence_transformers import CrossEncoder
+import httpx
 
 from app.api.v1.endpoints.metrics import rag_retrieval_latency_seconds
+from app.core.config import get_settings
 
-MODEL_NAME = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
-
-
-@lru_cache(maxsize=1)
-def _get_model() -> CrossEncoder:
-    """Load the cross-encoder once and cache it."""
-    return CrossEncoder(MODEL_NAME, max_length=512)
+# Hosted multilingual reranker (replaces the local cross-encoder, which OOM'd the box).
+JINA_RERANK_URL = "https://api.jina.ai/v1/rerank"
+MODEL_NAME = "jina-reranker-v2-base-multilingual"
+_TIMEOUT = 60.0
 
 
 @dataclass
 class RerankedChunk:
-    """A chunk with its cross-encoder score."""
+    """A chunk with its reranker relevance score."""
     chunk: dict
     ce_score: float
     original_rank: int
@@ -47,7 +44,7 @@ class RerankedChunk:
 
 def rerank(query: str, chunks: list[dict], top_k: int = 5) -> list[RerankedChunk]:
     """
-    Re-rank chunks using the multilingual cross-encoder.
+    Re-rank chunks using the Jina hosted multilingual reranker.
 
     Args:
         query: The user query (in French, post-normalization).
@@ -55,30 +52,46 @@ def rerank(query: str, chunks: list[dict], top_k: int = 5) -> list[RerankedChunk
         top_k: Number of top results to return.
 
     Returns:
-        Top-k chunks sorted by cross-encoder score (descending).
+        Top-k chunks sorted by relevance score (descending). Raises on API
+        failure — the caller (_safe_rerank in pipeline.py) falls back to RRF order.
     """
     if not chunks:
         return []
 
-    model = _get_model()
+    settings = get_settings()
+    if not settings.JINA_API_KEY:
+        raise RuntimeError("JINA_API_KEY is not set — reranking unavailable")
 
-    # Build (query, passage) pairs for the cross-encoder
-    pairs = [(query, chunk.get("text", "")) for chunk in chunks]
+    documents = [chunk.get("text", "") for chunk in chunks]
 
-    # Score all pairs
     with rag_retrieval_latency_seconds.labels(stage="rerank").time():
-        scores = model.predict(pairs)
+        resp = httpx.post(
+            JINA_RERANK_URL,
+            headers={
+                "Authorization": f"Bearer {settings.JINA_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": MODEL_NAME,
+                "query": query,
+                "documents": documents,
+                "top_n": top_k,
+                "return_documents": False,
+            },
+            timeout=_TIMEOUT,
+        )
+        resp.raise_for_status()
+        results = resp.json()["results"]
 
-    # Combine with original data
-    ranked = [
-        RerankedChunk(chunk=chunk, ce_score=float(score), original_rank=i)
-        for i, (chunk, score) in enumerate(zip(chunks, scores))
+    # Jina returns results pre-sorted by relevance, each with the original index.
+    return [
+        RerankedChunk(
+            chunk=chunks[r["index"]],
+            ce_score=float(r["relevance_score"]),
+            original_rank=r["index"],
+        )
+        for r in results
     ]
-
-    # Sort by cross-encoder score (descending)
-    ranked.sort(key=lambda x: x.ce_score, reverse=True)
-
-    return ranked[:top_k]
 
 
 def evaluate_rrf_vs_crossencoder(

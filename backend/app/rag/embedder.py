@@ -1,60 +1,87 @@
 """
-Embedding service using intfloat/multilingual-e5-base.
+Embedding service using Jina AI hosted embeddings (jina-embeddings-v3).
 
-Why this model?
-  - 768-dim embeddings, good balance of size vs quality
-  - Trained on 100+ languages including Arabic and French
-  - Outperforms nomic-embed-text for Arabic/Darija queries
-  - E5 instruction format: prefix "query: " or "passage: " for asymmetric retrieval
+Why hosted (vs a local sentence-transformers model)?
+  - The local multilingual-e5 model is ~1GB resident and OOM-killed the API box.
+  - Jina v3 is strong multilingual (French / Arabic / Darija) — fits the medical corpus.
+  - Hosted = the API container stays small; embedding is a lightweight HTTP call.
 
-Why sentence-transformers?
-  - Standard library for embedding models
-  - Handles tokenization, batching, normalization
-  - Cross-encoder support from the same library (reranker.py)
+Model: jina-embeddings-v3, 1024-dim, cosine. Task-specific LoRA:
+  - "retrieval.query"   for user queries   (asymmetric retrieval)
+  - "retrieval.passage" for indexed documents
+
+Drop-in replacement: same public interface (embed_query / embed_passage /
+embed_passages_batch / EMBEDDING_DIM) as the previous local implementation.
 """
-from functools import lru_cache
+from __future__ import annotations
 
-from sentence_transformers import SentenceTransformer
+import time
 
-MODEL_NAME = "intfloat/multilingual-e5-base"
-EMBEDDING_DIM = 768
+import httpx
+
+from app.core.config import get_settings
+
+JINA_URL = "https://api.jina.ai/v1/embeddings"
+MODEL_NAME = "jina-embeddings-v3"
+EMBEDDING_DIM = 1024
+_TIMEOUT = 60.0
+_MAX_RETRIES = 6
 
 
-@lru_cache(maxsize=1)
-def _get_model() -> SentenceTransformer:
-    """Load the model once and cache it for the process lifetime."""
-    return SentenceTransformer(MODEL_NAME)
+def _embed(texts: list[str], task: str) -> list[list[float]]:
+    """Call the Jina embeddings API and return vectors in input order.
+
+    Retries with exponential backoff on rate limits (429) and transient 5xx,
+    so bulk ingestion and the live chat path both survive the free-tier limits.
+    """
+    settings = get_settings()
+    if not settings.JINA_API_KEY:
+        raise RuntimeError("JINA_API_KEY is not set — embeddings unavailable")
+
+    payload = {
+        "model": MODEL_NAME,
+        "task": task,
+        "dimensions": EMBEDDING_DIM,
+        "normalized": True,          # L2-normalized → cosine == dot product
+        "embedding_type": "float",
+        "input": texts,
+    }
+    headers = {
+        "Authorization": f"Bearer {settings.JINA_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    last_exc: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
+        resp = httpx.post(JINA_URL, headers=headers, json=payload, timeout=_TIMEOUT)
+        if resp.status_code == 429 or resp.status_code >= 500:
+            wait = float(resp.headers.get("retry-after", 2 ** attempt))
+            last_exc = httpx.HTTPStatusError(
+                f"Jina {resp.status_code}", request=resp.request, response=resp
+            )
+            time.sleep(min(wait, 30))
+            continue
+        resp.raise_for_status()
+        data = resp.json()["data"]
+        data.sort(key=lambda d: d["index"])  # preserve input order
+        return [d["embedding"] for d in data]
+
+    raise RuntimeError(f"Jina embeddings failed after {_MAX_RETRIES} retries") from last_exc
 
 
 def embed_query(text: str) -> list[float]:
-    """
-    Embed a user query.
-
-    E5 models require "query: " prefix for queries (asymmetric retrieval).
-    """
-    model = _get_model()
-    vector = model.encode(f"query: {text}", normalize_embeddings=True)
-    return vector.tolist()
+    """Embed a single user query."""
+    return _embed([text], task="retrieval.query")[0]
 
 
 def embed_passage(text: str) -> list[float]:
-    """
-    Embed a document passage for indexing.
-
-    E5 models require "passage: " prefix for documents.
-    """
-    model = _get_model()
-    vector = model.encode(f"passage: {text}", normalize_embeddings=True)
-    return vector.tolist()
+    """Embed a single document passage for indexing."""
+    return _embed([text], task="retrieval.passage")[0]
 
 
 def embed_passages_batch(texts: list[str], batch_size: int = 64) -> list[list[float]]:
-    """
-    Batch-embed multiple passages for bulk indexing.
-
-    Used by ingest_medical_corpus.py to index 84k chunks efficiently.
-    """
-    model = _get_model()
-    prefixed = [f"passage: {t}" for t in texts]
-    vectors = model.encode(prefixed, normalize_embeddings=True, batch_size=batch_size, show_progress_bar=True)
-    return vectors.tolist()
+    """Batch-embed passages for bulk indexing (chunked to respect API limits)."""
+    out: list[list[float]] = []
+    for i in range(0, len(texts), batch_size):
+        out.extend(_embed(texts[i : i + batch_size], task="retrieval.passage"))
+    return out

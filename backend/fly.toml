@@ -25,7 +25,9 @@ primary_region = "cdg"
   POSTGRES_USER = "medisense_user"
   REDIS_HOST = "fly-medisense-redis.upstash.io"
   REDIS_PORT = "6379"
-  QDRANT_HOST = "<your-qdrant-cloud-host>"
+  # Direct 6PN private networking (.internal) — Qdrant listens on 0.0.0.0:6333.
+  # Avoids needing a flycast service/ports config on the Qdrant app.
+  QDRANT_HOST = "medisense-qdrant.internal"
   QDRANT_PORT = "6333"
   LLM_PROVIDER = "groq"
   GROQ_MODEL = "llama-3.1-8b-instant"
@@ -58,8 +60,9 @@ primary_region = "cdg"
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
-  # 512MB OOM-kills the app on startup — it loads ML libs (LSTM anomaly model etc.).
-  memory_mb = 1024
+  # 512MB OOM-kills on startup; 1GB OOM-kills at runtime when chat/RAG/ML code runs
+  # (spikes to ~850MB+). 2GB gives headroom for inference. Max for shared-cpu-1x.
+  memory_mb = 2048
 
 [deploy]
   # NOTE: the alembic chain is broken for a from-scratch run (the migration that

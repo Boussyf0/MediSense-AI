@@ -1,0 +1,29 @@
+# Fly.io config for a private Qdrant vector DB (MediSense RAG).
+# Reachable from the backend over the private network at: medisense-qdrant.flycast:6333
+# Not publicly exposed (no `ports` block) — internal-only.
+app = "medisense-qdrant"
+primary_region = "cdg"
+
+[build]
+  image = "qdrant/qdrant:v1.12.4"
+
+[env]
+  # Fly private networking (.internal / .flycast) is IPv6-only. Qdrant defaults to
+  # 0.0.0.0 (IPv4) which is unreachable over 6PN — bind IPv6 (dual-stack) instead.
+  QDRANT__SERVICE__HOST = "::"
+
+[mounts]
+  source = "qdrant_data"
+  destination = "/qdrant/storage"
+
+[[services]]
+  internal_port = 6333
+  protocol = "tcp"
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
