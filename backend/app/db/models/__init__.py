@@ -3,6 +3,7 @@ from .biometric_anomaly import BiometricAnomaly
 from .biometric_reading import BiometricReading
 from .caregiver import PatientCaregiver
 from .conversation import Conversation
+from .device_token import DeviceToken
 from .dpa_summary import DPASummary
 from .iot_device import IotDevice
 from .medication_reminder import MedicationReminder
@@ -19,6 +20,7 @@ __all__ = [
     "BiometricReading",
     "PatientCaregiver",
     "Conversation",
+    "DeviceToken",
     "DPASummary",
     "IotDevice",
     "MedicationReminder",
