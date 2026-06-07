@@ -23,33 +23,43 @@ fly auth whoami >/dev/null 2>&1 || { echo "Not logged in. Run: fly auth login"; 
 [ -f "$SECRETS" ] || { echo "Missing $SECRETS"; exit 1; }
 # shellcheck disable=SC1090
 set -a; source "$SECRETS"; set +a
-[ -n "${GROQ_API_KEY:-}" ] || { echo "GROQ_API_KEY is empty in $SECRETS — get one at https://console.groq.com/keys"; exit 1; }
+if [ -z "${GROQ_API_KEY:-}" ]; then
+  echo "⚠ GROQ_API_KEY is empty — backend will boot but AI chat will fail."
+  echo "  Get a free key at https://console.groq.com/keys, then:"
+  echo "    fly secrets set -a $APP GROQ_API_KEY=gsk_..."
+fi
 
 echo "==> 1/5  Ensure app exists"
 fly apps list | grep -qw "$APP" || fly apps create "$APP" --org personal
 
-echo "==> 2/5  Ensure Postgres cluster exists"
+echo "==> 2/5  Ensure Postgres cluster + database/role exist"
 if ! fly apps list | grep -qw "$PG"; then
   fly postgres create --name "$PG" --region "$REGION" \
     --vm-size shared-cpu-1x --volume-size 1 --initial-cluster-size 1
-fi
 
-echo "==> 3/5  Create database + role to match fly.toml (idempotent)"
-# fly.toml expects: db=medisense_db user=medisense_user host=medisense-pg.flycast
-fly postgres connect -a "$PG" <<SQL || echo "(db/role may already exist — continuing)"
+  # One-time DB/role bootstrap, only right after creating the cluster.
+  # fly.toml expects: db=medisense_db user=medisense_user host=medisense-pg.flycast
+  # NOTE: `fly postgres connect` can hang after \q — if it does, press Ctrl-D once.
+  fly postgres connect -a "$PG" <<SQL || echo "(db/role may already exist — continuing)"
 CREATE ROLE medisense_user LOGIN PASSWORD '${POSTGRES_PASSWORD}';
 CREATE DATABASE medisense_db OWNER medisense_user;
 \c medisense_db
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 GRANT ALL PRIVILEGES ON DATABASE medisense_db TO medisense_user;
+\q
 SQL
+else
+  echo "    $PG already exists — skipping creation and DB bootstrap."
+fi
+
+echo "==> 3/5  (db/role bootstrap handled above)"
 
 echo "==> 4/5  Set secrets on $APP"
 fly secrets set -a "$APP" \
   POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
   JWT_SECRET_KEY="$JWT_SECRET_KEY" \
   PGCRYPTO_KEY="$PGCRYPTO_KEY" \
-  GROQ_API_KEY="$GROQ_API_KEY" \
+  ${GROQ_API_KEY:+GROQ_API_KEY="$GROQ_API_KEY"} \
   ${REDIS_PASSWORD:+REDIS_PASSWORD="$REDIS_PASSWORD"} \
   ${FCM_SERVICE_ACCOUNT_B64:+FCM_SERVICE_ACCOUNT_B64="$FCM_SERVICE_ACCOUNT_B64"}
 
