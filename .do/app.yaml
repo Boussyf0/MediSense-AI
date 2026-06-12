@@ -33,7 +33,9 @@ databases:
 services:
   # ───────────────────────────── Backend API ─────────────────────────────
   - name: backend
-    dockerfile_path: backend/Dockerfile
+    # Dockerfile.do installs the slim runtime set + CPU-only torch; the full
+    # requirements.txt image (~6GB w/ CUDA) exhausts DO's build node.
+    dockerfile_path: backend/Dockerfile.do
     source_dir: backend
     github:
       repo: Boussyf0/MediSense-AI
@@ -42,6 +44,11 @@ services:
     http_port: 8000
     instance_size_slug: apps-s-1vcpu-2gb # backend spikes to ~850MB+ during RAG/ML
     instance_count: 1
+    # Build the schema (create_all, idempotent) then start uvicorn — replaces the
+    # old Fly release_command. Folded in here instead of a separate PRE_DEPLOY job
+    # so the heavy torch image is built ONCE, not twice concurrently (which OOM'd
+    # DO's build node). Safe with instance_count: 1; create_all is idempotent.
+    run_command: python scripts/init_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000
     health_check:
       http_path: /api/v1/health
       initial_delay_seconds: 60
@@ -136,30 +143,6 @@ services:
         scope: RUN_AND_BUILD_TIME
         value: ${APP_URL}
 
-jobs:
-  # init_db.py builds the schema from the ORM models (create_all, idempotent).
-  # Runs before every deploy, after the DB is reachable.
-  - name: init-db
-    kind: PRE_DEPLOY
-    dockerfile_path: backend/Dockerfile
-    source_dir: backend
-    github:
-      repo: Boussyf0/MediSense-AI
-      branch: main
-    run_command: python scripts/init_db.py
-    instance_size_slug: apps-s-1vcpu-0.5gb
-    envs:
-      - key: PYTHONPATH
-        value: /app
-      - key: POSTGRES_HOST
-        value: ${medisense-pg.HOSTNAME}
-      - key: POSTGRES_PORT
-        value: ${medisense-pg.PORT}
-      - key: POSTGRES_DB
-        value: ${medisense-pg.DATABASE}
-      - key: POSTGRES_USER
-        value: ${medisense-pg.USERNAME}
-      - key: POSTGRES_PASSWORD
-        value: ${medisense-pg.PASSWORD}
-      - key: PGSSLMODE
-        value: require
+# NOTE: schema init (scripts/init_db.py) runs from the backend service's
+# run_command, not a separate PRE_DEPLOY job — building the heavy backend image
+# twice concurrently exhausted DO's build node.

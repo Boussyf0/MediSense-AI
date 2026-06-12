@@ -1,0 +1,48 @@
+# Production / cloud runtime image (DigitalOcean App Platform).
+#
+# This is the SUBSET of requirements.txt that the running FastAPI app actually
+# imports at runtime. The full requirements.txt also carries the training /
+# MLOps / synthetic-data / plotting stack (torch+CUDA, transformers,
+# sentence-transformers, mlflow, evidently, sdv/ctgan, xgboost/lightgbm,
+# matplotlib, boto3, …) which is ~6GB+ and exhausts DO's build node when
+# snapshotting the image. None of it is on the request path:
+#   - embeddings + reranking are hosted (Jina, over HTTP)
+#   - the no-show model is an sklearn Pipeline loaded via joblib
+#   - mlflow is a lazy, try-guarded fallback (degrades to the joblib file)
+#   - torch is lazy-imported only for LSTM anomaly inference (CPU); it is
+#     installed separately as the CPU-only wheel in Dockerfile.do
+#
+# Keep this in sync with the runtime import surface (see `grep` of app/).
+
+# ---- Web / API (mirrors requirements-ci.txt, the CI-validated web stack) ----
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+psycopg2-binary==2.9.10
+
+redis==5.2.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-multipart==0.0.18
+
+pydantic[email]==2.10.2
+email-validator==2.2.0
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+aiofiles==24.1.0
+httpx==0.28.1
+
+qdrant-client==1.12.1
+langdetect==1.0.9
+sse-starlette==2.1.3
+prometheus-client==0.21.0
+
+# ---- ML runtime (no-show predictor: sklearn Pipeline via joblib) ----
+scikit-learn==1.5.2
+numpy>=1.26.0
+pandas==2.2.3
+joblib==1.4.2
