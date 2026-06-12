@@ -117,7 +117,11 @@ services:
         value: "" # empty = FCM mock mode (logs payloads); set base64 JSON to enable
       # ---- Misc ----
       - key: KAFKA_BROKERS
-        value: "" # cloud demo runs anomaly detection synchronously
+        value: "" # no broker → /iot/ingest runs the LSTM detector inline
+      # Absolute path: the default resolver assumes the repo's backend/ subdir,
+      # which is the image root (/app) here. The model is COPY'd to /app/models/.
+      - key: LSTM_MODEL_PATH
+        value: /app/models/lstm_anomaly_detector.pt
       - key: CORS_ORIGINS
         value: '["${APP_URL}"]' # same-origin web app; add custom domains here
 

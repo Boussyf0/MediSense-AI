@@ -174,7 +174,17 @@ async def ingest_reading(patient_uuid: str, reading: dict) -> dict[str, Any]:
     else:
         score_60m = None
 
-    alert_critical = is_critical(score_5m)  if score_5m  is not None else False
+    # Rule-based safety net — dangerous vitals alert immediately, regardless of the
+    # LSTM score. Covers the cold-start window (before MIN_READINGS_FOR_SCORE) and a
+    # missing/unavailable model (score_window returns 0.0 then).
+    _hr = reading.get("hr")
+    _spo2 = reading.get("spo2")
+    rule_critical = (
+        (_spo2 is not None and _spo2 < 90)
+        or (_hr is not None and (_hr >= 130 or _hr <= 40))
+    )
+    lstm_critical = is_critical(score_5m) if score_5m is not None else False
+    alert_critical = rule_critical or lstm_critical
     trend_elevated = (score_60m or 0) >= 0.60 if score_60m is not None else False
 
     # Always update Prometheus counters so Grafana panels react to traffic
