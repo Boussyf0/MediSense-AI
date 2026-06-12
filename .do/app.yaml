@@ -24,11 +24,11 @@
 name: medisense-ai
 region: fra # Frankfurt — closest to the old Fly cdg (Paris) region
 
-databases:
-  - name: medisense-pg
-    engine: PG
-    version: "16"
-    production: false # dev database (free tier); flip to true for a managed cluster
+# Postgres is external (Neon, free tier) — NOT a DO managed/dev database. DO dev
+# databases only expose one restricted role that cannot CREATE the `secure`
+# schema the RGPD identity-encryption tables require (no doadmin to grant it).
+# Neon gives an owner role (neondb_owner), so init_db.py creates the schema +
+# extensions cleanly. Connection set via POSTGRES_* below.
 
 services:
   # ───────────────────────────── Backend API ─────────────────────────────
@@ -44,11 +44,10 @@ services:
     http_port: 8000
     instance_size_slug: apps-s-1vcpu-2gb # backend spikes to ~850MB+ during RAG/ML
     instance_count: 1
-    # Build the schema (create_all, idempotent) then start uvicorn — replaces the
-    # old Fly release_command. Folded in here instead of a separate PRE_DEPLOY job
-    # so the heavy torch image is built ONCE, not twice concurrently (which OOM'd
-    # DO's build node). Safe with instance_count: 1; create_all is idempotent.
-    run_command: python scripts/init_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000
+    # start.sh: init_db (idempotent schema build) then exec uvicorn. A script,
+    # not an inline "init && uvicorn" — DO runs run_command via shlex split, not a
+    # shell, so `&&` would be passed as argv to python and uvicorn never starts.
+    run_command: sh start.sh
     health_check:
       http_path: /api/v1/health
       initial_delay_seconds: 60
@@ -62,19 +61,20 @@ services:
         value: production
       - key: PYTHONPATH
         value: /app
-      # ---- Postgres (auto-injected from the managed dev DB binding) ----
+      # ---- Postgres (Neon — external, owner role, full privileges) ----
       - key: POSTGRES_HOST
-        value: ${medisense-pg.HOSTNAME}
+        value: ep-curly-violet-aspgcsn4.c-4.eu-central-1.aws.neon.tech
       - key: POSTGRES_PORT
-        value: ${medisense-pg.PORT}
+        value: "5432"
       - key: POSTGRES_DB
-        value: ${medisense-pg.DATABASE}
+        value: neondb
       - key: POSTGRES_USER
-        value: ${medisense-pg.USERNAME}
-      - key: POSTGRES_PASSWORD
-        value: ${medisense-pg.PASSWORD}
+        value: neondb_owner
+      - key: POSTGRES_PASSWORD # Neon password — set in dashboard, do NOT commit
+        value: REPLACE_ME
+        type: SECRET
       - key: PGSSLMODE
-        value: require # DO managed Postgres enforces TLS
+        value: require # Neon requires TLS
       # ---- Redis (Upstash free serverless — TLS) ----
       - key: REDIS_HOST
         value: prepared-corgi-37804.upstash.io
