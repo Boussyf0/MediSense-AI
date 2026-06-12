@@ -113,8 +113,9 @@ services:
       - key: PGCRYPTO_KEY
         value: REPLACE_ME
         type: SECRET
-      - key: FCM_SERVICE_ACCOUNT_B64
-        value: "" # empty = FCM mock mode (logs payloads); set base64 JSON to enable
+      - key: FCM_SERVICE_ACCOUNT_B64 # base64 Firebase service account JSON (real push)
+        value: REPLACE_ME
+        type: SECRET
       # ---- Misc ----
       - key: KAFKA_BROKERS
         value: "" # no broker → /iot/ingest runs the LSTM detector inline
