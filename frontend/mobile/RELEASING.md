@@ -38,16 +38,15 @@ If a release build crashes with `ClassNotFoundException`, add a `-keep` rule the
 
 ## ⚠️ Backend must be live before launch
 
-The app's production config (`.env.production`) points to:
+The app's production config (`.env.production`) points to the live backend on
+DigitalOcean App Platform:
 
-    API_BASE_URL=https://api.medisense.ai/api/v1
+    API_BASE_URL=https://medisense-ai-7li7x.ondigitalocean.app/api/v1
 
-As of this writing that host does **not resolve** (NXDOMAIN), and the Fly app
-`medisense-backend.fly.dev` is unreachable. Before publishing you must either:
-
-1. Deploy the backend (see root `fly.toml`) and point a DNS record for
-   `api.medisense.ai` at it (Fly: `fly certs add api.medisense.ai`), **or**
-2. Update `.env.production` to the real reachable backend URL and rebuild.
+This host is reachable (`/api/v1/health` returns 200). See
+`docs/deploy/digitalocean.md` for the backend deploy. If you later put the API
+behind a custom domain (e.g. `api.medisense.ai`), update `.env.production` to
+that URL, add it to the backend's `CORS_ORIGINS`, and rebuild.
 
 Otherwise the app is non-functional on first launch and risks a Play policy rejection
 ("broken functionality").
