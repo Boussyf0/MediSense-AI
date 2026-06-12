@@ -86,7 +86,10 @@ async def build(
     symptoms_task = asyncio.create_task(_fetch_recent_symptoms(patient_uuid, db))
     iot_task = asyncio.create_task(_fetch_iot_summary(patient_uuid, db))
 
-    symptoms, iot_data = await asyncio.gather(symptoms_task, iot_task)
+    # _fetch_recent_symptoms returns (symptoms, is_urgent); gather keeps the tuple
+    # intact, so unpack it here — otherwise `symptoms` is the whole (list, bool)
+    # tuple and every downstream use (join, payload, confidence) breaks.
+    (symptoms, _is_urgent), iot_data = await asyncio.gather(symptoms_task, iot_task)
 
     # [3] Recommendations depend on symptoms
     recommendations = _generate_recommendations(symptoms, iot_data)
@@ -132,7 +135,7 @@ async def build(
 async def _fetch_recent_symptoms(
     patient_id: uuid.UUID,
     db: AsyncSession,
-) -> list[str]:
+) -> tuple[list[dict[str, Any]], bool]:
     """
     Extract symptom keywords from the patient's recent chat messages.
 
@@ -175,7 +178,7 @@ async def _fetch_recent_symptoms(
             conversations = list(history_result.scalars().all())
 
         if not conversations:
-            return []
+            return [], False
 
         conv_ids = [c.id for c in conversations]
 
@@ -312,7 +315,7 @@ def _compute_trend(severities: list[str]) -> str:
 
 
 def _generate_recommendations(
-    symptoms: list[str],
+    symptoms: list[dict[str, Any]],
     iot_data: dict[str, Any],
 ) -> list[dict[str, Any]]:
     """
@@ -355,8 +358,15 @@ def _generate_recommendations(
             "reasoning": f"FC={hr_anomalies[0]['value']}bpm détectée",
         })
 
-    # Symptom-based recommendations
-    symptom_text = " ".join(symptoms).lower()
+    # Symptom-based recommendations.
+    # `symptoms` is list[dict] ({name, severity, source}) from _fetch_recent_symptoms,
+    # not list[str] — guard against dict/list items so join() never raises.
+    symptom_text = " ".join(
+        s.get("name", "") if isinstance(s, dict)
+        else " ".join(map(str, s)) if isinstance(s, (list, tuple))
+        else str(s)
+        for s in symptoms
+    ).lower()
     if "fièvre" in symptom_text or "temperature" in symptom_text:
         actions.append({
             "action": "refer",
@@ -383,7 +393,7 @@ def _generate_recommendations(
     return actions
 
 
-def _compute_confidence(symptoms: list[str], iot_data: dict[str, Any]) -> float:
+def _compute_confidence(symptoms: list[dict[str, Any]], iot_data: dict[str, Any]) -> float:
     """
     Estimate confidence in the DPA summary quality.
 

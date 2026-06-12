@@ -137,12 +137,12 @@ services:
     envs:
       - key: NODE_ENV
         value: production
-      # Same-origin: the web app's axios baseURL is NEXT_PUBLIC_API_URL and it
-      # posts to '/auth/login' etc., so the value MUST include /api/v1. Baked at
-      # build via the Dockerfile ARG (Next.js inlines NEXT_PUBLIC_* at build).
+      # axios baseURL; the app posts to '/auth/login', so this MUST end in /api/v1.
+      # Concrete URL (not ${APP_URL}) — ${APP_URL} is a runtime binding and does
+      # NOT resolve at build time, but Next.js inlines NEXT_PUBLIC_* at build.
       - key: NEXT_PUBLIC_API_URL
         scope: RUN_AND_BUILD_TIME
-        value: ${APP_URL}/api/v1
+        value: https://medisense-ai-7li7x.ondigitalocean.app/api/v1
 
 # NOTE: schema init (scripts/init_db.py) runs from the backend service's
 # run_command, not a separate PRE_DEPLOY job — building the heavy backend image

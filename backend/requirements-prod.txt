@@ -41,8 +41,14 @@ langdetect==1.0.9
 sse-starlette==2.1.3
 prometheus-client==0.21.0
 
-# ---- ML runtime (no-show predictor: sklearn Pipeline via joblib) ----
+# ---- ML runtime (no-show predictor: XGBoost model + SHAP explainer via joblib) ----
+# joblib.load of the pickled artifacts needs the libs that created them present:
+#   noshow_xgb_model.joblib       -> xgboost
+#   noshow_shap_explainer.joblib  -> shap (pulls numba/llvmlite)
+#   scaler/label_encoder          -> scikit-learn
 scikit-learn==1.5.2
 numpy>=1.26.0
 pandas==2.2.3
 joblib==1.4.2
+xgboost==2.1.2
+shap==0.46.0
