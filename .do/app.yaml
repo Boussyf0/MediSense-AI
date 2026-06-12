@@ -137,11 +137,12 @@ services:
     envs:
       - key: NODE_ENV
         value: production
-      # Same-origin: the web app calls ${APP_URL}/api/v1/... which the backend
-      # service serves. NEXT_PUBLIC_* is baked at build, so scope it BUILD_TIME.
+      # Same-origin: the web app's axios baseURL is NEXT_PUBLIC_API_URL and it
+      # posts to '/auth/login' etc., so the value MUST include /api/v1. Baked at
+      # build via the Dockerfile ARG (Next.js inlines NEXT_PUBLIC_* at build).
       - key: NEXT_PUBLIC_API_URL
         scope: RUN_AND_BUILD_TIME
-        value: ${APP_URL}
+        value: ${APP_URL}/api/v1
 
 # NOTE: schema init (scripts/init_db.py) runs from the backend service's
 # run_command, not a separate PRE_DEPLOY job — building the heavy backend image
