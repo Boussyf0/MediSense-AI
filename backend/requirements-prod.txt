@@ -52,3 +52,6 @@ pandas==2.2.3
 joblib==1.4.2
 xgboost==2.1.2
 shap==0.46.0
+
+# ---- Push notifications (real FCM; mock mode if FCM_SERVICE_ACCOUNT_B64 unset) ----
+firebase-admin==7.4.0

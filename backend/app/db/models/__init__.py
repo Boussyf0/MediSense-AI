@@ -13,6 +13,7 @@ from .sms_reminder_log import SmsReminderLog
 from .user import User
 from .appointment import Appointment
 from .ml_feedback import MLFeedback
+from .notification import Notification
 
 __all__ = [
     "AuditLog",
@@ -31,4 +32,5 @@ __all__ = [
     "User",
     "Appointment",
     "MLFeedback",
+    "Notification",
 ]

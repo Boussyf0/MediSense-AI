@@ -23,6 +23,7 @@ from app.db.models.appointment import Appointment
 from app.db.models.patient import Patient
 from app.db.models.user import User, UserRole
 from app.db.session import get_db
+from app.services.appointment_notifier import notify_appointment_event
 from app.services.noshow_predictor import (
     build_appointment_features,
     get_risk_color,
@@ -243,6 +244,9 @@ async def create_appointment(
     except (ModelNotReadyError, FeatureValidationError):
         pass
 
+    # Notify the other parties (durable inbox row + best-effort FCM push).
+    await notify_appointment_event(db, appt, "booked", caller_uuid)
+
     doctor_label = " ".join(
         part for part in [doctor.first_name, doctor.last_name] if part
     ) or doctor.email
@@ -304,6 +308,71 @@ async def cancel_appointment(
 
     appt.status = "CANCELLED"
     await db.flush()
+    await notify_appointment_event(db, appt, "cancelled", caller_uuid)
+
+    doctor_label = " ".join(
+        part for part in [doctor.first_name, doctor.last_name] if part
+    ) or doctor.email
+
+    return AppointmentItem(
+        appointment_uuid=appt.appointment_uuid,
+        scheduled_at=appt.scheduled_at,
+        appointment_time=appt.scheduled_at.strftime("%H:%M"),
+        appointment_type="Consultation",
+        doctor_name=f"Dr. {doctor_label}",
+        doctor_specialty=doctor.specialty,
+        duration_minutes=appt.duration_minutes,
+        price_mad=price_for_duration(appt.duration_minutes),
+        status=appt.status,
+        noshow_probability=appt.noshow_probability,
+        risk_color=None,
+    )
+
+
+@router.patch(
+    "/{appointment_uuid}/confirm",
+    response_model=AppointmentItem,
+    summary="Confirm a pending appointment (staff only)",
+)
+async def confirm_appointment(
+    appointment_uuid: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+):
+    """Staff confirm a PENDING appointment → CONFIRMED, notifying the patient.
+
+    Patients cannot confirm (403). Only PENDING appointments are confirmable (409).
+    """
+    if current_user.role not in {"doctor", "secretary", "admin"}:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only staff can confirm appointments",
+        )
+    caller_uuid = uuid.UUID(current_user.sub)
+
+    row = (
+        await db.execute(
+            select(Appointment, User)
+            .join(User, User.user_uuid == Appointment.doctor_uuid)
+            .where(Appointment.appointment_uuid == appointment_uuid)
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Appointment not found",
+        )
+    appt, doctor = row
+
+    if appt.status.upper() != "PENDING":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Only PENDING appointments can be confirmed (currently {appt.status})",
+        )
+
+    appt.status = "CONFIRMED"
+    await db.flush()
+    await notify_appointment_event(db, appt, "confirmed", caller_uuid)
 
     doctor_label = " ".join(
         part for part in [doctor.first_name, doctor.last_name] if part
