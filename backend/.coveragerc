@@ -1,5 +1,10 @@
 [run]
 source = app
+# Force the sys.monitoring core (PEP 669). The default C tracer drops line
+# events for `await` statements and the lines after them, undercounting every
+# async endpoint — it reported the suite at ~80% when it is actually ~94%.
+# Do not remove: without this the coverage gate is measuring fiction.
+core = sysmon
 # Only omit pure infrastructure (session middleware) and external adapters
 # that require live services not available in CI.
 omit =

@@ -1,0 +1,165 @@
+# DigitalOcean App Platform spec — MediSense AI
+# -----------------------------------------------------------------------------
+# Mirrors the old Fly.io stack (medisense-ai + medisense-pg + medisense-qdrant
+# + medisense-web + Redis) on a single App Platform app:
+#
+#   service  backend  ->  FastAPI (Dockerfile), routed at /api
+#   service  web      ->  Next.js dashboard (Dockerfile), routed at /
+#   job      init-db  ->  PRE_DEPLOY, runs scripts/init_db.py against Postgres
+#   database medisense-pg -> DO Managed Dev Postgres 16 (auto-injected creds)
+#
+# Qdrant (vector DB) and Redis are NOT in this spec — App Platform's filesystem
+# is ephemeral, so they live off-platform:
+#   - Qdrant  -> Qdrant Cloud free 1GB cluster   (set QDRANT_* secrets below)
+#   - Redis   -> Upstash free serverless (rediss) (set REDIS_* secrets below)
+#
+# Deploy:
+#   doctl apps create --spec .do/app.yaml          # first time
+#   doctl apps update <APP_ID> --spec .do/app.yaml # subsequent
+#
+# Secrets marked `type: SECRET` with a REPLACE_ME value must be set to real
+# values either by editing this file before `apps create`, or in the dashboard
+# (App -> Settings -> component -> Environment Variables) after creation.
+# -----------------------------------------------------------------------------
+name: medisense-ai
+region: fra # Frankfurt — closest to the old Fly cdg (Paris) region
+
+databases:
+  - name: medisense-pg
+    engine: PG
+    version: "16"
+    production: false # dev database (free tier); flip to true for a managed cluster
+
+services:
+  # ───────────────────────────── Backend API ─────────────────────────────
+  - name: backend
+    dockerfile_path: backend/Dockerfile
+    source_dir: backend
+    github:
+      repo: Boussyf0/MediSense-AI
+      branch: main
+      deploy_on_push: true
+    http_port: 8000
+    instance_size_slug: apps-s-1vcpu-2gb # backend spikes to ~850MB+ during RAG/ML
+    instance_count: 1
+    health_check:
+      http_path: /api/v1/health
+      initial_delay_seconds: 60
+      period_seconds: 30
+      timeout_seconds: 10
+    routes:
+      - path: /api
+        preserve_path_prefix: true # forward /api/v1/... unchanged to FastAPI
+    envs:
+      - key: APP_ENV
+        value: production
+      - key: PYTHONPATH
+        value: /app
+      # ---- Postgres (auto-injected from the managed dev DB binding) ----
+      - key: POSTGRES_HOST
+        value: ${medisense-pg.HOSTNAME}
+      - key: POSTGRES_PORT
+        value: ${medisense-pg.PORT}
+      - key: POSTGRES_DB
+        value: ${medisense-pg.DATABASE}
+      - key: POSTGRES_USER
+        value: ${medisense-pg.USERNAME}
+      - key: POSTGRES_PASSWORD
+        value: ${medisense-pg.PASSWORD}
+      - key: PGSSLMODE
+        value: require # DO managed Postgres enforces TLS
+      # ---- Redis (Upstash free serverless — TLS) ----
+      - key: REDIS_HOST
+        value: prepared-corgi-37804.upstash.io
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_SSL
+        value: "true"
+      - key: REDIS_PASSWORD # Upstash token — set in dashboard, do NOT commit
+        value: REPLACE_ME
+        type: SECRET
+      # ---- Qdrant Cloud (HTTPS + API key) ----
+      - key: QDRANT_HOST
+        value: 0f4a61ee-4b69-4f47-a546-ee97922f15dc.europe-west6-0.gcp.cloud.qdrant.io
+      - key: QDRANT_PORT
+        value: "6333"
+      - key: QDRANT_HTTPS
+        value: "true"
+      - key: QDRANT_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      # ---- LLM (Groq cloud, fast demo) ----
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_MODEL
+        value: llama-3.1-8b-instant
+      - key: GROQ_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: JINA_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      # ---- App secrets ----
+      - key: JWT_SECRET_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: PGCRYPTO_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: FCM_SERVICE_ACCOUNT_B64
+        value: "" # empty = FCM mock mode (logs payloads); set base64 JSON to enable
+      # ---- Misc ----
+      - key: KAFKA_BROKERS
+        value: "" # cloud demo runs anomaly detection synchronously
+      - key: CORS_ORIGINS
+        value: '["${APP_URL}"]' # same-origin web app; add custom domains here
+
+  # ──────────────────────────── Web dashboard ────────────────────────────
+  - name: web
+    dockerfile_path: frontend/web/Dockerfile
+    source_dir: frontend/web
+    github:
+      repo: Boussyf0/MediSense-AI
+      branch: main
+      deploy_on_push: true
+    http_port: 3000
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    instance_count: 1
+    routes:
+      - path: / # catch-all; backend's /api route takes precedence
+    envs:
+      - key: NODE_ENV
+        value: production
+      # Same-origin: the web app calls ${APP_URL}/api/v1/... which the backend
+      # service serves. NEXT_PUBLIC_* is baked at build, so scope it BUILD_TIME.
+      - key: NEXT_PUBLIC_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${APP_URL}
+
+jobs:
+  # init_db.py builds the schema from the ORM models (create_all, idempotent).
+  # Runs before every deploy, after the DB is reachable.
+  - name: init-db
+    kind: PRE_DEPLOY
+    dockerfile_path: backend/Dockerfile
+    source_dir: backend
+    github:
+      repo: Boussyf0/MediSense-AI
+      branch: main
+    run_command: python scripts/init_db.py
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    envs:
+      - key: PYTHONPATH
+        value: /app
+      - key: POSTGRES_HOST
+        value: ${medisense-pg.HOSTNAME}
+      - key: POSTGRES_PORT
+        value: ${medisense-pg.PORT}
+      - key: POSTGRES_DB
+        value: ${medisense-pg.DATABASE}
+      - key: POSTGRES_USER
+        value: ${medisense-pg.USERNAME}
+      - key: POSTGRES_PASSWORD
+        value: ${medisense-pg.PASSWORD}
+      - key: PGSSLMODE
+        value: require
