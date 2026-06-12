@@ -3,6 +3,7 @@ from .biometric_anomaly import BiometricAnomaly
 from .biometric_reading import BiometricReading
 from .caregiver import PatientCaregiver
 from .conversation import Conversation
+from .device_token import DeviceToken
 from .dpa_summary import DPASummary
 from .iot_device import IotDevice
 from .medication_reminder import MedicationReminder
@@ -12,6 +13,7 @@ from .sms_reminder_log import SmsReminderLog
 from .user import User
 from .appointment import Appointment
 from .ml_feedback import MLFeedback
+from .notification import Notification
 
 __all__ = [
     "AuditLog",
@@ -19,6 +21,7 @@ __all__ = [
     "BiometricReading",
     "PatientCaregiver",
     "Conversation",
+    "DeviceToken",
     "DPASummary",
     "IotDevice",
     "MedicationReminder",
@@ -29,4 +32,5 @@ __all__ = [
     "User",
     "Appointment",
     "MLFeedback",
+    "Notification",
 ]

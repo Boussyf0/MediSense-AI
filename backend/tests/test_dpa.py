@@ -135,6 +135,45 @@ class TestDPASummaryGet:
         assert data["status"] == "PENDING"
 
     @pytest.mark.asyncio
+    async def test_get_serializes_dict_symptoms(self, client, test_db):
+        """Regression: build() stores symptoms as list[dict] ({name, severity,
+        source}) but DPASummaryOut.symptoms is list[str]. A patient with real
+        symptoms must serialize (project dicts → names), not 500."""
+        from app.db.models.dpa_summary import DPASummary
+
+        patient_id = str(uuid.uuid4())
+        token = _make_doctor_token()
+
+        mock_summary = MagicMock(spec=DPASummary)
+        mock_summary.id = uuid.uuid4()
+        mock_summary.status = "PENDING"
+        mock_summary.version = 1
+        mock_summary.created_at = datetime.now(timezone.utc)
+        mock_summary.actions = []
+        mock_summary.payload_before = {
+            "symptoms": [
+                {"name": "douleur thoracique", "severity": "critical", "source": "icd10"},
+                {"name": "dyspnée", "severity": "moderate", "source": "chat"},
+            ],
+            "iot_summary": {"latest_anomalies": [], "trend": "stable"},
+            "recommended_actions": [],
+            "confidence": 0.4,
+            "data_freshness_minutes": 0,
+        }
+
+        with patch(
+            "app.api.v1.endpoints.doctor.dpa_summarizer.build",
+            AsyncMock(return_value=mock_summary),
+        ):
+            resp = await client.get(
+                f"/api/v1/doctor/patient/{patient_id}/dpa-summary?refresh=true",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+        assert resp.status_code == 200
+        assert resp.json()["symptoms"] == ["douleur thoracique", "dyspnée"]
+
+    @pytest.mark.asyncio
     async def test_get_returns_latest_existing_summary_after_approval(self, client, test_db):
         """
         After approval, GET must return the persisted APPROVED summary so the UI

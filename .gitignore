@@ -232,3 +232,7 @@ medisense-ai-70ba8-firebase-adminsdk-fbsvc-6fdbdb902c.json
 frontend/mobile/android/app/google-services.json
 frontend/mobile/ios/Runner/GoogleService-Info.plist
 secrets-firebase-adminsdk.json
+backend/.deploy/
+
+# DO App Platform spec with real secrets filled in — never commit
+.do/app.local.yaml

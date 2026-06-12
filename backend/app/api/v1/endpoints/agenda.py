@@ -14,6 +14,7 @@ from app.db.models.patient import Patient
 from app.db.models.user import User
 from app.db.models.noshow_feedback import NoShowFeedback
 from app.db.session import get_db
+from app.services.appointment_notifier import notify_appointment_event
 from app.services.noshow_predictor import (
     NoShowPredictor,
     ModelNotReadyError,
@@ -270,6 +271,13 @@ async def submit_noshow_feedback(
     )
     db.add(feedback)
     await db.flush()
+
+    # Notify the patient that the consultation outcome was recorded.
+    await notify_appointment_event(
+        db, appt,
+        "completed" if body.outcome == "presented" else "no_show",
+        uuid.UUID(current_user.sub),
+    )
 
     # 3. Count total no-shows for this patient (ML feature: previous_noshows)
     count_result = await db.execute(

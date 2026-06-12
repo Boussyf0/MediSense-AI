@@ -1,0 +1,154 @@
+# DigitalOcean App Platform spec — MediSense AI
+# -----------------------------------------------------------------------------
+# Mirrors the old Fly.io stack (medisense-ai + medisense-pg + medisense-qdrant
+# + medisense-web + Redis) on a single App Platform app:
+#
+#   service  backend  ->  FastAPI (Dockerfile), routed at /api
+#   service  web      ->  Next.js dashboard (Dockerfile), routed at /
+#   job      init-db  ->  PRE_DEPLOY, runs scripts/init_db.py against Postgres
+#   database medisense-pg -> DO Managed Dev Postgres 16 (auto-injected creds)
+#
+# Qdrant (vector DB) and Redis are NOT in this spec — App Platform's filesystem
+# is ephemeral, so they live off-platform:
+#   - Qdrant  -> Qdrant Cloud free 1GB cluster   (set QDRANT_* secrets below)
+#   - Redis   -> Upstash free serverless (rediss) (set REDIS_* secrets below)
+#
+# Deploy:
+#   doctl apps create --spec .do/app.yaml          # first time
+#   doctl apps update <APP_ID> --spec .do/app.yaml # subsequent
+#
+# Secrets marked `type: SECRET` with a REPLACE_ME value must be set to real
+# values either by editing this file before `apps create`, or in the dashboard
+# (App -> Settings -> component -> Environment Variables) after creation.
+# -----------------------------------------------------------------------------
+name: medisense-ai
+region: fra # Frankfurt — closest to the old Fly cdg (Paris) region
+
+# Postgres is external (Neon, free tier) — NOT a DO managed/dev database. DO dev
+# databases only expose one restricted role that cannot CREATE the `secure`
+# schema the RGPD identity-encryption tables require (no doadmin to grant it).
+# Neon gives an owner role (neondb_owner), so init_db.py creates the schema +
+# extensions cleanly. Connection set via POSTGRES_* below.
+
+services:
+  # ───────────────────────────── Backend API ─────────────────────────────
+  - name: backend
+    # Dockerfile.do installs the slim runtime set + CPU-only torch; the full
+    # requirements.txt image (~6GB w/ CUDA) exhausts DO's build node.
+    dockerfile_path: backend/Dockerfile.do
+    source_dir: backend
+    github:
+      repo: Boussyf0/MediSense-AI
+      branch: main
+      deploy_on_push: true
+    http_port: 8000
+    instance_size_slug: apps-s-1vcpu-2gb # backend spikes to ~850MB+ during RAG/ML
+    instance_count: 1
+    # start.sh: init_db (idempotent schema build) then exec uvicorn. A script,
+    # not an inline "init && uvicorn" — DO runs run_command via shlex split, not a
+    # shell, so `&&` would be passed as argv to python and uvicorn never starts.
+    run_command: sh start.sh
+    health_check:
+      http_path: /api/v1/health
+      initial_delay_seconds: 60
+      period_seconds: 30
+      timeout_seconds: 10
+    routes:
+      - path: /api
+        preserve_path_prefix: true # forward /api/v1/... unchanged to FastAPI
+    envs:
+      - key: APP_ENV
+        value: production
+      - key: PYTHONPATH
+        value: /app
+      # ---- Postgres (Neon — external, owner role, full privileges) ----
+      - key: POSTGRES_HOST
+        value: ep-curly-violet-aspgcsn4.c-4.eu-central-1.aws.neon.tech
+      - key: POSTGRES_PORT
+        value: "5432"
+      - key: POSTGRES_DB
+        value: neondb
+      - key: POSTGRES_USER
+        value: neondb_owner
+      - key: POSTGRES_PASSWORD # Neon password — set in dashboard, do NOT commit
+        value: REPLACE_ME
+        type: SECRET
+      - key: PGSSLMODE
+        value: require # Neon requires TLS
+      # ---- Redis (Upstash free serverless — TLS) ----
+      - key: REDIS_HOST
+        value: prepared-corgi-37804.upstash.io
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_SSL
+        value: "true"
+      - key: REDIS_PASSWORD # Upstash token — set in dashboard, do NOT commit
+        value: REPLACE_ME
+        type: SECRET
+      # ---- Qdrant Cloud (HTTPS + API key) ----
+      - key: QDRANT_HOST
+        value: 0f4a61ee-4b69-4f47-a546-ee97922f15dc.europe-west6-0.gcp.cloud.qdrant.io
+      - key: QDRANT_PORT
+        value: "6333"
+      - key: QDRANT_HTTPS
+        value: "true"
+      - key: QDRANT_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      # ---- LLM (Groq cloud, fast demo) ----
+      - key: LLM_PROVIDER
+        value: groq
+      - key: GROQ_MODEL
+        value: llama-3.1-8b-instant
+      - key: GROQ_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: JINA_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      # ---- App secrets ----
+      - key: JWT_SECRET_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: PGCRYPTO_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: FCM_SERVICE_ACCOUNT_B64 # base64 Firebase service account JSON (real push)
+        value: REPLACE_ME
+        type: SECRET
+      # ---- Misc ----
+      - key: KAFKA_BROKERS
+        value: "" # no broker → /iot/ingest runs the LSTM detector inline
+      # Absolute path: the default resolver assumes the repo's backend/ subdir,
+      # which is the image root (/app) here. The model is COPY'd to /app/models/.
+      - key: LSTM_MODEL_PATH
+        value: /app/models/lstm_anomaly_detector.pt
+      - key: CORS_ORIGINS
+        value: '["${APP_URL}"]' # same-origin web app; add custom domains here
+
+  # ──────────────────────────── Web dashboard ────────────────────────────
+  - name: web
+    dockerfile_path: frontend/web/Dockerfile
+    source_dir: frontend/web
+    github:
+      repo: Boussyf0/MediSense-AI
+      branch: main
+      deploy_on_push: true
+    http_port: 3000
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    instance_count: 1
+    routes:
+      - path: / # catch-all; backend's /api route takes precedence
+    envs:
+      - key: NODE_ENV
+        value: production
+      # axios baseURL; the app posts to '/auth/login', so this MUST end in /api/v1.
+      # Concrete URL (not ${APP_URL}) — ${APP_URL} is a runtime binding and does
+      # NOT resolve at build time, but Next.js inlines NEXT_PUBLIC_* at build.
+      - key: NEXT_PUBLIC_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: https://medisense-ai-7li7x.ondigitalocean.app/api/v1
+
+# NOTE: schema init (scripts/init_db.py) runs from the backend service's
+# run_command, not a separate PRE_DEPLOY job — building the heavy backend image
+# twice concurrently exhausted DO's build node.

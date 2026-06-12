@@ -57,7 +57,12 @@ _ICD10_BOOST_LIMIT = 15        # ICD-10 boost — code-specific retrieval
 
 def _get_client() -> QdrantClient:
     settings = get_settings()
-    return QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+    return QdrantClient(
+        host=settings.QDRANT_HOST,
+        port=settings.QDRANT_PORT,
+        https=settings.QDRANT_HTTPS,
+        api_key=settings.QDRANT_API_KEY or None,
+    )
 
 
 def ensure_collection() -> None:

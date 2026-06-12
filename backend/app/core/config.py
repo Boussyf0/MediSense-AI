@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: str = ""
+    # TLS for hosted Redis (Upstash, DO Managed Caching). Local/Docker Redis is
+    # plaintext, so this defaults off; set REDIS_SSL=true in cloud environments.
+    REDIS_SSL: bool = False
 
     # JWT
     JWT_SECRET_KEY: str
@@ -43,6 +46,10 @@ class Settings(BaseSettings):
     # Qdrant (used Sprint 3)
     QDRANT_HOST: str = "qdrant"
     QDRANT_PORT: int = 6333
+    # Hosted Qdrant Cloud connects over HTTPS with an API key. Self-hosted
+    # (Docker / private network) stays HTTP with no key.
+    QDRANT_HTTPS: bool = False
+    QDRANT_API_KEY: str = ""
 
     # LLM provider — "ollama" (local) or "groq" (cloud, fast demo)
     LLM_PROVIDER: str = "ollama"
@@ -57,6 +64,9 @@ class Settings(BaseSettings):
     # Set LLM_PROVIDER=groq and GROQ_API_KEY=gsk_... in .env
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.1-8b-instant"
+
+    # Hosted embeddings + reranking (Jina) — keeps heavy models off the API box
+    JINA_API_KEY: str = ""
 
     # SMS reminders (Sprint 5)
     # If SMS_WEBHOOK_URL is empty, reminders are sent in mock mode (dev/demo).
@@ -128,9 +138,11 @@ class Settings(BaseSettings):
 
     @property
     def REDIS_URL(self) -> str:
+        # rediss:// enables TLS, required by hosted providers (Upstash et al.).
+        scheme = "rediss" if self.REDIS_SSL else "redis"
         if self.REDIS_PASSWORD:
-            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+            return f"{scheme}://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+        return f"{scheme}://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     model_config = SettingsConfigDict(
         env_file=["../.env", ".env"],  # ../.env for local runs from backend/, .env inside Docker

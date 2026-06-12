@@ -14,6 +14,7 @@ from app.db.models.patient import Patient
 from app.db.session import get_db
 from app.schemas.iot import DeviceStatus, IngestBatch, IngestResponse, VitalPoint
 from app.services.kafka_producer import publish_reading
+from app.services.anomaly_detector import ingest_reading
 
 router = APIRouter(prefix="/iot", tags=["IoT"])
 
@@ -231,14 +232,19 @@ async def ingest_vitals(
         existing_ts.add(sample.ts)
         accepted += 1
 
-        await publish_reading({
+        reading_payload = {
             "device_id": batch.device_id,
             "patient_uuid": str(patient_uuid),
             "hr": sample.hr,
             "spo2": sample.spo2,
             "hrv": sample.hrv,
             "timestamp": int(sample.ts.timestamp()),
-        })
+        }
+        # Prefer Kafka (consumer runs the LSTM detector). When no broker is
+        # configured (cloud demo), publish_reading() returns False — fall back to
+        # running detection inline so real-time alerts still fire on ingest.
+        if not await publish_reading(reading_payload):
+            await ingest_reading(str(patient_uuid), reading_payload)
 
     await db.flush()
     return IngestResponse(accepted=accepted, dropped=dropped)

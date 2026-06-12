@@ -10,12 +10,15 @@ import uuid
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from pydantic import BaseModel
 
 from app.core.dependencies import TokenPayload, get_current_user
 from app.db.models.appointment import Appointment
 from app.db.models.device_token import DeviceToken
+from app.db.models.notification import Notification
 from app.db.models.sms_reminder_log import SmsReminderLog
 from app.db.session import get_db
 from app.schemas.notifications import (
@@ -126,3 +129,77 @@ async def unregister_token(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token not found")
     await db.delete(row)
     await db.flush()
+
+
+# ── General durable notification inbox (all roles) ───────────────────────────
+# Backs the offline-account guarantee: appointment-lifecycle events are written
+# to the `notification` table at event time, so the recipient sees them on next
+# login regardless of FCM/connectivity. Works for patient, doctor and secretary.
+
+class NotificationOut(BaseModel):
+    id: uuid.UUID
+    type: str
+    title: str
+    body: str
+    appointment_uuid: uuid.UUID | None = None
+    read_at: datetime | None = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class NotificationListResponse(BaseModel):
+    items: list[NotificationOut]
+    unread_count: int
+
+
+@router.get("", response_model=NotificationListResponse, summary="List my notifications")
+async def list_notifications(
+    unread_only: bool = Query(default=False),
+    limit: int = Query(default=30, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+) -> NotificationListResponse:
+    user_uuid = uuid.UUID(current_user.sub)
+    q = select(Notification).where(Notification.user_uuid == user_uuid)
+    if unread_only:
+        q = q.where(Notification.read_at.is_(None))
+    q = q.order_by(Notification.created_at.desc()).limit(limit)
+    items = (await db.execute(q)).scalars().all()
+
+    unread_count = (
+        await db.execute(
+            select(func.count(Notification.id)).where(
+                Notification.user_uuid == user_uuid,
+                Notification.read_at.is_(None),
+            )
+        )
+    ).scalar_one()
+
+    return NotificationListResponse(
+        items=[NotificationOut.model_validate(n) for n in items],
+        unread_count=int(unread_count),
+    )
+
+
+@router.post("/{notification_id}/read", status_code=status.HTTP_204_NO_CONTENT)
+async def mark_notification_read(
+    notification_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+) -> None:
+    user_uuid = uuid.UUID(current_user.sub)
+    notif = (
+        await db.execute(
+            select(Notification).where(
+                Notification.id == notification_id,
+                Notification.user_uuid == user_uuid,
+            )
+        )
+    ).scalar_one_or_none()
+    if notif is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+    if notif.read_at is None:
+        from datetime import timezone
+        notif.read_at = datetime.now(timezone.utc)
+        await db.flush()

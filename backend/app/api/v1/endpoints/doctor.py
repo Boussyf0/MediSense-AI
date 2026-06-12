@@ -172,7 +172,12 @@ async def get_dpa_summary(
         patient_uuid=patient_uuid,
         patient_name=patient_name,
         patient=patient_card,
-        symptoms=payload.get("symptoms", []),
+        # payload stores symptoms as list[dict] ({name, severity, source}); the
+        # response contract is list[str], so project to the symptom names.
+        symptoms=[
+            s.get("name", "") if isinstance(s, dict) else str(s)
+            for s in payload.get("symptoms", [])
+        ],
         iot_summary=_parse_iot_summary(payload.get("iot_summary", {})),
         recommended_actions=_parse_actions(payload.get("recommended_actions", [])),
         agent_actions=_parse_agent_actions(getattr(summary, "actions", [])),

@@ -1,9 +1,10 @@
 /// Inbox polling fallback for clients without working FCM (iOS without APNs).
 ///
-/// On `start()` the poller periodically calls `GET /notifications/inbox`,
-/// dedupes against ids seen so far, and surfaces new items as local
-/// notifications. Designed to coexist with FCM: if push delivery already
-/// fired for an item, the dedupe set drops it on the next poll.
+/// On `start()` the poller baselines the current unread notifications, then
+/// periodically calls `GET /notifications?unread_only=true`, dedupes against ids
+/// seen so far, and surfaces genuinely-new items as local notifications.
+/// Designed to coexist with FCM: if push delivery already fired for an item, the
+/// dedupe set drops it on the next poll.
 library;
 
 import 'dart:async';
@@ -26,7 +27,6 @@ class InboxPoller {
       FlutterLocalNotificationsPlugin();
   final Set<String> _seen = <String>{};
   Timer? _timer;
-  DateTime? _since;
   bool _localNotifReady = false;
 
   Future<void> _ensureLocalNotifs() async {
@@ -46,8 +46,7 @@ class InboxPoller {
   Future<void> start({Duration interval = _defaultInterval}) async {
     if (_timer != null) return;
     await _ensureLocalNotifs();
-    _since = DateTime.now().toUtc();
-    await _poll();
+    await _prime();
     _timer = Timer.periodic(interval, (_) => _poll());
   }
 
@@ -55,30 +54,36 @@ class InboxPoller {
     _timer?.cancel();
     _timer = null;
     _seen.clear();
-    _since = null;
+  }
+
+  /// Baseline the unread notifications already present at startup (mark them
+  /// seen without notifying) so only items arriving afterwards surface locally.
+  Future<void> _prime() async {
+    for (final item in await _fetchUnread()) {
+      _seen.add(item['id'] as String);
+    }
   }
 
   Future<void> _poll() async {
+    for (final item in await _fetchUnread()) {
+      final id = item['id'] as String;
+      if (_seen.contains(id)) continue;
+      _seen.add(id);
+      await _showLocal(item);
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchUnread() async {
     try {
       final dio = createDio();
-      final params = <String, dynamic>{};
-      if (_since != null) params['since'] = _since!.toIso8601String();
       final resp = await dio.get(
-        '/notifications/inbox',
-        queryParameters: params,
+        '/notifications',
+        queryParameters: <String, dynamic>{'unread_only': true, 'limit': 50},
       );
-      final items = (resp.data['items'] as List).cast<Map<String, dynamic>>();
-      for (final item in items) {
-        final id = item['id'] as String;
-        if (_seen.contains(id)) continue;
-        _seen.add(id);
-        await _showLocal(item);
-      }
-      if (items.isNotEmpty) {
-        _since = DateTime.now().toUtc();
-      }
+      return (resp.data['items'] as List).cast<Map<String, dynamic>>();
     } on DioException catch (e) {
       debugPrint('InboxPoller: ${e.message}');
+      return const [];
     }
   }
 

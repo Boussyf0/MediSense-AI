@@ -8,6 +8,11 @@ RUN npm ci
 
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# Next.js inlines NEXT_PUBLIC_* at build time. .env.production is gitignored
+# (not in the build context), so the API base must come from the platform: DO
+# passes build-time spec env vars as build args — surface it to `next build`.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build
 
 FROM node:20-alpine AS runner
